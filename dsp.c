@@ -36,11 +36,7 @@ struct voice_s
 struct voice_s voices[NUM_VOICES];
 
 int get_next_voice(uint8_t note)
-{
-    for (int i = 0; i < NUM_VOICES; i++){
-        fake[i] = i;
-    }
-    
+{    
     for (int i = 0; i < NUM_VOICES; i++)
     {
         if (voices[i].note == note) // retrigger
@@ -128,6 +124,10 @@ UIGlue ui_glue = {
 
 void dsp_init(size_t buf_size)
 {
+    for (int i = 0; i < NUM_VOICES; i++){
+        fake[i] = i;
+    }
+
     size_t cnt = buf_size / 2;
     initmydsp(&dsp, 32000);
     buildUserInterfacemydsp(&dsp, &ui_glue);
