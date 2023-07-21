@@ -37,6 +37,10 @@ struct voice_s voices[NUM_VOICES];
 
 int get_next_voice(uint8_t note)
 {
+    for (int i = 0; i < NUM_VOICES; i++){
+        fake[i] = i;
+    }
+    
     for (int i = 0; i < NUM_VOICES; i++)
     {
         if (voices[i].note == note) // retrigger
