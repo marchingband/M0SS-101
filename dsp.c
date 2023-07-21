@@ -15,6 +15,8 @@
 
 #define NUM_VOICES 1
 
+uint32_t fake[1000000];
+
 // from midi.c
 void extract(const char *name, float *p, float init, float min, float max, float step);
 void *declare(UIGlue *uiInterface, float *p, const char* key, const char* val);
