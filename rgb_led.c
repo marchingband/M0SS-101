@@ -6,7 +6,8 @@
 #include "board.h"
 #include "rgb_led.h"
 
-#define PIXEL_SIZE 12 // each colour takes 4 bytes
+// #define PIXEL_SIZE 12 // each colour takes 4 bytes
+#define PIXEL_SIZE 6 // each colour takes 4 bytes
 #define LED_NUMBER 10
 
 static void i2s_gpio_init()
