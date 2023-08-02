@@ -144,14 +144,14 @@ void rgb_set_color(struct pixel_t *pixels){
         // out_buffer[loc + 10] = bitpatterns[pixels[i].blue >> 2 & 0x03];
         // out_buffer[loc + 11] = bitpatterns[pixels[i].blue & 0x03];
 
-        tx_buffer[loc] = (bitpatterns[pixels[i].green >> 6 & 0x03] << 8) | bitpatterns[pixels[i].green >> 4 & 0x03];
+        tx_buffer[loc]     = (bitpatterns[pixels[i].green >> 6 & 0x03] << 8) | bitpatterns[pixels[i].green >> 4 & 0x03];
         tx_buffer[loc + 1] = (bitpatterns[pixels[i].green >> 2 & 0x03] << 8) | bitpatterns[pixels[i].green & 0x03];
 
-        tx_buffer[loc + 2] = (bitpatterns[pixels[i].red >> 6 & 0x03] << 8) | bitpatterns[pixels[i].red >> 4 & 0x03];
-        tx_buffer[loc + 3] = (bitpatterns[pixels[i].red >> 2 & 0x03] << 8) | bitpatterns[pixels[i].red & 0x03];
+        tx_buffer[loc + 2] = (bitpatterns[pixels[i].red   >> 6 & 0x03] << 8) | bitpatterns[pixels[i].red >> 4 & 0x03];
+        tx_buffer[loc + 3] = (bitpatterns[pixels[i].red   >> 2 & 0x03] << 8) | bitpatterns[pixels[i].red & 0x03];
 
-        tx_buffer[loc + 4] = (bitpatterns[pixels[i].blue >> 6 & 0x03] << 8) | bitpatterns[pixels[i].blue >> 4 & 0x03];
-        tx_buffer[loc + 5] = (bitpatterns[pixels[i].blue >> 2 & 0x03] << 8) | bitpatterns[pixels[i].blue & 0x03];
+        tx_buffer[loc + 4] = (bitpatterns[pixels[i].blue  >> 6 & 0x03] << 8) | bitpatterns[pixels[i].blue >> 4 & 0x03];
+        tx_buffer[loc + 5] = (bitpatterns[pixels[i].blue  >> 2 & 0x03] << 8) | bitpatterns[pixels[i].blue & 0x03];
     }
     i2s_send();
 }
