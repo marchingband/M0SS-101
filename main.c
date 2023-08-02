@@ -342,7 +342,7 @@ void gpio_sig_init(void)
 }
 
 static const struct pixel_t p_blue = {
-    .blue = 255,
+    .blue = 55,
     .green = 0,
     .red = 0
 };
@@ -350,12 +350,12 @@ static const struct pixel_t p_blue = {
 static const struct pixel_t p_red = {
     .blue = 0,
     .green = 0,
-    .red = 255
+    .red = 55
 };
 
 static const struct pixel_t p_green = {
     .blue = 0,
-    .green = 255,
+    .green = 55,
     .red = 0
 };
 
