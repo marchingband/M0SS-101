@@ -61,7 +61,7 @@ void rgb_led_init(){
     // }
 
     struct bflb_i2s_config_s i2s_cfg = {
-        .bclk_freq_hz = 120000 * 16 * 2, /* bclk = Sampling_rate * frame_width * channel_num */
+        .bclk_freq_hz = 130000 * 16 * 2, /* bclk = Sampling_rate * frame_width * channel_num */
         // .bclk_freq_hz = 93750 * 16 * 2, /* bclk = Sampling_rate * frame_width * channel_num */
         .role = I2S_ROLE_MASTER,
         .format_mode = I2S_MODE_LEFT_JUSTIFIED,
