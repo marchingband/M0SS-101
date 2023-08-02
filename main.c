@@ -412,10 +412,12 @@ int main(void)
         rgb_set_color(pix_blue);
         bflb_mtimer_delay_ms(500);
         printf("send green\n");
-        rgb_set_color(pix_green);
+        rgb_set_color(pix_blue);
+        // rgb_set_color(pix_green);
         bflb_mtimer_delay_ms(500);
         printf("send red\n");
-        rgb_set_color(pix_red);
+        rgb_set_color(pix_blue);
+        // rgb_set_color(pix_red);
 
     vTaskStartScheduler();
     
