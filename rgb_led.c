@@ -8,7 +8,7 @@
 
 // #define PIXEL_SIZE 12 // each colour takes 4 bytes
 #define PIXEL_SIZE 6 // each colour takes 4 bytes
-#define LED_NUMBER 2
+#define LED_NUMBER 5
 
 static void i2s_gpio_init()
 {
