@@ -407,7 +407,7 @@ int main(void)
     // // printf("audac is irq %d with prio %d\n", audac_int_num, audac_prio);
     // // int cnt = 0;
     // // bool bench = true;
-            bflb_mtimer_delay_ms(500);
+        bflb_mtimer_delay_ms(500);
         printf("send blue\n");
         rgb_set_color(pix_blue);
         bflb_mtimer_delay_ms(500);

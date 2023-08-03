@@ -123,12 +123,14 @@ UIGlue ui_glue = {
 void dsp_init(size_t buf_size)
 {
 
-    size_t cnt = buf_size / 2;
+    // size_t cnt = buf_size / 2;
     initmydsp(&dsp, 48000);
     // initmydsp(&dsp, 32000);
     buildUserInterfacemydsp(&dsp, &ui_glue);
-    buf[0] = (float *)malloc(cnt * sizeof(float));
-    buf_len = cnt;
+    buf[0] = (float *)malloc(buf_size * sizeof(float));
+    buf_len = buf_size;
+    // buf[0] = (float *)malloc(cnt * sizeof(float));
+    // buf_len = cnt;
 
 #ifdef POLY_MODE
     voices[0].on = false;
@@ -209,11 +211,12 @@ void dsp_run(int16_t *dest)
     for (int i = 0; i < buf_len; i++)
     {
         float val = buf[0][i];
-        int16_t i16 = val * 32767;
-        uint16_t u16 = (uint16_t)i16;
-        size_t index = i * 2;
-        dest[index] = u16;
-        dest[index + 1] = u16;
+        dest[i] = (uint16_t)((val + 1) * 32767);
+        // int16_t i16 = val * 32767;
+        // uint16_t u16 = (uint16_t)i16;
+        // size_t index = i * 2;
+        // dest[index] = u16;
+        // dest[index + 1] = u16;
     }
     consumed = bflb_mtimer_get_time_us() - now;
 }
