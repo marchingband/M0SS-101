@@ -21,6 +21,7 @@
 #include <FreeRTOS.h>
 
 #include "rgb_led.h"
+#include "gpio.h"
 
 void dsp_run(int16_t *dest);
 void dsp_init(size_t buf_size);
