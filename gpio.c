@@ -3,8 +3,6 @@
 
 #include "bflb_gpio.h"
 
-#define USE_UART 1
-
 struct bflb_device_s *gpio;
 
 #define NUM_BUTTONS 14 // save UART

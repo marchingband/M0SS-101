@@ -12,6 +12,7 @@ target_sources(app PRIVATE
     dsp.c
     usb.c
     rgb_led.c
+    gpio.c
 )
 
 sdk_set_main_file(main.c)
