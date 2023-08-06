@@ -404,6 +404,8 @@ int main(void)
     // i2s_init();
     // rgb_led_init();
 
+    gpio_init():
+
     // // printf("uart is irq %d with prio %d\n", uart_int_num, uart_prio);
     // // printf("audac is irq %d with prio %d\n", audac_int_num, audac_prio);
     // // int cnt = 0;

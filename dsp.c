@@ -6,6 +6,7 @@
 
 #include "bflb_mtimer.h"
 #include "dsp.h"
+#include "gpio.h"
 
 // #include "square-diode-lfo.h"
 // #include "square-diode.h"
@@ -212,13 +213,9 @@ void dsp_run(int16_t *dest)
     {
         float val = buf[0][i];
         dest[i] = (uint16_t)((val + 1) * 32767);
-        // int16_t i16 = val * 32767;
-        // uint16_t u16 = (uint16_t)i16;
-        // size_t index = i * 2;
-        // dest[index] = u16;
-        // dest[index + 1] = u16;
     }
     consumed = bflb_mtimer_get_time_us() - now;
+    poll_gpio();
 }
 
 void play(uint8_t note)
