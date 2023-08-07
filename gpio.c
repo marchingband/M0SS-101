@@ -10,7 +10,8 @@ struct bflb_device_s *gpio;
 
 #define DEBOUNCE_TIME 1000 * 50 // 50 ms
 
-const uint8_t button_pins[]   = { 0, 1, 3, 10, 12, 13, 15, 16, 17, 20, 27, 28, 29, 30, 21 }; // 21 is UART
+// const uint8_t button_pins[]   = { 0,  1,  3,  10, 12, 13, 15, 16, 17, 20, 27, 28, 29, 30, 21 }; // 21 is UART
+const uint8_t button_pins[]      = { 30, 29, 28, 27, 16, 20, 12, 10, 13, 17, 3,  15, 1 , 0 }; // 21 is UART
 
 uint8_t button_pushes[]       = { 0, 0, 0, 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0  };
 uint8_t button_state[]        = { 0, 0, 0, 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0  };

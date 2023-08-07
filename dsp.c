@@ -12,7 +12,8 @@
 // #include "square-diode.h"
 // #include "moog-poly-8.h"
 // #include "moog-poly-8-verb.h"
-#include "mg1.h"
+// #include "mg1.h"
+#include "m0s.h"
 
 #define NUM_VOICES 1
 

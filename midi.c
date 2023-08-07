@@ -61,6 +61,14 @@ struct CC {
 
 #define NUM_SEL 20
 
+struct Mod {
+    float *p;
+    float min;
+    float max;
+    float init;
+    char name[20];
+};
+
 struct Sel {
     float *p;
     float min;
