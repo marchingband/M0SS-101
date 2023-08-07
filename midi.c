@@ -103,17 +103,17 @@ void extract(const char *name, float *p, float init, float min, float max, float
         }
     }
 
-    for(int i=0; i<NUM_SEL; i++)
-    {
-        struct Sel *sel = &Sels[i];
-        if(sel->p == p){
-            sel->min = min;
-            sel->max = max;
-            sel->init = init;
-            strcpy(sel->name, name);
-            return;
-        }
-    }
+    // for(int i=0; i<NUM_SEL; i++)
+    // {
+    //     struct Sel *sel = &Sels[i];
+    //     if(sel->p == p){
+    //         sel->min = min;
+    //         sel->max = max;
+    //         sel->init = init;
+    //         strcpy(sel->name, name);
+    //         return;
+    //     }
+    // }
 
     printf("failed to find cc for %s\n", name);
 }
