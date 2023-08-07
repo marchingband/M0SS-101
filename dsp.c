@@ -213,7 +213,8 @@ void dsp_run(int16_t *dest)
     for (int i = 0; i < buf_len; i++)
     {
         float val = buf[0][i];
-        dest[i] = (uint16_t)((val + 1) * 32767);
+        printf("%f", val);
+        // dest[i] = (uint16_t)((val + 1) * 32767);
     }
     consumed = bflb_mtimer_get_time_us() - now;
     poll_gpio();
