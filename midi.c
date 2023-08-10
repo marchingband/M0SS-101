@@ -188,6 +188,10 @@ void *declare(UIGlue *uiInterface, float *p, const char* key, const char* val){
 void handle_button_press(int num)
 {
     struct Sel *sel = &Sels[num];
+    if(sel->p == 0) // nothing to do for that button press
+    {
+        return;
+    }
     float cur = *sel->p;
     if(cur < sel->max)
     {

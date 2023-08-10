@@ -105,8 +105,8 @@ typedef struct {
 	FAUSTFLOAT fHslider27;
 	FAUSTFLOAT fHslider28;
 	float fRec4[2];
+	float fRec5[2];
 	float fRec6[2];
-	float fRec7[2];
 	float fConst7;
 	float fRec20[2];
 	float fRec19[2];
@@ -393,14 +393,14 @@ void instanceClearmydsp(mydsp* dsp) {
 	{
 		int l22;
 		for (l22 = 0; l22 < 2; l22 = l22 + 1) {
-			dsp->fRec6[l22] = 0.0f;
+			dsp->fRec5[l22] = 0.0f;
 		}
 	}
 	/* C99 loop */
 	{
 		int l23;
 		for (l23 = 0; l23 < 2; l23 = l23 + 1) {
-			dsp->fRec7[l23] = 0.0f;
+			dsp->fRec6[l23] = 0.0f;
 		}
 	}
 	/* C99 loop */
@@ -504,7 +504,7 @@ void buildUserInterfacemydsp(mydsp* dsp, UIGlue* ui_interface) {
 	ui_interface->addHorizontalSlider(ui_interface->uiInterface, "lfo-depth", &dsp->fHslider19, (FAUSTFLOAT)1.0f, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)1.0f, (FAUSTFLOAT)0.001f);
 	ui_interface->declare(ui_interface->uiInterface, &dsp->fHslider4, "midi", "3");
 	ui_interface->addHorizontalSlider(ui_interface->uiInterface, "lfo-freq", &dsp->fHslider4, (FAUSTFLOAT)1.0f, (FAUSTFLOAT)0.01f, (FAUSTFLOAT)2e+01f, (FAUSTFLOAT)0.001f);
-	ui_interface->declare(ui_interface->uiInterface, &dsp->fHslider3, "sel", "7");
+	ui_interface->declare(ui_interface->uiInterface, &dsp->fHslider3, "mod", "7");
 	ui_interface->addHorizontalSlider(ui_interface->uiInterface, "lfo-to-env", &dsp->fHslider3, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)1.0f, (FAUSTFLOAT)1.0f);
 	ui_interface->declare(ui_interface->uiInterface, &dsp->fHslider20, "mod", "4");
 	ui_interface->addHorizontalSlider(ui_interface->uiInterface, "lfo-to-osc", &dsp->fHslider20, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)1.0f, (FAUSTFLOAT)0.001f);
@@ -673,16 +673,16 @@ void computemydsp(mydsp* dsp, int count, FAUSTFLOAT** RESTRICT inputs, FAUSTFLOA
 			float fTemp48 = fSlow44 * fTemp11;
 			float fTemp49 = fSlow45 * (float)((int)(fTemp29) ^ (int)(fTemp43));
 			float fTemp50 = fTemp33 + fTemp47 + fTemp48 + fTemp49;
-			float fTemp51 = (fTemp50 - dsp->fRec7[1]) * fTemp15;
+			float fTemp51 = (fTemp50 - dsp->fRec6[1]) * fTemp15;
 			float fTemp52 = fTemp15 + 1.0f;
 			float fTemp53 = fTemp15 / fTemp52;
-			float fTemp54 = (fTemp50 - (dsp->fRec7[1] + (fTemp51 - dsp->fRec4[1] - dsp->fRec6[1] * (0.0f - fTemp53)) / fTemp52)) / (1.0f - fSlow20 * (fTemp15 * (1.0f - fTemp53) / fTemp52));
+			float fTemp54 = (fTemp50 - (dsp->fRec6[1] + (fTemp51 - dsp->fRec4[1] - dsp->fRec5[1] * (0.0f - fTemp53)) / fTemp52)) / (fSlow20 * (fTemp15 * (fTemp53 + -1.0f) / fTemp52) + 1.0f);
 			float fTemp55 = fSlow20 * fTemp54;
-			float fTemp56 = fTemp15 * (fTemp55 - dsp->fRec6[1]) / fTemp52;
-			dsp->fRec4[0] = dsp->fRec4[1] + 2.0f * (fTemp15 * (fTemp55 - (fTemp56 + dsp->fRec4[1] + dsp->fRec6[1])) / fTemp52);
-			float fRec5 = fTemp54;
-			dsp->fRec6[0] = dsp->fRec6[1] + 2.0f * fTemp56;
-			dsp->fRec7[0] = dsp->fRec7[1] + 2.0f * (fTemp51 / fTemp52);
+			float fTemp56 = fTemp15 * (fTemp55 - dsp->fRec5[1]) / fTemp52;
+			dsp->fRec4[0] = dsp->fRec4[1] + 2.0f * (fTemp15 * (fTemp55 - (dsp->fRec5[1] + dsp->fRec4[1] + fTemp56)) / fTemp52);
+			dsp->fRec5[0] = dsp->fRec5[1] + 2.0f * fTemp56;
+			dsp->fRec6[0] = dsp->fRec6[1] + 2.0f * (fTemp51 / fTemp52);
+			float fRec7 = fTemp54;
 			float fTemp57 = dsp->fConst7 * fTemp14;
 			float fTemp58 = 1.0f - fTemp57;
 			dsp->fRec20[0] = fTemp49 + fTemp48 + fTemp47 + fTemp33 + fTemp58 * dsp->fRec20[1] + fSlow46 * dsp->fRec16[1];
@@ -701,7 +701,7 @@ void computemydsp(mydsp* dsp, int count, FAUSTFLOAT** RESTRICT inputs, FAUSTFLOA
 			float fTemp66 = fTemp15 * fTemp63 * fTemp64;
 			dsp->fRec22[0] = dsp->fRec22[1] + 2.0f * fTemp66;
 			dsp->fRec23[0] = fTemp62 + fTemp65;
-			output0[i0] = (FAUSTFLOAT)(fSlow0 * fTemp9 * ((iSlow11) ? fRec21 : ((iSlow12) ? dsp->fRec16[0] : fRec5)) * (fSlow48 * fTemp12 + 1.0f));
+			output0[i0] = (FAUSTFLOAT)(fSlow0 * fTemp9 * ((iSlow11) ? fRec21 : ((iSlow12) ? dsp->fRec16[0] : fRec7)) * (fSlow48 * fTemp12 + 1.0f));
 			dsp->iVec0[1] = dsp->iVec0[0];
 			dsp->fRec1[1] = dsp->fRec1[0];
 			dsp->fVec1[1] = dsp->fVec1[0];
@@ -723,8 +723,8 @@ void computemydsp(mydsp* dsp, int count, FAUSTFLOAT** RESTRICT inputs, FAUSTFLOA
 			dsp->fRec15[1] = dsp->fRec15[0];
 			dsp->fVec8[1] = dsp->fVec8[0];
 			dsp->fRec4[1] = dsp->fRec4[0];
+			dsp->fRec5[1] = dsp->fRec5[0];
 			dsp->fRec6[1] = dsp->fRec6[0];
-			dsp->fRec7[1] = dsp->fRec7[0];
 			dsp->fRec20[1] = dsp->fRec20[0];
 			dsp->fRec19[1] = dsp->fRec19[0];
 			dsp->fRec18[1] = dsp->fRec18[0];
