@@ -42,8 +42,8 @@ static int max(int a, int b)
     return (a > b ? a : b);
 }
 
-#define BUF_SIZE 128
-// #define BUF_SIZE 64
+// #define BUF_SIZE 128
+#define BUF_SIZE 64
 
 static uint16_t tic[BUF_SIZE];
 static uint16_t toc[BUF_SIZE];
