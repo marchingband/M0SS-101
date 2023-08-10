@@ -248,13 +248,13 @@ void handle_midi(uint8_t *msg, uint8_t len)
     {
         uint8_t cc_num = msg[1] & 0b01111111;
         uint8_t cc_val = msg[2] & 0b01111111;
-        if(cc_num == 7) // maybe a modifier
+        if(cc_num == 8) // maybe a modifier
         {
             uint8_t should_set_volume = true;
             uint8_t *button_states = get_button_states();
             for(int i=0; i<NUM_BUTTONS; i++)
             {
-                if(button_states[i])
+                if(button_states[i] == 0) // button is pressed means 0
                 {
                     struct Mod mod = Mods[i];
                     if(mod.p == 0)
