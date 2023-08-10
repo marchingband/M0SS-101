@@ -220,7 +220,7 @@ void dsp_run(int16_t *dest)
         dest[i] = (uint16_t)(val * 32767);
     }
     consumed = bflb_mtimer_get_time_us() - now;
-    // poll_gpio();
+    poll_gpio();
 }
 
 void play(uint8_t note)
