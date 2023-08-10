@@ -22,7 +22,7 @@
 #define MIDI_CC_EQ_BASS 20
 #define MIDI_CC_EQ_TREBLE 21
 
-#define NUM_BUTTONS 14 // save UART
+// #define NUM_BUTTONS 14 // save UART
 
 uint8_t *getMidiMsg(void);
 uint8_t getMidiMsgLen(void);

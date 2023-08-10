@@ -3,6 +3,8 @@
 
 #include "bflb_gpio.h"
 
+#include "gpio.h"
+
 void handle_button_press(int num); // from midi.c
 
 struct bflb_device_s *gpio;
