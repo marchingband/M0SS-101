@@ -126,8 +126,8 @@ void dsp_init(size_t buf_size)
 {
 
     // size_t cnt = buf_size / 2;
-    initmydsp(&dsp, 48000);
-    // initmydsp(&dsp, 32000);
+    // initmydsp(&dsp, 48000);
+    initmydsp(&dsp, 32000);
     buildUserInterfacemydsp(&dsp, &ui_glue);
     buf[0] = (float *)malloc(buf_size * sizeof(float));
     buf_len = buf_size;
