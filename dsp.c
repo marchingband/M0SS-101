@@ -12,8 +12,8 @@
 // #include "square-diode.h"
 // #include "moog-poly-8.h"
 // #include "moog-poly-8-verb.h"
-#include "mg1.h"
-// #include "m0s.h"
+// #include "mg1.h"
+#include "m0s.h"
 
 #define NUM_VOICES 1
 
@@ -216,6 +216,7 @@ void dsp_run(int16_t *dest)
         float val = buf[0][i];
         // printf("%f\n", val);
         // dest[i] = (uint16_t)((val + 1) * 32767);
+        // the AUDAC expects int16_t but the buffer is typed uint16_t so do this awkward thing.
         dest[i] = (uint16_t)(val * 32767);
     }
     consumed = bflb_mtimer_get_time_us() - now;
