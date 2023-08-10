@@ -3,6 +3,8 @@
 
 #include "bflb_gpio.h"
 
+void handle_button_press(int num); // from midi.c
+
 struct bflb_device_s *gpio;
 
 #define NUM_BUTTONS 14 // save UART
@@ -42,6 +44,7 @@ void poll_gpio(void)
                     button_state[i] = 0;
                     button_time[i] = now;
                     printf("button %d pushed", i);
+                    handle_button_press(i);
                 }
             }
         }

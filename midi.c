@@ -103,17 +103,17 @@ void extract(const char *name, float *p, float init, float min, float max, float
         }
     }
 
-    // for(int i=0; i<NUM_SEL; i++)
-    // {
-    //     struct Sel *sel = &Sels[i];
-    //     if(sel->p == p){
-    //         sel->min = min;
-    //         sel->max = max;
-    //         sel->init = init;
-    //         strcpy(sel->name, name);
-    //         return;
-    //     }
-    // }
+    for(int i=0; i<NUM_SEL; i++)
+    {
+        struct Sel *sel = &Sels[i];
+        if(sel->p == p){
+            sel->min = min;
+            sel->max = max;
+            sel->init = init;
+            strcpy(sel->name, name);
+            return;
+        }
+    }
 
     printf("failed to find cc for %s\n", name);
 }
@@ -147,6 +147,28 @@ void *declare(UIGlue *uiInterface, float *p, const char* key, const char* val){
         pitch_bend = p;
     }
 };
+
+// struct Sel {
+//     float *p;
+//     float min;
+//     float max;
+//     float init;
+//     char name[20];
+// };
+
+void handle_button_press(int num)
+{
+    struct Sel *sel = &Sels[num];
+    float cur = *sel->p;
+    if(cur < sel->max)
+    {
+        *sel->p += 1;
+    }
+    else
+    {
+        *sel->p = sel->min;
+    }
+}
 
 void handle_midi(uint8_t *msg, uint8_t len)
 {
