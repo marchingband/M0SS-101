@@ -14,9 +14,22 @@ struct bflb_device_s *gpio;
 // const uint8_t button_pins[]      = { 30, 29, 28, 27, 16, 20, 12, 10, 13, 17, 3,  15, 1 , 0 };
 const uint8_t button_pins[]      = { 30, 29, 28, 27, 16, 20, 12, 10, 13, 17, 3,  15, 1 , 0, 21 }; // 21 is UART
 
-uint8_t button_pushes[]       = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-uint8_t button_state[]        = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
-uint64_t button_time[]        = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+uint8_t button_pushes[]    = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+uint8_t button_cancelled[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+uint8_t button_state[]     = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
+uint64_t button_time[]     = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+bool alt_held(void)
+{
+    if(NUM_BUTTONS == 15)
+    {
+        return button_state[14] == 0;
+    }
+    else
+    {
+        return false;
+    }
+}
 
 void gpio_init(void)
 {
@@ -42,8 +55,12 @@ void poll_gpio(void)
                     button_pushes[i] = 1;
                     button_state[i] = 0;
                     button_time[i] = now;
+                    if(alt_held())
+                    {
+                        button_cancelled[i] = 1;
+                    }
                     printf("button %d pushed", i);
-                    handle_button_press(i);
+                    // handle_button_press(i);
                 }
             }
         }
@@ -58,6 +75,14 @@ void poll_gpio(void)
                     button_state[i] = 1;
                     button_time[i] = now;
                     printf("button %d released", i);
+                    if(button_cancelled[i])
+                    {
+                        button_cancelled[i] = 0;
+                    }
+                    else
+                    {
+                        handle_button_press(i); // trigger event on release
+                    }
                 }
             }
         }

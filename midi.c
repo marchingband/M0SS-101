@@ -74,6 +74,16 @@ struct Mod {
     char name[20];
 };
 
+struct Alt {
+    float *p;
+    float min;
+    float max;
+    float init;
+    float step;
+    float mul;
+    char name[20];
+};
+
 struct Sel {
     float *p;
     float min;
@@ -84,6 +94,7 @@ struct Sel {
 
 struct CC CCs[127] = {0};
 struct Mod Mods[127] = {0};
+struct Alt Alts[127] = {0};
 struct Sel Sels[NUM_SEL] = {0};
 float *pitch = 0;
 float *gate = 0;
@@ -125,6 +136,22 @@ void extract(const char *name, float *p, float init, float min, float max, float
         }
     }
 
+    for(int i=0; i<NUM_BUTTONS; i++)
+    {
+        struct Alt *alt = &Alts[i];
+        if(alt->p == p){
+            alt->min = min;
+            alt->max = max;
+            alt->init = init;
+            alt->step = step;
+            float steps = (max - min) / step;
+            float per = steps / 127.0;
+            alt->mul = per;
+            strcpy(alt->name, name);
+            return;
+        }
+    }
+
     for(int i=0; i<NUM_SEL; i++)
     {
         struct Sel *sel = &Sels[i];
@@ -154,6 +181,13 @@ void *declare(UIGlue *uiInterface, float *p, const char* key, const char* val){
 
         struct Mod *mod = &Mods[num];
         mod->p = p;
+    }
+    else if(strcmp("alt", key) == 0) // its a cc
+    {
+        long num = strtol(val, NULL, 10);
+
+        struct Alt *alt = &Alts[num];
+        alt->p = p;
     }
     else if(strcmp("sel", key) == 0) // its a selection toggle
     {
@@ -256,18 +290,37 @@ void handle_midi(uint8_t *msg, uint8_t len)
             {
                 if(button_states[i] == 0) // button is pressed means 0
                 {
-                    struct Mod mod = Mods[i];
-                    if(mod.p == 0)
+                    if(alt_held())
                     {
-                        printf("got unknown Mod %d\n", i);
+                        struct Alt alt = Alts[i];
+                        if(alt.p == 0)
+                        {
+                            printf("got unknown Alt %d\n", i);
+                        }
+                        else
+                        {
+                            should_set_volume = false; // data is redirected, do not change volume
+                            float steps = alt.mul * (float)cc_val;
+                            int whole_steps = round(steps);
+                            float val = (alt.step * whole_steps) + alt.min;
+                            *alt.p = val;
+                        }
                     }
                     else
                     {
-                        should_set_volume = false; // data is redirected, do not change volume
-                        float steps = mod.mul * (float)cc_val;
-                        int whole_steps = round(steps);
-                        float val = (mod.step * whole_steps) + mod.min;
-                        *mod.p = val;
+                        struct Mod mod = Mods[i];
+                        if(mod.p == 0)
+                        {
+                            printf("got unknown Mod %d\n", i);
+                        }
+                        else
+                        {
+                            should_set_volume = false; // data is redirected, do not change volume
+                            float steps = mod.mul * (float)cc_val;
+                            int whole_steps = round(steps);
+                            float val = (mod.step * whole_steps) + mod.min;
+                            *mod.p = val;
+                        }
                     }
                 }
             }

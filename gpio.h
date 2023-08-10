@@ -9,5 +9,6 @@ uint8_t *get_button_pushes(void);
 void clear_button_pushes(void);
 void gpio_init(void);
 void poll_gpio(void);
+bool alt_held(void);
 
 #endif
