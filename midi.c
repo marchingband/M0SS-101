@@ -22,6 +22,8 @@
 #define MIDI_CC_EQ_BASS 20
 #define MIDI_CC_EQ_TREBLE 21
 
+#define NUM_BUTTONS 14 // save UART
+
 uint8_t *getMidiMsg(void);
 uint8_t getMidiMsgLen(void);
 bool parse(uint8_t byte);
@@ -107,7 +109,7 @@ void extract(const char *name, float *p, float init, float min, float max, float
         }
     }
 
-    for(int i=0; i<127; i++)
+    for(int i=0; i<NUM_BUTTONS; i++)
     {
         struct Mod *mod = &Mods[i];
         if(mod->p == p){
