@@ -7,7 +7,7 @@ void handle_button_press(int num); // from midi.c
 
 struct bflb_device_s *gpio;
 
-#define NUM_BUTTONS 14 // save UART
+// #define NUM_BUTTONS 14 // save UART
 // #define NUM_BUTTONS 15 // use uart as button
 
 #define DEBOUNCE_TIME 1000 * 50 // 50 ms

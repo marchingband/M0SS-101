@@ -4,6 +4,7 @@
 #include <string.h>
 #include "math.h"
 #include "dsp.h"
+#include "gpio.h"
 
 #define MIDI_NOTE_OFF 8
 #define MIDI_NOTE_ON 9
@@ -66,6 +67,8 @@ struct Mod {
     float min;
     float max;
     float init;
+    float step;
+    float mul;
     char name[20];
 };
 
@@ -78,6 +81,7 @@ struct Sel {
 };
 
 struct CC CCs[127] = {0};
+struct Mod Mods[127] = {0};
 struct Sel Sels[NUM_SEL] = {0};
 float *pitch = 0;
 float *gate = 0;
@@ -99,6 +103,22 @@ void extract(const char *name, float *p, float init, float min, float max, float
             float per = steps / 127.0;
             cc->mul = per;
             strcpy(cc->name, name);
+            return;
+        }
+    }
+
+    for(int i=0; i<127; i++)
+    {
+        struct Mod *mod = &Mods[i];
+        if(mod->p == p){
+            mod->min = min;
+            mod->max = max;
+            mod->init = init;
+            mod->step = step;
+            float steps = (max - min) / step;
+            float per = steps / 127.0;
+            mod->mul = per;
+            strcpy(mod->name, name);
             return;
         }
     }
@@ -125,6 +145,13 @@ void *declare(UIGlue *uiInterface, float *p, const char* key, const char* val){
 
         struct CC *cc = &CCs[num];
         cc->p = p;
+    }
+    else if(strcmp("mod", key) == 0) // its a cc
+    {
+        long num = strtol(val, NULL, 10);
+
+        struct Mod *mod = &Mods[num];
+        mod->p = p;
     }
     else if(strcmp("sel", key) == 0) // its a selection toggle
     {
@@ -215,19 +242,45 @@ void handle_midi(uint8_t *msg, uint8_t len)
     {
         uint8_t cc_num = msg[1] & 0b01111111;
         uint8_t cc_val = msg[2] & 0b01111111;
+        if(cc_num == 7) // maybe a modifier
         {
-            struct CC cc = CCs[cc_num];
-            if(cc.p == 0)
+            uint8_t should_set_volume = true;
+            uint8_t *button_states = get_button_states();
+            for(int i=0; i<NUM_BUTTONS; i++)
             {
-                printf("got unknown CC %d\n", cc_num);
+                if(button_states[i])
+                {
+                    struct Mod mod = Mods[i];
+                    if(mod.p == 0)
+                    {
+                        printf("got unknown Mod %d\n", i);
+                    }
+                    else
+                    {
+                        should_set_volume = false; // data is redirected, do not change volume
+                        float steps = mod.mul * (float)cc_val;
+                        int whole_steps = round(steps);
+                        float val = (mod.step * whole_steps) + mod.min;
+                        *mod.p = val;
+                    }
+                }
+            }
+            if(!should_set_volume)
+            {
                 break;
             }
-            float steps = cc.mul * (float)cc_val;
-            int whole_steps = round(steps);
-            float val = (cc.step * whole_steps) + cc.min;
-            *cc.p = val;
-            // printf("cc%-2d::%12f -> %s\n", cc_num, val, cc.name );
         }
+        struct CC cc = CCs[cc_num];
+        if(cc.p == 0)
+        {
+            printf("got unknown CC %d\n", cc_num);
+            break;
+        }
+        float steps = cc.mul * (float)cc_val;
+        int whole_steps = round(steps);
+        float val = (cc.step * whole_steps) + cc.min;
+        *cc.p = val;
+        // printf("cc%-2d::%12f -> %s\n", cc_num, val, cc.name );
         break;
     }
     case MIDI_PITCH_BEND:
