@@ -121,7 +121,7 @@ void rgb_set_color(struct pixel_t *pixels){
 struct pixel_t pixel_buf[NUM_LED];
 
 const struct pixel_t pixel_on = { // moss green (div by 15)
-    .red = 1,
+    .red = 2,
     .green = 1,
     .blue = 0
 };
