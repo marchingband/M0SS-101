@@ -224,9 +224,9 @@ void dsp_run(int16_t *dest)
     }
     consumed = bflb_mtimer_get_time_us() - now;
     poll_gpio();
-    
+
     loop_cnt++;
-    if(loop_cnt >= 100)
+    if(loop_cnt >= 1000)
     {
         render_lights();
         loop_cnt = 0;
