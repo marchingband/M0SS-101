@@ -122,9 +122,9 @@ void rgb_set_color(struct pixel_t *pixels){
 struct pixel_t pixel_buf[NUM_LED];
 
 const struct pixel_t pixel_on = { // moss green (div by 15)
-    .red = 9,
-    .green = 10,
-    .blue = 6
+    .red = 3,
+    .green = 4,
+    .blue = 2
 };
 
 const struct pixel_t pixel_off = { // moss green (div by 15)

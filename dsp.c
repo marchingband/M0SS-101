@@ -206,6 +206,8 @@ void print_bench(void)
     printf("%d of %d [us]\n", consumed, period);
 }
 
+static int loop_cnt = 0;
+
 void dsp_run(int16_t *dest)
 {
     int now = bflb_mtimer_get_time_us();
@@ -222,7 +224,11 @@ void dsp_run(int16_t *dest)
     }
     consumed = bflb_mtimer_get_time_us() - now;
     poll_gpio();
-    render_lights();
+    if(loop_cnt++ > 100)
+    {
+        render_lights();
+        loop_cnt = 0;
+    }
 }
 
 void play(uint8_t note)
