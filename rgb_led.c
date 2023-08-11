@@ -8,7 +8,7 @@
 
 // #define PIXEL_SIZE 12 // each colour takes 4 bytes
 #define PIXEL_SIZE 6 // each colour takes 4 bytes
-#define LED_NUMBER 5
+#define LED_NUMBER 2
 
 static void i2s_gpio_init()
 {
@@ -61,8 +61,8 @@ void rgb_led_init(){
     // }
 
     struct bflb_i2s_config_s i2s_cfg = {
-        .bclk_freq_hz = 130000 * 16 * 2, /* bclk = Sampling_rate * frame_width * channel_num */
-        // .bclk_freq_hz = 93750 * 16 * 2, /* bclk = Sampling_rate * frame_width * channel_num */
+        // .bclk_freq_hz = 130000 * 16 * 2, /* bclk = Sampling_rate * frame_width * channel_num */
+        .bclk_freq_hz = 93750 * 16 * 2, /* bclk = Sampling_rate * frame_width * channel_num */
         .role = I2S_ROLE_MASTER,
         .format_mode = I2S_MODE_LEFT_JUSTIFIED,
         .channel_mode = I2S_CHANNEL_MODE_NUM_2,

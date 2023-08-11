@@ -676,7 +676,7 @@ void computemydsp(mydsp* dsp, int count, FAUSTFLOAT** RESTRICT inputs, FAUSTFLOA
 			float fTemp51 = (fTemp50 - dsp->fRec6[1]) * fTemp15;
 			float fTemp52 = fTemp15 + 1.0f;
 			float fTemp53 = fTemp15 / fTemp52;
-			float fTemp54 = (fTemp50 - (dsp->fRec6[1] + (fTemp51 - dsp->fRec4[1] - dsp->fRec5[1] * (0.0f - fTemp53)) / fTemp52)) / (fSlow20 * (fTemp15 * (fTemp53 + -1.0f) / fTemp52) + 1.0f);
+			float fTemp54 = (fTemp50 - (dsp->fRec6[1] + (fTemp51 - dsp->fRec4[1] - dsp->fRec5[1] * (0.0f - fTemp53)) / fTemp52)) / (1.0f - fSlow20 * (fTemp15 * (1.0f - fTemp53) / fTemp52));
 			float fTemp55 = fSlow20 * fTemp54;
 			float fTemp56 = fTemp15 * (fTemp55 - dsp->fRec5[1]) / fTemp52;
 			dsp->fRec4[0] = dsp->fRec4[1] + 2.0f * (fTemp15 * (fTemp55 - (dsp->fRec5[1] + dsp->fRec4[1] + fTemp56)) / fTemp52);
