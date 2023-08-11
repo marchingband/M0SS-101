@@ -22,8 +22,6 @@
 #define MIDI_CC_EQ_BASS 20
 #define MIDI_CC_EQ_TREBLE 21
 
-// #define NUM_BUTTONS 14 // save UART
-
 uint8_t *getMidiMsg(void);
 uint8_t getMidiMsgLen(void);
 bool parse(uint8_t byte);
@@ -36,21 +34,6 @@ void set_filter(uint8_t val);
 
 static struct bflb_device_s *uart0;
 int ch;
-
-// UIGlue {
-// 	UIGlue *uiInterface;
-// 	void (*openVerticalBox)(UIGlue *uiInterface, char* key);
-// 	void (*openHorizontalBox)(UIGlue *uiInterface, char* key);
-// 	void (*closeBox)(UIGlue *uiInterface);
-// 	void (*declare)(UIGlue *uiInterface, float *p, const char* key, const char* val);
-
-// 	void (*addVerticalSlider)(UIGlue *uiInterface, const char *name, float *p, float init, float min, float max, float step);
-// 	void (*addHorizontalSlider)(UIGlue *uiInterface, const char *name, float *p, float init, float min, float max, float step);
-// 	void (*addNumEntry)(UIGlue *uiInterface, const char *name, float *p, float init, float min, float max, float step);
-
-// 	void (*addVerticalBargraph)(UIGlue *uiInterface, const char *name, float *p, float f1, float f2);
-// 	void (*addButton)(UIGlue *uiInterface, const char *name, float *p);
-// };
 
 struct CC {
     float *p;
@@ -96,6 +79,7 @@ struct CC CCs[127] = {0};
 struct Mod Mods[127] = {0};
 struct Alt Alts[127] = {0};
 struct Sel Sels[NUM_SEL] = {0};
+
 float *pitch = 0;
 float *gate = 0;
 float *pitch_bend = 0;

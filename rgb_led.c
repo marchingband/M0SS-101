@@ -8,7 +8,7 @@
 
 // #define PIXEL_SIZE 12 // each colour takes 4 bytes
 #define PIXEL_SIZE 6 // each colour takes 4 bytes
-#define LED_NUMBER 26
+#define NUM_LED 26
 
 static void i2s_gpio_init()
 {
@@ -35,30 +35,8 @@ void dma0_ch1_isr(void *arg)
 
 
 void rgb_led_init(){
-
-    i2s_gpio_init();
-
     struct bflb_device_s *i2s0;
-
-    // tx_buffer[0] = 0b1101101101101101;
-    // tx_buffer[1] = 0b1011011011011011;
-    // tx_buffer[2] = 0b0110110110110110;
-    // tx_buffer[3] = 0b0110110110110110;
-    // tx_buffer[4] = 0b0110110110000000;
-    
-    // for (int i=5; i < 256; i++) {
-    //     tx_buffer[i] = 0;
-    // }
-
-    // tx_buffer[256] = 0b1001001001001001;
-    // tx_buffer[257] = 0b0010010010010010;
-    // tx_buffer[258] = 0b0100100100100100;
-    // tx_buffer[259] = 0b1001001001001001;
-    // tx_buffer[260] = 0b0010010000000000;
-
-    // for (int i=261; i < 512; i++) {
-    //     tx_buffer[i] = 0;
-    // }
+    i2s_gpio_init();
 
     struct bflb_i2s_config_s i2s_cfg = {
         // .bclk_freq_hz = 130000 * 16 * 2, /* bclk = Sampling_rate * frame_width * channel_num */
@@ -97,8 +75,6 @@ void rgb_led_init(){
         .dst_width = DMA_DATA_WIDTH_16BIT,
     };
 
-    // board_i2s_gpio_init();
-
     i2s0 = bflb_device_get_by_name("i2s0");
     bflb_i2s_init(i2s0, &i2s_cfg);
     bflb_i2s_link_txdma(i2s0, true);
@@ -123,43 +99,74 @@ void i2s_send(void)
 }
 
 static const uint16_t bitpatterns[4] = {0x88, 0x8e, 0xe8, 0xee};
-static uint8_t out_buffer[LED_NUMBER * PIXEL_SIZE] = {0};
+static uint8_t out_buffer[NUM_LED * PIXEL_SIZE] = {0};
 
 void rgb_set_color(struct pixel_t *pixels){
     memset(tx_buffer, 0, sizeof tx_buffer);
-    for (uint16_t i = 0; i < LED_NUMBER; i++) {
+    for (uint16_t i = 0; i < NUM_LED; i++) {
         int loc = i * PIXEL_SIZE;
 
-        // out_buffer[loc] = bitpatterns[pixels[i].green >> 6 & 0x03];
-        // out_buffer[loc + 1] = bitpatterns[pixels[i].green >> 4 & 0x03];
-        // out_buffer[loc + 2] = bitpatterns[pixels[i].green >> 2 & 0x03];
-        // out_buffer[loc + 3] = bitpatterns[pixels[i].green & 0x03];
+        tx_buffer[loc]     = (bitpatterns[pixels[i].green >> 6 & 0x03] << 8) | bitpatterns[pixels[i].green >> 4 & 0x03];
+        tx_buffer[loc + 1] = (bitpatterns[pixels[i].green >> 2 & 0x03] << 8) | bitpatterns[pixels[i].green & 0x03];
 
-        // out_buffer[loc + 4] = bitpatterns[pixels[i].red >> 6 & 0x03];
-        // out_buffer[loc + 5] = bitpatterns[pixels[i].red >> 4 & 0x03];
-        // out_buffer[loc + 6] = bitpatterns[pixels[i].red >> 2 & 0x03];
-        // out_buffer[loc + 7] = bitpatterns[pixels[i].red & 0x03];
+        tx_buffer[loc + 2] = (bitpatterns[pixels[i].red   >> 6 & 0x03] << 8) | bitpatterns[pixels[i].red >> 4 & 0x03];
+        tx_buffer[loc + 3] = (bitpatterns[pixels[i].red   >> 2 & 0x03] << 8) | bitpatterns[pixels[i].red & 0x03];
 
-        // out_buffer[loc + 8] = bitpatterns[pixels[i].blue >> 6 & 0x03];
-        // out_buffer[loc + 9] = bitpatterns[pixels[i].blue >> 4 & 0x03];
-        // out_buffer[loc + 10] = bitpatterns[pixels[i].blue >> 2 & 0x03];
-        // out_buffer[loc + 11] = bitpatterns[pixels[i].blue & 0x03];
-
-        tx_buffer[loc]     = (bitpatterns[pixels[0].green >> 6 & 0x03] << 8) | bitpatterns[pixels[0].green >> 4 & 0x03];
-        tx_buffer[loc + 1] = (bitpatterns[pixels[0].green >> 2 & 0x03] << 8) | bitpatterns[pixels[0].green & 0x03];
-
-        tx_buffer[loc + 2] = (bitpatterns[pixels[0].red   >> 6 & 0x03] << 8) | bitpatterns[pixels[0].red >> 4 & 0x03];
-        tx_buffer[loc + 3] = (bitpatterns[pixels[0].red   >> 2 & 0x03] << 8) | bitpatterns[pixels[0].red & 0x03];
-
-        tx_buffer[loc + 4] = (bitpatterns[pixels[0].blue  >> 6 & 0x03] << 8) | bitpatterns[pixels[0].blue >> 4 & 0x03];
-        tx_buffer[loc + 5] = (bitpatterns[pixels[0].blue  >> 2 & 0x03] << 8) | bitpatterns[pixels[0].blue & 0x03];
+        tx_buffer[loc + 4] = (bitpatterns[pixels[i].blue  >> 6 & 0x03] << 8) | bitpatterns[pixels[i].blue >> 4 & 0x03];
+        tx_buffer[loc + 5] = (bitpatterns[pixels[i].blue  >> 2 & 0x03] << 8) | bitpatterns[pixels[i].blue & 0x03];
     }
     i2s_send();
 }
 
+struct pixel_t *pixel_buf[NUM_LED];
 
-
-void rgb_led_white(){
-    i2s_send();
+const pixel_t pixel_on = { // moss green (div by 15)
+    .red = 9,
+    .green = 10,
+    .blue = 6
 }
 
+const pixel_t pixel_off = { // moss green (div by 15)
+    .red = 0,
+    .green = 0,
+    .blue = 0
+}
+
+void render_lights(void)
+{
+    pixel_buf[0] = *sels[0].p   == 0 ? pixel_on : pixel_off; // o1sqr
+    pixel_buf[1] = *sels[0].p   == 1 ? pixel_on : pixel_off;  // o1saw
+    pixel_buf[2] = *sels[1].p   == 0 ? pixel_on : pixel_off;  // o1oct0
+    pixel_buf[3] = *sels[1].p   == 1 ? pixel_on : pixel_off;  // o1oct-1
+    pixel_buf[4] = *sels[1].p   == 2 ? pixel_on : pixel_off;  // o1oct-2
+
+    pixel_buf[5] = *sels[2].p   == 0 ? pixel_on : pixel_off;  // o2sqr
+    pixel_buf[6] = *sels[2].p   == 1 ? pixel_on : pixel_off;  // o2saw
+    pixel_buf[7] = *sels[3].p   == 0 ? pixel_on : pixel_off;  // o2oct0
+    pixel_buf[8] = *sels[3].p   == 1 ? pixel_on : pixel_off;  // o2oct-1
+    pixel_buf[9] = *sels[3].p   == 2 ? pixel_on : pixel_off;  // o2oct-2
+
+    pixel_buf[10] = *sels[5].p  == 0 ? pixel_on : pixel_off; // lfotri
+    pixel_buf[11] = *sels[5].p  == 1 ? pixel_on : pixel_off; // lfosqr
+    pixel_buf[12] = *sels[5].p  == 2 ? pixel_on : pixel_off; // lfornd
+
+    pixel_buf[13] = *sels[9].p  == 0 ? pixel_on : pixel_off; // vcfhp
+    pixel_buf[14] = *sels[9].p  == 1 ? pixel_on : pixel_off; // vcflp
+    pixel_buf[15] = *sels[9].p  == 2 ? pixel_on : pixel_off; // vcfbp
+
+    pixel_buf[16] = *sels[11].p == 0 ? pixel_on : pixel_off; // envasr
+    pixel_buf[17] = *sels[11].p == 1 ? pixel_on : pixel_off; // envar
+
+    pixel_buf[18] = pixel_off; // lfo.osc
+    pixel_buf[19] = pixel_off; // lfo.vcf
+    pixel_buf[20] = pixel_off; // lfo.vcA
+    pixel_buf[21] = pixel_off; // lfo.env
+
+    pixel_buf[22] = pixel_off; // vca
+
+    pixel_buf[23] = pixel_off; // env.vca
+    pixel_buf[24] = pixel_off; // env.vcf
+    pixel_buf[25] = pixel_off; // env.osc
+
+    rgb_set_color(pixel_buf);
+}

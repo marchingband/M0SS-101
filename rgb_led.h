@@ -7,8 +7,8 @@ struct pixel_t {
   uint8_t blue;
 };
 
-void rgb_led_white();
 void rgb_led_init();
 void rgb_set_color(struct pixel_t *pixels);
+void render_lights(void);
 
 #endif

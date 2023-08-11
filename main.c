@@ -345,35 +345,32 @@ void gpio_sig_init(void)
 
 }
 
-static const struct pixel_t p_blue = {
-    .blue = 5,
-    .green = 10,
-    .red = 0
-};
+// static const struct pixel_t p_blue = {
+//     .blue = 5,
+//     .green = 10,
+//     .red = 0
+// };
 
-static const struct pixel_t p_red = {
-    .blue = 10,
-    .green = 15,
-    .red = 0
-};
+// static const struct pixel_t p_red = {
+//     .blue = 10,
+//     .green = 15,
+//     .red = 0
+// };
 
-static const struct pixel_t p_green = {
-    .blue = 15,
-    .green = 5,
-    .red = 0
-};
+// static const struct pixel_t p_green = {
+//     .blue = 15,
+//     .green = 5,
+//     .red = 0
+// };
 
-static const struct pixel_t pix_blue[1] = {p_blue};
-static const struct pixel_t pix_red[1] = {p_red};
-static const struct pixel_t pix_green[1] = {p_green};
+// static const struct pixel_t pix_blue[1] = {p_blue};
+// static const struct pixel_t pix_red[1] = {p_red};
+// static const struct pixel_t pix_green[1] = {p_green};
 
 int main(void)
 {
     /* board init */
     board_init();
-
-    /* initialize rgb driver */
-    // rgb_led_init();
 
     /* start usb */
     printf("Starting usb host task...\r\n");
@@ -415,10 +412,10 @@ int main(void)
     // // bool bench = true;
         // bflb_mtimer_delay_ms(500);
         // printf("send blue\n");
-    rgb_set_color(pix_blue);
-    bflb_mtimer_delay_ms(500);
+    // rgb_set_color(pix_blue);
+    // bflb_mtimer_delay_ms(500);
         // printf("send green\n");
-    rgb_set_color(pix_blue);
+    // rgb_set_color(pix_blue);
         // // rgb_set_color(pix_green);
         // bflb_mtimer_delay_ms(500);
         // printf("send red\n");

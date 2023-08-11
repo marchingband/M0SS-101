@@ -7,6 +7,7 @@
 #include "bflb_mtimer.h"
 #include "dsp.h"
 #include "gpio.h"
+#include "rgb_led.h"
 
 // #include "square-diode-lfo.h"
 // #include "square-diode.h"
@@ -221,6 +222,7 @@ void dsp_run(int16_t *dest)
     }
     consumed = bflb_mtimer_get_time_us() - now;
     poll_gpio();
+    render_lights();
 }
 
 void play(uint8_t note)
