@@ -226,7 +226,7 @@ void dsp_run(int16_t *dest)
     poll_gpio();
 
     loop_cnt++;
-    if(loop_cnt >= 1000)
+    if(loop_cnt >= 200)
     {
         render_lights();
         loop_cnt = 0;

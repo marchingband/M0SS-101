@@ -34,7 +34,6 @@ void dma0_ch1_isr(void *arg)
     bflb_dma_channel_stop(dma0_ch1);
 }
 
-
 void rgb_led_init(){
     struct bflb_device_s *i2s0;
     i2s_gpio_init();
@@ -122,9 +121,9 @@ void rgb_set_color(struct pixel_t *pixels){
 struct pixel_t pixel_buf[NUM_LED];
 
 const struct pixel_t pixel_on = { // moss green (div by 15)
-    .red = 3,
-    .green = 4,
-    .blue = 2
+    .red = 1,
+    .green = 2,
+    .blue = 1
 };
 
 const struct pixel_t pixel_off = { // moss green (div by 15)
