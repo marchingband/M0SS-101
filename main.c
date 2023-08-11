@@ -367,6 +367,16 @@ void gpio_sig_init(void)
 // static const struct pixel_t pix_red[1] = {p_red};
 // static const struct pixel_t pix_green[1] = {p_green};
 
+static void rgb_task(void *pvParameters)
+{
+    while (1) {
+        render_lights();
+        vTaskDelay(1000);
+    }
+    vTaskDelete(NULL);
+}
+
+
 int main(void)
 {
     /* board init */
@@ -421,6 +431,7 @@ int main(void)
         // printf("send red\n");
         // rgb_set_color(pix_blue);
         // rgb_set_color(pix_red);
+    xTaskCreate(rgb_task, (char *)"rgb_task", 512, NULL, 2, NULL);
 
     vTaskStartScheduler();
     
