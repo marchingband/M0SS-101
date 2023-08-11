@@ -404,7 +404,7 @@ int main(void)
     /* usb midi host */
     usb_midi_start();
 
-    // i2s_init();
+    /* start the LEDs */
     rgb_led_init();
 
     gpio_init();
