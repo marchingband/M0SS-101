@@ -122,8 +122,8 @@ struct pixel_t pixel_buf[NUM_LED];
 
 const struct pixel_t pixel_on = { // moss green (div by 15)
     .red = 1,
-    .green = 2,
-    .blue = 1
+    .green = 1,
+    .blue = 0
 };
 
 const struct pixel_t pixel_off = { // moss green (div by 15)
