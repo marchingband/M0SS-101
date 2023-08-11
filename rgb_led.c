@@ -5,6 +5,7 @@
 #include "bl616_irq.h"
 #include "board.h"
 #include "rgb_led.h"
+#include "midi.h"
 
 // #define PIXEL_SIZE 12 // each colour takes 4 bytes
 #define PIXEL_SIZE 6 // each colour takes 4 bytes
@@ -118,7 +119,7 @@ void rgb_set_color(struct pixel_t *pixels){
     i2s_send();
 }
 
-struct pixel_t *pixel_buf[NUM_LED];
+struct pixel_t pixel_buf[NUM_LED];
 
 const struct pixel_t pixel_on = { // moss green (div by 15)
     .red = 9,
@@ -134,28 +135,30 @@ const struct pixel_t pixel_off = { // moss green (div by 15)
 
 void render_lights(void)
 {
-    pixel_buf[0] = *sels[0].p   == 0 ? pixel_on : pixel_off; // o1sqr
-    pixel_buf[1] = *sels[0].p   == 1 ? pixel_on : pixel_off;  // o1saw
-    pixel_buf[2] = *sels[1].p   == 0 ? pixel_on : pixel_off;  // o1oct0
-    pixel_buf[3] = *sels[1].p   == 1 ? pixel_on : pixel_off;  // o1oct-1
-    pixel_buf[4] = *sels[1].p   == 2 ? pixel_on : pixel_off;  // o1oct-2
+    struct Sel *sels = get_sels();
+    
+    pixel_buf[0] = *sels[0]->p   == 0 ? pixel_on : pixel_off; // o1sqr
+    pixel_buf[1] = *sels[0]->p   == 1 ? pixel_on : pixel_off;  // o1saw
+    pixel_buf[2] = *sels[1]->p   == 0 ? pixel_on : pixel_off;  // o1oct0
+    pixel_buf[3] = *sels[1]->p   == 1 ? pixel_on : pixel_off;  // o1oct-1
+    pixel_buf[4] = *sels[1]->p   == 2 ? pixel_on : pixel_off;  // o1oct-2
 
-    pixel_buf[5] = *sels[2].p   == 0 ? pixel_on : pixel_off;  // o2sqr
-    pixel_buf[6] = *sels[2].p   == 1 ? pixel_on : pixel_off;  // o2saw
-    pixel_buf[7] = *sels[3].p   == 0 ? pixel_on : pixel_off;  // o2oct0
-    pixel_buf[8] = *sels[3].p   == 1 ? pixel_on : pixel_off;  // o2oct-1
-    pixel_buf[9] = *sels[3].p   == 2 ? pixel_on : pixel_off;  // o2oct-2
+    pixel_buf[5] = *sels[2]->p   == 0 ? pixel_on : pixel_off;  // o2sqr
+    pixel_buf[6] = *sels[2]->p   == 1 ? pixel_on : pixel_off;  // o2saw
+    pixel_buf[7] = *sels[3]->p   == 0 ? pixel_on : pixel_off;  // o2oct0
+    pixel_buf[8] = *sels[3]->p   == 1 ? pixel_on : pixel_off;  // o2oct-1
+    pixel_buf[9] = *sels[3]->p   == 2 ? pixel_on : pixel_off;  // o2oct-2
 
-    pixel_buf[10] = *sels[5].p  == 0 ? pixel_on : pixel_off; // lfotri
-    pixel_buf[11] = *sels[5].p  == 1 ? pixel_on : pixel_off; // lfosqr
-    pixel_buf[12] = *sels[5].p  == 2 ? pixel_on : pixel_off; // lfornd
+    pixel_buf[10] = *sels[5]->p  == 0 ? pixel_on : pixel_off; // lfotri
+    pixel_buf[11] = *sels[5]->p  == 1 ? pixel_on : pixel_off; // lfosqr
+    pixel_buf[12] = *sels[5]->p  == 2 ? pixel_on : pixel_off; // lfornd
 
-    pixel_buf[13] = *sels[9].p  == 0 ? pixel_on : pixel_off; // vcfhp
-    pixel_buf[14] = *sels[9].p  == 1 ? pixel_on : pixel_off; // vcflp
-    pixel_buf[15] = *sels[9].p  == 2 ? pixel_on : pixel_off; // vcfbp
+    pixel_buf[13] = *sels[9]->p  == 0 ? pixel_on : pixel_off; // vcfhp
+    pixel_buf[14] = *sels[9]->p  == 1 ? pixel_on : pixel_off; // vcflp
+    pixel_buf[15] = *sels[9]->p  == 2 ? pixel_on : pixel_off; // vcfbp
 
-    pixel_buf[16] = *sels[11].p == 0 ? pixel_on : pixel_off; // envasr
-    pixel_buf[17] = *sels[11].p == 1 ? pixel_on : pixel_off; // envar
+    pixel_buf[16] = *sels[11]->p == 0 ? pixel_on : pixel_off; // envasr
+    pixel_buf[17] = *sels[11]->p == 1 ? pixel_on : pixel_off; // envar
 
     pixel_buf[18] = pixel_off; // lfo.osc
     pixel_buf[19] = pixel_off; // lfo.vcf

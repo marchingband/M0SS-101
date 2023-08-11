@@ -5,6 +5,7 @@
 #include "math.h"
 #include "dsp.h"
 #include "gpio.h"
+#include "midi.h"
 
 #define MIDI_NOTE_OFF 8
 #define MIDI_NOTE_ON 9
@@ -35,45 +36,45 @@ void set_filter(uint8_t val);
 static struct bflb_device_s *uart0;
 int ch;
 
-struct CC {
-    float *p;
-    float min;
-    float max;
-    float init;
-    float step;
-    float mul;
-    char name[20];
-};
-
 #define NUM_SEL 20
 
-struct Mod {
-    float *p;
-    float min;
-    float max;
-    float init;
-    float step;
-    float mul;
-    char name[20];
-};
+// struct CC {
+//     float *p;
+//     float min;
+//     float max;
+//     float init;
+//     float step;
+//     float mul;
+//     char name[20];
+// };
 
-struct Alt {
-    float *p;
-    float min;
-    float max;
-    float init;
-    float step;
-    float mul;
-    char name[20];
-};
+// struct Mod {
+//     float *p;
+//     float min;
+//     float max;
+//     float init;
+//     float step;
+//     float mul;
+//     char name[20];
+// };
 
-struct Sel {
-    float *p;
-    float min;
-    float max;
-    float init;
-    char name[20];
-};
+// struct Alt {
+//     float *p;
+//     float min;
+//     float max;
+//     float init;
+//     float step;
+//     float mul;
+//     char name[20];
+// };
+
+// struct Sel {
+//     float *p;
+//     float min;
+//     float max;
+//     float init;
+//     char name[20];
+// };
 
 struct CC CCs[127] = {0};
 struct Mod Mods[127] = {0};
@@ -84,6 +85,11 @@ float *pitch = 0;
 float *gate = 0;
 float *pitch_bend = 0;
 float pitch_bend_constant = 100.0 / 8192.0;
+
+struct Sel *get_sels(void)
+{
+    return &Sels[0];
+}
 
 void extract(const char *name, float *p, float init, float min, float max, float step)
 {
