@@ -38,44 +38,6 @@ int ch;
 
 #define NUM_SEL 20
 
-// struct CC {
-//     float *p;
-//     float min;
-//     float max;
-//     float init;
-//     float step;
-//     float mul;
-//     char name[20];
-// };
-
-// struct Mod {
-//     float *p;
-//     float min;
-//     float max;
-//     float init;
-//     float step;
-//     float mul;
-//     char name[20];
-// };
-
-// struct Alt {
-//     float *p;
-//     float min;
-//     float max;
-//     float init;
-//     float step;
-//     float mul;
-//     char name[20];
-// };
-
-// struct Sel {
-//     float *p;
-//     float min;
-//     float max;
-//     float init;
-//     char name[20];
-// };
-
 struct CC CCs[127] = {0};
 struct Mod Mods[127] = {0};
 struct Alt Alts[127] = {0};
