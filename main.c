@@ -371,7 +371,7 @@ static void rgb_task(void *pvParameters)
 {
     while (1) {
         render_lights();
-        vTaskDelay(1000);
+        vTaskDelay(100);
     }
     vTaskDelete(NULL);
 }
