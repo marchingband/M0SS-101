@@ -10,5 +10,6 @@ void clear_button_pushes(void);
 void gpio_init(void);
 void poll_gpio(void);
 bool alt_held(void);
+void cancel_button(int num);
 
 #endif
