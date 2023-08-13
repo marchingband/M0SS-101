@@ -421,7 +421,7 @@ int main(void)
         // printf("send red\n");
         // rgb_set_color(pix_blue);
         // rgb_set_color(pix_red);
-    xTaskCreate(rgb_task, (char *)"rgb_task", 512, NULL, 2, NULL);
+    // xTaskCreate(rgb_task, (char *)"rgb_task", 512, NULL, 2, NULL);
 
     vTaskStartScheduler();
     
