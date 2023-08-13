@@ -11,6 +11,21 @@
 #define PIXEL_SIZE 6 // each colour takes 4 bytes
 #define NUM_LED 26
 
+bool rgb_rendering = false;
+
+void rgb_task(void *pvParameters)
+{
+    while (1) {
+        if(!rgb_rendering)
+        {
+            rgb_rendering = true;
+            render_lights();
+        }
+        vTaskDelay(100);
+    }
+    vTaskDelete(NULL);
+}
+
 static void i2s_gpio_init()
 {
     struct bflb_device_s *gpio;
@@ -30,8 +45,8 @@ static struct bflb_dma_channel_lli_transfer_s tx_transfers[1];
 void dma0_ch1_isr(void *arg)
 {
     dma_tc_flag0++;
-    // printf("tc done\r\n");
     bflb_dma_channel_stop(dma0_ch1);
+    rgb_rendering = false;
 }
 
 void rgb_led_init(){

@@ -10,5 +10,6 @@ struct pixel_t {
 void rgb_led_init();
 void rgb_set_color(struct pixel_t *pixels);
 void render_lights(void);
+void rgb_task(void *pvParameters);
 
 #endif

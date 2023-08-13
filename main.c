@@ -367,16 +367,6 @@ void gpio_sig_init(void)
 // static const struct pixel_t pix_red[1] = {p_red};
 // static const struct pixel_t pix_green[1] = {p_green};
 
-static void rgb_task(void *pvParameters)
-{
-    while (1) {
-        render_lights();
-        vTaskDelay(1000);
-    }
-    vTaskDelete(NULL);
-}
-
-
 int main(void)
 {
     /* board init */
