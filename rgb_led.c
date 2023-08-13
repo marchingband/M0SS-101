@@ -30,7 +30,7 @@ static struct bflb_dma_channel_lli_transfer_s tx_transfers[1];
 void dma0_ch1_isr(void *arg)
 {
     dma_tc_flag0++;
-    printf("tc done\r\n");
+    // printf("tc done\r\n");
     bflb_dma_channel_stop(dma0_ch1);
 }
 
