@@ -183,7 +183,7 @@ void handle_button_press(int num)
 
 void handle_midi(uint8_t *msg, uint8_t len)
 {
-    printf("msg len %d -> %d %d %d\n", len, msg[0], msg[1], msg[2]);
+    // printf("msg len %d -> %d %d %d\n", len, msg[0], msg[1], msg[2]);
     uint8_t channel = msg[0] & 0b00001111;
     uint8_t code = (msg[0] >> 4) & 0b00001111;
     switch (code)
