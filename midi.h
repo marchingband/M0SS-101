@@ -1,6 +1,9 @@
 #ifndef MIDI_H
 #define MIDI_H
 
+#define NUM_SEL 20
+#define NUM_CC 8
+
 struct CC {
     float *p;
     float min;
@@ -40,5 +43,8 @@ struct Sel {
 };
 
 struct Sel *get_sels(void);
+struct Mod *get_mods(void);
+struct Alt *get_alts(void);
+struct CC *get_ccs(void);
 
 #endif

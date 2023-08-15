@@ -22,6 +22,7 @@
 
 #include "rgb_led.h"
 #include "gpio.h"
+#include "flash.h"
 
 void dsp_run(int16_t *dest);
 void dsp_init(size_t buf_size);
@@ -404,7 +405,11 @@ int main(void)
     /* start the LEDs */
     rgb_led_init();
 
+    /* setup button scanners */
     gpio_init();
+
+    /* load the config struct or initialize it */
+    flash_init();
 
     // // printf("uart is irq %d with prio %d\n", uart_int_num, uart_prio);
     // // printf("audac is irq %d with prio %d\n", audac_int_num, audac_prio);

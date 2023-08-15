@@ -36,11 +36,9 @@ void set_filter(uint8_t val);
 static struct bflb_device_s *uart0;
 int ch;
 
-#define NUM_SEL 20
-
-struct CC CCs[127] = {0};
-struct Mod Mods[127] = {0};
-struct Alt Alts[127] = {0};
+struct CC CCs[NUM_CC] = {0};
+struct Mod Mods[NUM_BUTTONS] = {0};
+struct Alt Alts[NUM_BUTTONS] = {0};
 struct Sel Sels[NUM_SEL] = {0};
 
 float *pitch = 0;
@@ -51,6 +49,21 @@ float pitch_bend_constant = 100.0 / 8192.0;
 struct Sel *get_sels(void)
 {
     return &Sels[0];
+}
+
+struct Mod *get_mods(void)
+{
+    return &Mods[0];
+}
+
+struct Alt *get_alts(void)
+{
+    return &Alts[0];
+}
+
+struct CC *get_ccs(void)
+{
+    return &CCs[0];
 }
 
 void extract(const char *name, float *p, float init, float min, float max, float step)
