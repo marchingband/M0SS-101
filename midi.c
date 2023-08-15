@@ -36,10 +36,14 @@ void set_filter(uint8_t val);
 static struct bflb_device_s *uart0;
 int ch;
 
-struct CC CCs[NUM_CC] = {0};
-struct Mod Mods[NUM_BUTTONS] = {0};
-struct Alt Alts[NUM_BUTTONS] = {0};
+struct CC CCs[127] = {0};
+struct Mod Mods[127] = {0};
+struct Alt Alts[127] = {0};
 struct Sel Sels[NUM_SEL] = {0};
+// struct CC CCs[NUM_CC] = {0};
+// struct Mod Mods[NUM_BUTTONS] = {0};
+// struct Alt Alts[NUM_BUTTONS] = {0};
+// struct Sel Sels[NUM_SEL] = {0};
 
 float *pitch = 0;
 float *gate = 0;
