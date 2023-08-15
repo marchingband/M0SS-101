@@ -131,11 +131,14 @@ void usbh_cdc_acm_callback(void *arg, int nbytes)
         {
             if(midi_buffer[i] == 0x00)
             {
+
+                USB_LOG_RAW("x");
                 break;
             }
             usb_midi_in(midi_buffer[i + 1]);
             usb_midi_in(midi_buffer[i + 2]);
             usb_midi_in(midi_buffer[i + 3]);
+            USB_LOG_RAW(".");
         }
     }
 }
