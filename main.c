@@ -374,8 +374,8 @@ int main(void)
     board_init();
 
     /* start usb */
-    printf("Starting usb host task...\r\n");
-    usbh_initialize();
+    // printf("Starting usb host task...\r\n");
+    // usbh_initialize();
 
     /* dsp init */
     dsp_init(BUF_SIZE);
@@ -397,7 +397,7 @@ int main(void)
     bflb_audac_feature_control(audac_hd, AUDAC_CMD_PLAY_START, 0);
 
     /* uart midi */
-    uart_receive_init();
+    // uart_receive_init();
 
     /* usb midi host */
     // usb_midi_start();
@@ -428,12 +428,14 @@ int main(void)
         // rgb_set_color(pix_red);
     // xTaskCreate(rgb_task, (char *)"rgb_task", 512, NULL, 2, NULL);
 
-    vTaskStartScheduler();
+    // vTaskStartScheduler();
     
     // gpio_sig_init();
 
     while (1)
     {
+        bflb_mtimer_delay_ms(1000);
+        printf("main loop");
         // uint64_t start = bflb_mtimer_get_time_us();x
         // if(bench && (cnt++ > 100000)){
         //     print_bench();
