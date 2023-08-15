@@ -400,7 +400,7 @@ int main(void)
     uart_receive_init();
 
     /* usb midi host */
-    usb_midi_start();
+    // usb_midi_start();
 
     /* start the LEDs */
     rgb_led_init();

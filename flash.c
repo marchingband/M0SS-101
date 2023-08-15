@@ -25,6 +25,7 @@ struct Config current_config;
 
 void flash_init(void)
 {
+    printf("initializing flash");
     struct Config conf;
     bflb_flash_read(CONFIG_BASE, &conf, sizeof(struct Config));
     if(conf.magic == default_config.magic)

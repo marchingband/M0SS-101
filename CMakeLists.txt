@@ -18,4 +18,4 @@ target_sources(app PRIVATE
 
 sdk_set_main_file(main.c)
 
-project(audac_play_from_mem)
+project(m0synth)
