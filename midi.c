@@ -36,14 +36,14 @@ void set_filter(uint8_t val);
 static struct bflb_device_s *uart0;
 int ch;
 
-struct CC CCs[127] = {0};
-struct Mod Mods[127] = {0};
-struct Alt Alts[127] = {0};
-struct Sel Sels[NUM_SEL] = {0};
-// struct CC CCs[NUM_CC] = {0};
-// struct Mod Mods[NUM_BUTTONS] = {0};
-// struct Alt Alts[NUM_BUTTONS] = {0};
+// struct CC CCs[127] = {0};
+// struct Mod Mods[127] = {0};
+// struct Alt Alts[127] = {0};
 // struct Sel Sels[NUM_SEL] = {0};
+struct CC CCs[NUM_CC] = {0};
+struct Mod Mods[NUM_BUTTONS] = {0};
+struct Alt Alts[NUM_BUTTONS] = {0};
+struct Sel Sels[NUM_SEL] = {0};
 
 float *pitch = 0;
 float *gate = 0;
@@ -73,7 +73,7 @@ struct CC *get_ccs(void)
 void extract(const char *name, float *p, float init, float min, float max, float step)
 {
     // we can ignore the pitch and gate, and just calibrate for CC's
-    for(int i=0; i<127; i++)
+    for(int i=0; i<NUM_CC; i++)
     {
         struct CC *cc = &CCs[i];
         if(cc->p == p){
@@ -182,6 +182,16 @@ void *declare(UIGlue *uiInterface, float *p, const char* key, const char* val){
 
 void handle_button_press(int num)
 {
+    if(num == 1)
+    {
+        save(0);
+        return;
+    }
+    else if(num == 2)
+    {
+        load(0);
+        return;
+    }
     struct Sel *sel = &Sels[num];
     if(sel->p == 0) // nothing to do for that button press
     {

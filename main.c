@@ -375,7 +375,8 @@ int main(void)
 
     /* start usb */
     // printf("Starting usb host task...\r\n");
-    // usbh_initialize();
+    printf("usbh_initialize\r\n");
+    usbh_initialize();
 
     /* dsp init */
     printf("dsp_init\r\n");
@@ -405,7 +406,7 @@ int main(void)
     // uart_receive_init();
 
     /* usb midi host */
-    // usb_midi_start();
+    usb_midi_start();
 
     /* start the LEDs */
     // printf("rgb_led_init\r\n");
@@ -436,7 +437,7 @@ int main(void)
         // rgb_set_color(pix_red);
     // xTaskCreate(rgb_task, (char *)"rgb_task", 512, NULL, 2, NULL);
 
-    // vTaskStartScheduler();
+    vTaskStartScheduler();
     
     // gpio_sig_init();
 
