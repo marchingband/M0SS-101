@@ -51,6 +51,7 @@ float *floats_buf;
 void save(int slot)
 {
     printf("save %d\n", slot);
+    int ret;
     uint32_t base = PRESET_BASE + (NUM_BYTES_PER_PRESET * slot);
 
     floats_buf = (float *)&buf[0];
@@ -65,10 +66,9 @@ void save(int slot)
     for(int i=0; i< NUM_CC; i++)
     {
         float val = ccs[i].p ? *ccs[i].p : 0.0;
-        printf("writing %f to cc %d", val, i);
+        printf("writing %f to cc %d\n", val, i);
         floats_buf[idx++] = val;
     }
-    base += ( NUM_CC * sizeof(float) );
 
     for(int i=0; i< NUM_BUTTONS; i++)
     {
@@ -76,7 +76,6 @@ void save(int slot)
         printf("writing %f to mods %d\n", val, i);
         floats_buf[idx++] = val;
     }
-    base += ( NUM_BUTTONS * sizeof(float) );
 
     for(int i=0; i< NUM_BUTTONS; i++)
     {
@@ -84,7 +83,6 @@ void save(int slot)
         printf("writing %f to alts %d\n", val, i);
         floats_buf[idx++] = val;
     }
-    base += ( NUM_BUTTONS * sizeof(float) );
 
     for(int i=0; i< NUM_SEL; i++)
     {
@@ -94,11 +92,19 @@ void save(int slot)
     }
 
     printf("write buf\n");
-    bflb_flash_write(PRESET_BASE, buf, sizeof(buf));
+    ret = bflb_flash_write(base, buf, sizeof(buf));
+    if(ret < 0)
+    {
+        printf("bflb_flash_write returned %d\n", ret);
+    }
 
     printf("write config\n");
     current_config.empty[slot] = false;
-    bflb_flash_write(CONFIG_BASE, &current_config, sizeof(struct Config));
+    ret = bflb_flash_write(CONFIG_BASE, &current_config, sizeof(struct Config));
+    if(ret < 0)
+    {
+        printf("bflb_flash_write returned %d\n", ret);
+    }
 }
 
 void load(int slot)
@@ -119,6 +125,10 @@ void load(int slot)
     struct Sel *sels = get_sels();
 
     ret = bflb_flash_read(base, buf, sizeof(buf));
+    if(ret < 0)
+    {
+        printf("bflb_flash_read returned %d\n", ret);
+    }
     floats_buf = (float *) &buf[0];
 
     int idx = 0;
@@ -126,7 +136,7 @@ void load(int slot)
     for(int i=0; i< NUM_CC; i++)
     {
         printf("load cc %d\n", i);
-        if(ccs[i].p == 0)
+        if(ccs[i].p == NULL)
         {
             printf("cc %d is null\n", i);
             idx++;
