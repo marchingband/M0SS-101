@@ -118,29 +118,50 @@ void load(int slot)
     ret = bflb_flash_read(base, buf, sizeof(buf));
     floats_buf = (float *) &buf[0];
 
-    int i = 0;
+    int idx = 0;
 
-    for(; i< NUM_CC; i++)
+    for(int i=0; i< NUM_CC; i++)
     {
         printf("load cc %d\n", i);
-        *ccs[i].p = floats_buf[i];
+        if(ccs[i].p == 0)
+        {
+            printf("cc %d is null\n", i);
+            continue;
+        }
+        *ccs[i].p = floats_buf[idx];
     }
 
-    for(; i< NUM_BUTTONS; i++)
+    for(int i=0; i< NUM_BUTTONS; i++)
     {
         printf("load mod %d\n", i);
-        *mods[i].p = floats_buf[i];
+        if(mods[i].p == 0)
+        {
+            printf("mod %d is null\n", i);
+            continue;
+        }
+
+        *mods[i].p = floats_buf[idx];
     }
 
-    for(; i< NUM_BUTTONS; i++)
+    for(int i=0; i< NUM_BUTTONS; i++)
     {
         printf("load alt %d\n", i);
-        *alts[i].p = floats_buf[i];
+        if(alts[i].p == 0)
+        {
+            printf("alt %d is null\n", i);
+            continue;
+        }
+        *alts[i].p = floats_buf[idx];
     }
 
-    for(; i< NUM_SEL; i++)
+    for(int i=0; i< NUM_SEL; i++)
     {
         printf("load sel %d\n", i);
-        *sels[i].p = floats_buf[i];
+        if(sels[i].p == 0)
+        {
+            printf("sel %d is null\n", i);
+            continue;
+        }
+        *sels[i].p = floats_buf[idx];
     }
 }
