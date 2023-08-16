@@ -64,7 +64,6 @@ void save(int slot)
 
     for(int i=0; i< NUM_CC; i++)
     {
-        printf("write cc %d\n", i);
         float val = ccs[i].p ? *ccs[i].p : 0.0;
         printf("writing %f to cc %d", val, i);
         floats_buf[idx++] = val;
@@ -73,29 +72,29 @@ void save(int slot)
 
     for(int i=0; i< NUM_BUTTONS; i++)
     {
-        printf("write mod %d\n", i);
         float val = mods[i].p ? *mods[i].p : 0.0;
-        printf("writing %f to mods %d", val, i);
+        printf("writing %f to mods %d\n", val, i);
         floats_buf[idx++] = val;
     }
     base += ( NUM_BUTTONS * sizeof(float) );
 
     for(int i=0; i< NUM_BUTTONS; i++)
     {
-        printf("write alt %d\n", i);
         float val = alts[i].p ? *alts[i].p : 0.0;
-        printf("writing %f to alts %d", val, i);
+        printf("writing %f to alts %d\n", val, i);
         floats_buf[idx++] = val;
     }
     base += ( NUM_BUTTONS * sizeof(float) );
 
     for(int i=0; i< NUM_SEL; i++)
     {
-        printf("write sel %d\n", i);
         float val = sels[i].p ? *sels[i].p : 0.0;
-        printf("writing %f to sels %d", val, i);
+        printf("writing %f to sels %d\n", val, i);
         floats_buf[idx++] = val;
     }
+    
+    printf("write buf\n");
+    bflb_flash_write(PRESET_BASE, buf, sizeof(buf));
 
     printf("write config\n");
     current_config.empty[slot] = false;
