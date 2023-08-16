@@ -4,7 +4,7 @@
 #include "gpio.h"
 
 #define NUM_PRESETS 14
-#define CONFIG_BASE 0x20100
+#define CONFIG_BASE 0x20000
 #define PRESET_BASE 0x20100
 
 #define NUM_FLOATS (NUM_CC + NUM_BUTTONS + NUM_BUTTONS + NUM_SEL)
@@ -25,19 +25,19 @@ struct Config current_config;
 
 void flash_init(void)
 {
-    printf("initializing flash");
+    printf("initializing flash\n");
     struct Config conf;
     bflb_flash_read(CONFIG_BASE, &conf, sizeof(struct Config));
     if(conf.magic == default_config.magic)
     {
-        printf("the magic number in flash was correct");
+        printf("the magic number in flash was correct\n");
         current_config = conf;
         return 0;
     }
     else
     {
-        printf("the magic number in flash was NOT correct");
-        printf("initializing flash storage!");
+        printf("the magic number in flash was NOT correct\n");
+        printf("initializing flash storage!\n");
         bflb_flash_erase(CONFIG_BASE, sizeof(struct Config));
         bflb_flash_erase(PRESET_BASE, TOTAL_BYTES);
         bflb_flash_write(CONFIG_BASE, &default_config, sizeof(struct Config));
@@ -47,7 +47,7 @@ void flash_init(void)
 
 void save(int slot)
 {
-    printf("save %d", slot);
+    printf("save %d\n", slot);
     uint32_t base = PRESET_BASE + (NUM_BYTES_PER_PRESET * slot);
 
     struct CC *ccs = get_ccs();
@@ -97,9 +97,9 @@ void save(int slot)
 
 void load(int slot)
 {
-    if(current_config.empty[slot] = true)
+    if(current_config.empty[slot] == true)
     {
-        printf("memory slot %d is empty", slot);
+        printf("memory slot %d is empty\n", slot);
         return;
     }
 
