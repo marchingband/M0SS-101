@@ -53,44 +53,48 @@ void save(int slot)
     printf("save %d\n", slot);
     uint32_t base = PRESET_BASE + (NUM_BYTES_PER_PRESET * slot);
 
+    floats_buf = (float *)&buf[0];
+
     struct CC *ccs = get_ccs();
     struct Mod *mods = get_mods();
     struct Alt *alts = get_alts();
     struct Sel *sels = get_sels();
 
+    int idx = 0;
+
     for(int i=0; i< NUM_CC; i++)
     {
         printf("write cc %d\n", i);
-        uint32_t addr = base + ( i * sizeof(float));
         float val = ccs[i].p ? *ccs[i].p : 0.0;
-        bflb_flash_write(addr, &val, sizeof(float));
+        printf("writing %f to cc %d", val, i);
+        floats_buf[idx++] = val;
     }
     base += ( NUM_CC * sizeof(float) );
 
     for(int i=0; i< NUM_BUTTONS; i++)
     {
         printf("write mod %d\n", i);
-        uint32_t addr = base + ( i * sizeof(float));
         float val = mods[i].p ? *mods[i].p : 0.0;
-        bflb_flash_write(addr, &val, sizeof(float));
+        printf("writing %f to mods %d", val, i);
+        floats_buf[idx++] = val;
     }
     base += ( NUM_BUTTONS * sizeof(float) );
 
     for(int i=0; i< NUM_BUTTONS; i++)
     {
         printf("write alt %d\n", i);
-        uint32_t addr = base + ( i * sizeof(float));
         float val = alts[i].p ? *alts[i].p : 0.0;
-        bflb_flash_write(addr, &val, sizeof(float));
+        printf("writing %f to alts %d", val, i);
+        floats_buf[idx++] = val;
     }
     base += ( NUM_BUTTONS * sizeof(float) );
 
     for(int i=0; i< NUM_SEL; i++)
     {
         printf("write sel %d\n", i);
-        uint32_t addr = base + ( i * sizeof(float));
         float val = sels[i].p ? *sels[i].p : 0.0;
-        bflb_flash_write(addr, &val, sizeof(float));
+        printf("writing %f to sels %d", val, i);
+        floats_buf[idx++] = val;
     }
 
     printf("write config\n");
@@ -128,8 +132,8 @@ void load(int slot)
             printf("cc %d is null\n", i);
             continue;
         }
-        float val = floats_buf[idx];
-        printf("writing %f to cc %d", val, i);
+        float val = floats_buf[idx++];
+        printf("writing %f to cc %d\n", val, i);
         *ccs[i].p = val;
     }
 
@@ -141,8 +145,8 @@ void load(int slot)
             printf("mod %d is null\n", i);
             continue;
         }
-        float val = floats_buf[idx];
-        printf("writing %f to mod %d", val, i);
+        float val = floats_buf[idx++];
+        printf("writing %f to mod %d\n", val, i);
         *mods[i].p = val;
     }
 
@@ -154,8 +158,8 @@ void load(int slot)
             printf("alt %d is null\n", i);
             continue;
         }
-        float val = floats_buf[idx];
-        printf("writing %f to alts %d", val, i);
+        float val = floats_buf[idx++];
+        printf("writing %f to alts %d\n", val, i);
         *alts[i].p = val;
     }
 
@@ -167,8 +171,8 @@ void load(int slot)
             printf("sel %d is null\n", i);
             continue;
         }
-        float val = floats_buf[idx];
-        printf("writing %f to sels %d", val, i);
+        float val = floats_buf[idx++];
+        printf("writing %f to sels %d\n", val, i);
         *sels[i].p = val;
     }
 }
