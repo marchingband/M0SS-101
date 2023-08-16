@@ -95,7 +95,8 @@ void save(int slot)
     bflb_flash_write(CONFIG_BASE, &current_config, sizeof(struct Config));
 }
 
-static uint8_t buf[256];
+static uint8_t buf[NUM_BYTES_PER_PRESET];
+float *floats_buf;
 
 void load(int slot)
 {
@@ -114,43 +115,32 @@ void load(int slot)
     struct Alt *alts = get_alts();
     struct Sel *sels = get_sels();
 
-    for(int i=0; i< NUM_CC; i++)
+    ret = bflb_flash_read(base, buf, sizeof(buf));
+    floats_buf = (float *) &buf[0];
+
+    int i = 0;
+
+    for(; i< NUM_CC; i++)
     {
         printf("load cc %d\n", i);
-        uint32_t addr = base + ( i * sizeof(float));
-        float *val = ccs[i].p;
-        ret = bflb_flash_read(addr, buf, sizeof(buf));
-        // ret = bflb_flash_read(addr, (uint8_t *)val, sizeof(float));
-        if(ret < 0){printf("errno %d", ret);}
+        *ccs[i].p = floats_buf[i];
     }
-    base += ( NUM_CC * sizeof(float) );
 
-    for(int i=0; i< NUM_BUTTONS; i++)
+    for(; i< NUM_BUTTONS; i++)
     {
         printf("load mod %d\n", i);
-        uint32_t addr = base + ( i * sizeof(float));
-        float *val = mods[i].p;
-        ret = bflb_flash_read(addr, (uint8_t *)val, sizeof(float));
-        if(ret < 0){printf("errno %d", ret);}
+        *mods[i].p = floats_buf[i];
     }
-    base += ( NUM_BUTTONS * sizeof(float) );
 
-    for(int i=0; i< NUM_BUTTONS; i++)
+    for(; i< NUM_BUTTONS; i++)
     {
         printf("load alt %d\n", i);
-        uint32_t addr = base + ( i * sizeof(float));
-        float *val = alts[i].p;
-        ret = bflb_flash_read(addr, (uint8_t *)val, sizeof(float));
-        if(ret < 0){printf("errno %d", ret);}
+        *alts[i].p = floats_buf[i];
     }
-    base += ( NUM_BUTTONS * sizeof(float) );
 
-    for(int i=0; i< NUM_SEL; i++)
+    for(; i< NUM_SEL; i++)
     {
         printf("load sel %d\n", i);
-        uint32_t addr = base + ( i * sizeof(float));
-        float *val = sels[i].p;
-        ret = bflb_flash_read(addr, (uint8_t *)val, sizeof(float));
-        if(ret < 0){printf("errno %d", ret);}
+        *sels[i].p = floats_buf[i];
     }
 }
