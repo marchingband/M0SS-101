@@ -403,7 +403,7 @@ int main(void)
     bflb_audac_feature_control(audac_hd, AUDAC_CMD_PLAY_START, 0);
 
     /* uart midi */
-    // uart_receive_init();
+    uart_receive_init();
 
     /* usb midi host */
     usb_midi_start();
