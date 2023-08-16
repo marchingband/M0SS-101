@@ -45,6 +45,9 @@ void flash_init(void)
     }
 }
 
+static uint8_t buf[NUM_BYTES_PER_PRESET];
+float *floats_buf;
+
 void save(int slot)
 {
     printf("save %d\n", slot);
@@ -95,9 +98,6 @@ void save(int slot)
     bflb_flash_write(CONFIG_BASE, &current_config, sizeof(struct Config));
 }
 
-static uint8_t buf[NUM_BYTES_PER_PRESET];
-float *floats_buf;
-
 void load(int slot)
 {
     if(current_config.empty[slot] == true)
@@ -128,7 +128,9 @@ void load(int slot)
             printf("cc %d is null\n", i);
             continue;
         }
-        *ccs[i].p = floats_buf[idx];
+        float val = floats_buf[idx];
+        printf("writing %f to cc %d", val, i);
+        *ccs[i].p = val;
     }
 
     for(int i=0; i< NUM_BUTTONS; i++)
@@ -139,8 +141,9 @@ void load(int slot)
             printf("mod %d is null\n", i);
             continue;
         }
-
-        *mods[i].p = floats_buf[idx];
+        float val = floats_buf[idx];
+        printf("writing %f to mod %d", val, i);
+        *mods[i].p = val;
     }
 
     for(int i=0; i< NUM_BUTTONS; i++)
@@ -151,7 +154,9 @@ void load(int slot)
             printf("alt %d is null\n", i);
             continue;
         }
-        *alts[i].p = floats_buf[idx];
+        float val = floats_buf[idx];
+        printf("writing %f to alts %d", val, i);
+        *alts[i].p = val;
     }
 
     for(int i=0; i< NUM_SEL; i++)
@@ -162,6 +167,8 @@ void load(int slot)
             printf("sel %d is null\n", i);
             continue;
         }
-        *sels[i].p = floats_buf[idx];
+        float val = floats_buf[idx];
+        printf("writing %f to sels %d", val, i);
+        *sels[i].p = val;
     }
 }
