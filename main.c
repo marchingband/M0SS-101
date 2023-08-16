@@ -373,6 +373,10 @@ int main(void)
     /* board init */
     board_init();
 
+    /* load the config struct or initialize it */
+    printf("flash_init\r\n");
+    flash_init();
+
     /* start usb */
     printf("usbh_initialize\r\n");
     usbh_initialize();
@@ -380,7 +384,6 @@ int main(void)
     /* dsp init */
     printf("dsp_init\r\n");
     dsp_init(BUF_SIZE);
-
 
     /* gpio init */
     printf("audac_gpio_init\r\n");
@@ -417,10 +420,6 @@ int main(void)
     /* setup button scanners */
     printf("gpio_init\r\n");
     gpio_init();
-
-    /* load the config struct or initialize it */
-    printf("flash_init\r\n");
-    flash_init();
 
     // // printf("uart is irq %d with prio %d\n", uart_int_num, uart_prio);
     // // printf("audac is irq %d with prio %d\n", audac_int_num, audac_prio);
