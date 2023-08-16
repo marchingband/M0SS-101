@@ -189,11 +189,11 @@ void handle_button_press(int num)
     {
         if(num == 4)
         {
-            set_mode(UI_MODE_LOAD);
+            set_ui_mode(UI_MODE_LOAD);
         }
         else if(num == 8)
         {
-            set_mode(UI_MODE_SAVE);
+            set_ui_mode(UI_MODE_SAVE);
         }
     } 
     else if(ui_mode == UI_MODE_PLAY)
