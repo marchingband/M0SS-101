@@ -15,7 +15,7 @@ static int current_slot = -1;
 
 static struct Config default_config = {
     .empty = {true, true, true, true, true, true, true, true, true, true, true, true, true, true},
-    .magic = 123,
+    .magic = 124,
 };
 
 static struct Config current_config;
@@ -99,6 +99,7 @@ void save(int slot)
     }
 
     printf("write buf\n");
+    ret = bflb_flash_erase(base, sizeof(buf));
     ret = bflb_flash_write(base, buf, sizeof(buf));
     if(ret < 0)
     {
