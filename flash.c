@@ -57,40 +57,40 @@ void save(int slot)
 
     for(int i=0; i< NUM_CC; i++)
     {
-        printf("write cc %d", i);
+        printf("write cc %d\n", i);
         uint32_t addr = base + ( i * sizeof(float));
-        float val = *ccs[i].p;
+        float val = ccs[i].p ? *ccs[i].p : 0.0;
         bflb_flash_write(addr, &val, sizeof(float));
     }
     base += ( NUM_CC * sizeof(float) );
 
     for(int i=0; i< NUM_BUTTONS; i++)
     {
-        printf("write mod %d", i);
+        printf("write mod %d\n", i);
         uint32_t addr = base + ( i * sizeof(float));
-        float val = *mods[i].p;
+        float val = mods[i].p ? *mods[i].p : 0.0;
         bflb_flash_write(addr, &val, sizeof(float));
     }
     base += ( NUM_BUTTONS * sizeof(float) );
 
     for(int i=0; i< NUM_BUTTONS; i++)
     {
-        printf("write alt %d", i);
+        printf("write alt %d\n", i);
         uint32_t addr = base + ( i * sizeof(float));
-        float val = *alts[i].p;
+        float val = alts[i].p ? *alts[i].p : 0.0;
         bflb_flash_write(addr, &val, sizeof(float));
     }
     base += ( NUM_BUTTONS * sizeof(float) );
 
     for(int i=0; i< NUM_SEL; i++)
     {
-        printf("write sel %d", i);
+        printf("write sel %d\n", i);
         uint32_t addr = base + ( i * sizeof(float));
-        float val = *sels[i].p;
+        float val = sels[i].p ? *sels[i].p : 0.0;
         bflb_flash_write(addr, &val, sizeof(float));
     }
 
-    printf("write config");
+    printf("write config\n");
     current_config.empty[slot] = false;
     bflb_flash_write(CONFIG_BASE, &current_config, sizeof(struct Config));
 }
