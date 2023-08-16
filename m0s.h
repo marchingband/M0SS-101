@@ -133,7 +133,7 @@ void metadatamydsp(MetaGlue* m) {
 	m->declare(m->metaInterface, "envelopes.lib/name", "Faust Envelope Library");
 	m->declare(m->metaInterface, "envelopes.lib/version", "0.2");
 	m->declare(m->metaInterface, "filename", "m0ss.dsp");
-	m->declare(m->metaInterface, "filters.lib/lowpass0_highpass1", "Copyright (C) 2003-2019 by Julius O. Smith III <jos@ccrma.stanford.edu>");
+	m->declare(m->metaInterface, "filters.lib/lowpass0_highpass1", "MIT-style STK-4.3 license");
 	m->declare(m->metaInterface, "filters.lib/name", "Faust Filters Library");
 	m->declare(m->metaInterface, "filters.lib/pole:author", "Julius O. Smith III");
 	m->declare(m->metaInterface, "filters.lib/pole:copyright", "Copyright (C) 2003-2019 by Julius O. Smith III <jos@ccrma.stanford.edu>");
@@ -187,7 +187,7 @@ void classInitmydsp(int sample_rate) {
 void instanceResetUserInterfacemydsp(mydsp* dsp) {
 	dsp->fHslider0 = (FAUSTFLOAT)(1.0f);
 	dsp->fHslider1 = (FAUSTFLOAT)(0.0f);
-	dsp->fHslider2 = (FAUSTFLOAT)(2.0f);
+	dsp->fHslider2 = (FAUSTFLOAT)(0.0f);
 	dsp->fHslider3 = (FAUSTFLOAT)(0.0f);
 	dsp->fHslider4 = (FAUSTFLOAT)(4e+01f);
 	dsp->fHslider5 = (FAUSTFLOAT)(0.0f);
@@ -203,7 +203,7 @@ void instanceResetUserInterfacemydsp(mydsp* dsp) {
 	dsp->fHslider14 = (FAUSTFLOAT)(0.0f);
 	dsp->fHslider15 = (FAUSTFLOAT)(0.5f);
 	dsp->fHslider16 = (FAUSTFLOAT)(0.0f);
-	dsp->fHslider17 = (FAUSTFLOAT)(2.0f);
+	dsp->fHslider17 = (FAUSTFLOAT)(0.0f);
 	dsp->fHslider18 = (FAUSTFLOAT)(0.5f);
 	dsp->fHslider19 = (FAUSTFLOAT)(0.0f);
 	dsp->fHslider20 = (FAUSTFLOAT)(0.5f);
@@ -475,11 +475,11 @@ void buildUserInterfacemydsp(mydsp* dsp, UIGlue* ui_interface) {
 	ui_interface->declare(ui_interface->uiInterface, &dsp->fHslider18, "alt", "2");
 	ui_interface->addHorizontalSlider(ui_interface->uiInterface, "osc-2-pw", &dsp->fHslider18, (FAUSTFLOAT)0.5f, (FAUSTFLOAT)0.1f, (FAUSTFLOAT)0.9f, (FAUSTFLOAT)0.001f);
 	ui_interface->declare(ui_interface->uiInterface, &dsp->fHslider2, "sel", "1");
-	ui_interface->addHorizontalSlider(ui_interface->uiInterface, "osc1-oct", &dsp->fHslider2, (FAUSTFLOAT)2.0f, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)2.0f, (FAUSTFLOAT)1.0f);
+	ui_interface->addHorizontalSlider(ui_interface->uiInterface, "osc1-oct", &dsp->fHslider2, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)2.0f, (FAUSTFLOAT)1.0f);
 	ui_interface->declare(ui_interface->uiInterface, &dsp->fHslider22, "sel", "0");
 	ui_interface->addHorizontalSlider(ui_interface->uiInterface, "osc1-wavform", &dsp->fHslider22, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)1.0f, (FAUSTFLOAT)1.0f);
 	ui_interface->declare(ui_interface->uiInterface, &dsp->fHslider17, "sel", "3");
-	ui_interface->addHorizontalSlider(ui_interface->uiInterface, "osc2-oct", &dsp->fHslider17, (FAUSTFLOAT)2.0f, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)2.0f, (FAUSTFLOAT)1.0f);
+	ui_interface->addHorizontalSlider(ui_interface->uiInterface, "osc2-oct", &dsp->fHslider17, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)2.0f, (FAUSTFLOAT)1.0f);
 	ui_interface->declare(ui_interface->uiInterface, &dsp->fHslider21, "sel", "2");
 	ui_interface->addHorizontalSlider(ui_interface->uiInterface, "osc2-wavform", &dsp->fHslider21, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)1.0f, (FAUSTFLOAT)1.0f);
 	ui_interface->declare(ui_interface->uiInterface, &dsp->fHslider3, "pitch-bend", "");

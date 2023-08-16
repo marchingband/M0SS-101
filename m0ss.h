@@ -25,6 +25,7 @@ extern "C" {
 #include <math.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <dsp.h>
 
 static float mydsp_faustpower2_f(float value) {
 	return value * value;
