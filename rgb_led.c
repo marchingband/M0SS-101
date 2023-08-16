@@ -222,7 +222,6 @@ void render_lights(void)
             pixel_buf[25] = pixel_off; // env.osc
             break;
         case UI_MODE_SAVE:
-        case UI_MODE_LOAD:
         {
             for(int i=0; i<NUM_LED; i++)
             {
@@ -243,6 +242,27 @@ void render_lights(void)
                 else
                 {
                     pixel_buf[light_num] = pixel_red;
+                }
+            }
+            break;
+        }
+        case UI_MODE_LOAD:
+        {
+            for(int i=0; i<NUM_LED; i++)
+            {
+                pixel_buf[i] = pixel_off; 
+            }
+
+            for(int i=0; i<NUM_PRESETS; i++)
+            {
+                uint8_t light_num = number_select_lights[i];
+                if(i == current_slot)
+                {
+                    pixel_buf[light_num] = pixel_blue;
+                }
+                else if(!config->empty[i])
+                {
+                    pixel_buf[light_num] = pixel_green;
                 }
             }
             break;

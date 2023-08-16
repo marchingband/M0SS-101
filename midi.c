@@ -185,8 +185,8 @@ void *declare(UIGlue *uiInterface, float *p, const char* key, const char* val){
 void handle_button_press(int num)
 {
     int ui_mode = get_ui_mode();
-    if(alt_held())
-    {
+    // if(alt_held())
+    // {
         if(num == 4)
         {
             set_ui_mode(UI_MODE_LOAD);
@@ -195,7 +195,7 @@ void handle_button_press(int num)
         {
             set_ui_mode(UI_MODE_SAVE);
         }
-    } 
+    // } 
     else if(ui_mode == UI_MODE_PLAY)
     {
         struct Sel *sel = &Sels[num];
