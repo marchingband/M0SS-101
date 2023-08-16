@@ -95,6 +95,8 @@ void save(int slot)
     bflb_flash_write(CONFIG_BASE, &current_config, sizeof(struct Config));
 }
 
+static uint8_t buf[256];
+
 void load(int slot)
 {
     if(current_config.empty[slot] == true)
@@ -117,7 +119,8 @@ void load(int slot)
         printf("load cc %d\n", i);
         uint32_t addr = base + ( i * sizeof(float));
         float *val = ccs[i].p;
-        ret = bflb_flash_read(addr, (uint8_t *)val, sizeof(float));
+        ret = bflb_flash_read(addr, buf, sizeof(buf));
+        // ret = bflb_flash_read(addr, (uint8_t *)val, sizeof(float));
         if(ret < 0){printf("errno %d", ret);}
     }
     base += ( NUM_CC * sizeof(float) );
