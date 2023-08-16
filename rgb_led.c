@@ -6,6 +6,7 @@
 #include "board.h"
 #include "rgb_led.h"
 #include "midi.h"
+#include "flash.h"
 
 // #define PIXEL_SIZE 12 // each colour takes 4 bytes
 #define PIXEL_SIZE 6 // each colour takes 4 bytes
