@@ -61,12 +61,11 @@ void poll_gpio(void)
                         {
                             button_cancelled[i] = 1;
                         }
+                        else if(i == 14) // its the alt button
+                        {
+                            handle_button_press(i);
+                        }
                     }
-                    else if(i == 14) // its the alt button
-                    {
-                        handle_button_press(i);
-                    }
-
                     printf("button %d pushed", i);
                 }
             }
