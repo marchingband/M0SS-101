@@ -42,7 +42,6 @@ void flash_init(void)
     {
         printf("the magic number in flash was correct\n");
         current_config = conf;
-        return 0;
     }
     else
     {

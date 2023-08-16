@@ -57,10 +57,17 @@ void poll_gpio(void)
                     button_time[i] = now;
                     if(alt_held())
                     {
-                        // button_cancelled[i] = 1;
+                        if((i!=4) && (i!=8)){ // load / save
+                        {
+                            button_cancelled[i] = 1;
+                        }
                     }
+                    else if(i == 14) // its the alt button
+                    {
+                        handle_button_press(i);
+                    }
+
                     printf("button %d pushed", i);
-                    // handle_button_press(i);
                 }
             }
         }
