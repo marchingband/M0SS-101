@@ -47,6 +47,7 @@ void flash_init(void)
 
 void save(int slot)
 {
+    printf("save %d", slot);
     uint32_t base = PRESET_BASE + (NUM_BYTES_PER_PRESET * slot);
 
     struct CC *ccs = get_ccs();
@@ -56,6 +57,7 @@ void save(int slot)
 
     for(int i=0; i< NUM_CC; i++)
     {
+        printf("write cc %d", i);
         uint32_t addr = base + ( i * sizeof(float));
         float val = *ccs[i].p;
         bflb_flash_write(addr, &val, sizeof(float));
@@ -64,6 +66,7 @@ void save(int slot)
 
     for(int i=0; i< NUM_BUTTONS; i++)
     {
+        printf("write mod %d", i);
         uint32_t addr = base + ( i * sizeof(float));
         float val = *mods[i].p;
         bflb_flash_write(addr, &val, sizeof(float));
@@ -72,6 +75,7 @@ void save(int slot)
 
     for(int i=0; i< NUM_BUTTONS; i++)
     {
+        printf("write alt %d", i);
         uint32_t addr = base + ( i * sizeof(float));
         float val = *alts[i].p;
         bflb_flash_write(addr, &val, sizeof(float));
@@ -80,11 +84,13 @@ void save(int slot)
 
     for(int i=0; i< NUM_SEL; i++)
     {
+        printf("write sel %d", i);
         uint32_t addr = base + ( i * sizeof(float));
         float val = *sels[i].p;
         bflb_flash_write(addr, &val, sizeof(float));
     }
 
+    printf("write config");
     current_config.empty[slot] = false;
     bflb_flash_write(CONFIG_BASE, &current_config, sizeof(struct Config));
 }
