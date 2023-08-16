@@ -12,5 +12,6 @@ void flash_init(void);
 void save(int slot);
 void load(int slot);
 int get_current_slot(void);
+struct Config *get_config(void);
 
 #endif
