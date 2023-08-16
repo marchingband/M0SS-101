@@ -104,6 +104,7 @@ void load(int slot)
     }
 
     printf("loading slot %d\n", slot);
+    int ret;
     uint32_t base = PRESET_BASE + (NUM_BYTES_PER_PRESET * slot);
 
     struct CC *ccs = get_ccs();
@@ -116,7 +117,8 @@ void load(int slot)
         printf("load cc %d\n", i);
         uint32_t addr = base + ( i * sizeof(float));
         float *val = ccs[i].p;
-        bflb_flash_read(addr, (uint8_t *)val, sizeof(float));
+        ret = bflb_flash_read(addr, (uint8_t *)val, sizeof(float));
+        if(ret < 0){printf("errno %d", ret);}
     }
     base += ( NUM_CC * sizeof(float) );
 
@@ -125,7 +127,8 @@ void load(int slot)
         printf("load mod %d\n", i);
         uint32_t addr = base + ( i * sizeof(float));
         float *val = mods[i].p;
-        bflb_flash_read(addr, (uint8_t *)val, sizeof(float));
+        ret = bflb_flash_read(addr, (uint8_t *)val, sizeof(float));
+        if(ret < 0){printf("errno %d", ret);}
     }
     base += ( NUM_BUTTONS * sizeof(float) );
 
@@ -134,7 +137,8 @@ void load(int slot)
         printf("load alt %d\n", i);
         uint32_t addr = base + ( i * sizeof(float));
         float *val = alts[i].p;
-        bflb_flash_read(addr, (uint8_t *)val, sizeof(float));
+        ret = bflb_flash_read(addr, (uint8_t *)val, sizeof(float));
+        if(ret < 0){printf("errno %d", ret);}
     }
     base += ( NUM_BUTTONS * sizeof(float) );
 
@@ -143,6 +147,7 @@ void load(int slot)
         printf("load sel %d\n", i);
         uint32_t addr = base + ( i * sizeof(float));
         float *val = sels[i].p;
-        bflb_flash_read(addr, (uint8_t *)val, sizeof(float));
+        ret = bflb_flash_read(addr, (uint8_t *)val, sizeof(float));
+        if(ret < 0){printf("errno %d", ret);}
     }
 }
