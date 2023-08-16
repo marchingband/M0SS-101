@@ -4,8 +4,8 @@
 #include "gpio.h"
 
 #define NUM_PRESETS 14
-#define CONFIG_BASE 0x20000
-#define PRESET_BASE 0x20100
+#define CONFIG_BASE 0x10000
+#define PRESET_BASE 0x20000
 
 #define NUM_FLOATS (NUM_CC + NUM_BUTTONS + NUM_BUTTONS + NUM_SEL)
 #define NUM_BYTES_PER_PRESET (NUM_FLOATS * sizeof(float))
