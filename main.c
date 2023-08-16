@@ -382,7 +382,7 @@ int main(void)
     printf("dsp_init\r\n");
     dsp_init(BUF_SIZE);
 
-    load(0);
+    // load(0);
 
     /* gpio init */
     printf("audac_gpio_init\r\n");
