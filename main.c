@@ -374,7 +374,6 @@ int main(void)
     board_init();
 
     /* start usb */
-    // printf("Starting usb host task...\r\n");
     printf("usbh_initialize\r\n");
     usbh_initialize();
 
@@ -382,7 +381,6 @@ int main(void)
     printf("dsp_init\r\n");
     dsp_init(BUF_SIZE);
 
-    // load(0);
 
     /* gpio init */
     printf("audac_gpio_init\r\n");
@@ -405,14 +403,16 @@ int main(void)
     bflb_audac_feature_control(audac_hd, AUDAC_CMD_PLAY_START, 0);
 
     /* uart midi */
+    printf("uart_receive_init\r\n");
     uart_receive_init();
 
     /* usb midi host */
+    printf("usb_midi_start\r\n");
     usb_midi_start();
 
     /* start the LEDs */
-    // printf("rgb_led_init\r\n");
-    // rgb_led_init();
+    printf("rgb_led_init\r\n");
+    rgb_led_init();
 
     /* setup button scanners */
     printf("gpio_init\r\n");
