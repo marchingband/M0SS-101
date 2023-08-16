@@ -116,7 +116,7 @@ void load(int slot)
         printf("load cc %d\n", i);
         uint32_t addr = base + ( i * sizeof(float));
         float *val = ccs[i].p;
-        bflb_flash_read(addr, val, sizeof(float));
+        bflb_flash_read(addr, (uint8_t *)val, sizeof(float));
     }
     base += ( NUM_CC * sizeof(float) );
 
@@ -125,7 +125,7 @@ void load(int slot)
         printf("load mod %d\n", i);
         uint32_t addr = base + ( i * sizeof(float));
         float *val = mods[i].p;
-        bflb_flash_read(addr, val, sizeof(float));
+        bflb_flash_read(addr, (uint8_t *)val, sizeof(float));
     }
     base += ( NUM_BUTTONS * sizeof(float) );
 
@@ -134,7 +134,7 @@ void load(int slot)
         printf("load alt %d\n", i);
         uint32_t addr = base + ( i * sizeof(float));
         float *val = alts[i].p;
-        bflb_flash_read(addr, val, sizeof(float));
+        bflb_flash_read(addr, (uint8_t *)val, sizeof(float));
     }
     base += ( NUM_BUTTONS * sizeof(float) );
 
@@ -143,6 +143,6 @@ void load(int slot)
         printf("load sel %d\n", i);
         uint32_t addr = base + ( i * sizeof(float));
         float *val = sels[i].p;
-        bflb_flash_read(addr, val, sizeof(float));
+        bflb_flash_read(addr, (uint8_t *)val, sizeof(float));
     }
 }
