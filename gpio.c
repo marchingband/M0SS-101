@@ -79,6 +79,10 @@ void poll_gpio(void)
                     {
                         button_cancelled[i] = 0;
                     }
+                    else if(i == 14) // its the alt button
+                    {
+                        continue;
+                    }
                     else
                     {
                         handle_button_press(i); // trigger event on release
