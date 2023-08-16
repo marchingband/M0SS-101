@@ -92,7 +92,7 @@ void save(int slot)
         printf("writing %f to sels %d\n", val, i);
         floats_buf[idx++] = val;
     }
-    
+
     printf("write buf\n");
     bflb_flash_write(PRESET_BASE, buf, sizeof(buf));
 
@@ -129,6 +129,7 @@ void load(int slot)
         if(ccs[i].p == 0)
         {
             printf("cc %d is null\n", i);
+            idx++;
             continue;
         }
         float val = floats_buf[idx++];
@@ -142,6 +143,7 @@ void load(int slot)
         if(mods[i].p == 0)
         {
             printf("mod %d is null\n", i);
+            idx++;
             continue;
         }
         float val = floats_buf[idx++];
@@ -155,6 +157,7 @@ void load(int slot)
         if(alts[i].p == 0)
         {
             printf("alt %d is null\n", i);
+            idx++;
             continue;
         }
         float val = floats_buf[idx++];
@@ -168,6 +171,7 @@ void load(int slot)
         if(sels[i].p == 0)
         {
             printf("sel %d is null\n", i);
+            idx++;
             continue;
         }
         float val = floats_buf[idx++];
