@@ -6,6 +6,8 @@
 #include "dsp.h"
 #include "gpio.h"
 #include "midi.h"
+#include "rgb_led.h"
+#include "flash.h"
 
 #define MIDI_NOTE_OFF 8
 #define MIDI_NOTE_ON 9
@@ -182,29 +184,50 @@ void *declare(UIGlue *uiInterface, float *p, const char* key, const char* val){
 
 void handle_button_press(int num)
 {
-    if(num == 1)
+    int ui_mode = get_ui_mode();
+    if(alt_held())
     {
-        save(0);
-        return;
+        if(num == 4)
+        {
+            set_mode(UI_MODE_LOAD);
+        }
+        else if(num == 8)
+        {
+            set_mode(UI_MODE_SAVE);
+        }
+    } 
+    else if(ui_mode == UI_MODE_PLAY)
+    {
+        struct Sel *sel = &Sels[num];
+        if(sel->p == 0) // nothing to do for that button press
+        {
+            return;
+        }
+        float cur = *sel->p;
+        if(cur < sel->max)
+        {
+            *sel->p += 1;
+        }
+        else
+        {
+            *sel->p = sel->min;
+        }
     }
-    else if(num == 2)
+    else if(ui_mode == UI_MODE_LOAD)
     {
-        load(0);
-        return;
+        if(num < NUM_PRESETS)
+        {
+            load(num);
+        }
+        set_ui_mode(UI_MODE_PLAY);
     }
-    struct Sel *sel = &Sels[num];
-    if(sel->p == 0) // nothing to do for that button press
+    else if(ui_mode == UI_MODE_SAVE)
     {
-        return;
-    }
-    float cur = *sel->p;
-    if(cur < sel->max)
-    {
-        *sel->p += 1;
-    }
-    else
-    {
-        *sel->p = sel->min;
+        if(num < NUM_PRESETS)
+        {
+            save(num);
+        }
+        set_ui_mode(UI_MODE_PLAY);
     }
 }
 

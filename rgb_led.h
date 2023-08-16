@@ -1,6 +1,10 @@
 #ifndef RGB_LED_H
 #define REG_LED_H
 
+#define UI_MODE_PLAY 0
+#define UI_MODE_LOAD 1
+#define UI_MODE_SAVE 2
+
 struct pixel_t {
   uint8_t green;
   uint8_t red;
@@ -11,5 +15,7 @@ void rgb_led_init();
 void rgb_set_color(struct pixel_t *pixels);
 void render_lights(void);
 void rgb_task(void *pvParameters);
+void set_ui_mode(int mode);
+int get_ui_mode(void);
 
 #endif

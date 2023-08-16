@@ -135,6 +135,24 @@ void rgb_set_color(struct pixel_t *pixels){
 
 struct pixel_t pixel_buf[NUM_LED];
 
+const struct pixel_t pixel_red = { // moss green (div by 15)
+    .red = 1,
+    .green = 0,
+    .blue = 0
+};
+
+const struct pixel_t pixel_green = { // moss green (div by 15)
+    .red = 0,
+    .green = 1,
+    .blue = 0
+};
+
+const struct pixel_t pixel_blue = { // moss green (div by 15)
+    .red = 0,
+    .green = 0,
+    .blue = 1
+};
+
 const struct pixel_t pixel_on = { // moss green (div by 15)
     .red = 2,
     .green = 1,
@@ -147,42 +165,88 @@ const struct pixel_t pixel_off = { // moss green (div by 15)
     .blue = 0
 };
 
+const uint8_t number_select_lights = { 0, 2, 5, 7, 18, 10, 20, 21, 19, 13, 23, 16, 24, 25 };
+int ui_mode = { UI_MODE_PLAY }
+
+void set_ui_mode(int mode)
+{
+    ui_mode = mode;
+}
+
+int get_ui_mode(void)
+{
+    return ui_mode;
+}
+
 void render_lights(void)
 {
     struct Sel *sels = get_sels();
-    pixel_buf[0] = *(sels[0].p)   == 0 ? pixel_on : pixel_off; // o1sqr
-    pixel_buf[1] = *(sels[0].p)   == 1 ? pixel_on : pixel_off;  // o1saw
-    pixel_buf[2] = *(sels[1].p)   == 0 ? pixel_on : pixel_off;  // o1oct0
-    pixel_buf[3] = *(sels[1].p)   == 1 ? pixel_on : pixel_off;  // o1oct-1
-    pixel_buf[4] = *(sels[1].p)   == 2 ? pixel_on : pixel_off;  // o1oct-2
+    int current_slot = get_current_slot();
+    struct Config *config = get_config();
 
-    pixel_buf[5] = *(sels[2].p)   == 0 ? pixel_on : pixel_off;  // o2sqr
-    pixel_buf[6] = *(sels[2].p)   == 1 ? pixel_on : pixel_off;  // o2saw
-    pixel_buf[7] = *(sels[3].p)   == 0 ? pixel_on : pixel_off;  // o2oct0
-    pixel_buf[8] = *(sels[3].p)   == 1 ? pixel_on : pixel_off;  // o2oct-1
-    pixel_buf[9] = *(sels[3].p)   == 2 ? pixel_on : pixel_off;  // o2oct-2
+    switch(ui_mode){
+        case UI_MODE_PLAY:
+            pixel_buf[0] = *(sels[0].p)   == 0 ? pixel_on : pixel_off; // o1sqr
+            pixel_buf[1] = *(sels[0].p)   == 1 ? pixel_on : pixel_off;  // o1saw
+            pixel_buf[2] = *(sels[1].p)   == 0 ? pixel_on : pixel_off;  // o1oct0
+            pixel_buf[3] = *(sels[1].p)   == 1 ? pixel_on : pixel_off;  // o1oct-1
+            pixel_buf[4] = *(sels[1].p)   == 2 ? pixel_on : pixel_off;  // o1oct-2
 
-    pixel_buf[10] = *(sels[5].p)  == 0 ? pixel_on : pixel_off; // lfotri
-    pixel_buf[11] = *(sels[5].p)  == 1 ? pixel_on : pixel_off; // lfosqr
-    pixel_buf[12] = *(sels[5].p)  == 2 ? pixel_on : pixel_off; // lfornd
+            pixel_buf[5] = *(sels[2].p)   == 0 ? pixel_on : pixel_off;  // o2sqr
+            pixel_buf[6] = *(sels[2].p)   == 1 ? pixel_on : pixel_off;  // o2saw
+            pixel_buf[7] = *(sels[3].p)   == 0 ? pixel_on : pixel_off;  // o2oct0
+            pixel_buf[8] = *(sels[3].p)   == 1 ? pixel_on : pixel_off;  // o2oct-1
+            pixel_buf[9] = *(sels[3].p)   == 2 ? pixel_on : pixel_off;  // o2oct-2
 
-    pixel_buf[13] = *(sels[9].p)  == 0 ? pixel_on : pixel_off; // vcfhp
-    pixel_buf[14] = *(sels[9].p)  == 1 ? pixel_on : pixel_off; // vcflp
-    pixel_buf[15] = *(sels[9].p)  == 2 ? pixel_on : pixel_off; // vcfbp
+            pixel_buf[10] = *(sels[5].p)  == 0 ? pixel_on : pixel_off; // lfotri
+            pixel_buf[11] = *(sels[5].p)  == 1 ? pixel_on : pixel_off; // lfosqr
+            pixel_buf[12] = *(sels[5].p)  == 2 ? pixel_on : pixel_off; // lfornd
 
-    pixel_buf[16] = *(sels[11].p) == 0 ? pixel_on : pixel_off; // envasr
-    pixel_buf[17] = *(sels[11].p) == 1 ? pixel_on : pixel_off; // envar
+            pixel_buf[13] = *(sels[9].p)  == 0 ? pixel_on : pixel_off; // vcfhp
+            pixel_buf[14] = *(sels[9].p)  == 1 ? pixel_on : pixel_off; // vcflp
+            pixel_buf[15] = *(sels[9].p)  == 2 ? pixel_on : pixel_off; // vcfbp
 
-    pixel_buf[18] = pixel_off; // lfo.osc
-    pixel_buf[19] = pixel_off; // lfo.vcf
-    pixel_buf[20] = pixel_off; // lfo.vcA
-    pixel_buf[21] = pixel_off; // lfo.env
+            pixel_buf[16] = *(sels[11].p) == 0 ? pixel_on : pixel_off; // envasr
+            pixel_buf[17] = *(sels[11].p) == 1 ? pixel_on : pixel_off; // envar
 
-    pixel_buf[22] = pixel_off; // vca
+            pixel_buf[18] = pixel_off; // lfo.osc
+            pixel_buf[19] = pixel_off; // lfo.vcf
+            pixel_buf[20] = pixel_off; // lfo.vcA
+            pixel_buf[21] = pixel_off; // lfo.env
 
-    pixel_buf[23] = pixel_off; // env.vca
-    pixel_buf[24] = pixel_off; // env.vcf
-    pixel_buf[25] = pixel_off; // env.osc
+            pixel_buf[22] = pixel_off; // vca
+
+            pixel_buf[23] = pixel_off; // env.vca
+            pixel_buf[24] = pixel_off; // env.vcf
+            pixel_buf[25] = pixel_off; // env.osc
+            break;
+        case UI_MODE_SAVE:
+        case UI_MODE_LOAD:
+        {
+            for(int i=0; i<NUM_LED; i++)
+            {
+                pixel_buf[i] = pixel_off; 
+            }
+
+            for(int i=0; i<sizeof(number_select_lights); i++)
+            {
+                if(i == current_slot)
+                {
+                    pixel_buf[i] = pixel_blue;
+                }
+                else if(config->empty[i])
+                {
+                    pixel_buf[i] = pixel_green;
+                }
+                else
+                {
+                    pixel_buf[i] = pixel_red;
+                }
+            }
+            break;
+        }
+        default: break;
+    }
 
     rgb_set_color(pixel_buf);
 }
