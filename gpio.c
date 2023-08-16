@@ -11,8 +11,8 @@ struct bflb_device_s *gpio;
 
 #define DEBOUNCE_TIME 1000 * 50 // 50 ms
 
-const uint8_t button_pins[]      = { 30, 29, 28, 27, 16, 20, 12, 10, 13, 17, 3,  15, 1 , 0 };
-// const uint8_t button_pins[]      = { 30, 29, 28, 27, 16, 20, 12, 10, 13, 17, 3,  15, 1 , 0, 21 }; // 21 is UART
+// const uint8_t button_pins[]      = { 30, 29, 28, 27, 16, 20, 12, 10, 13, 17, 3,  15, 1 , 0 };
+const uint8_t button_pins[]      = { 30, 29, 28, 27, 16, 20, 12, 10, 13, 17, 3,  15, 1 , 0, 21 }; // 21 is UART
 
 uint8_t button_pushes[]    = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 uint8_t button_cancelled[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -57,7 +57,7 @@ void poll_gpio(void)
                     button_time[i] = now;
                     if(alt_held())
                     {
-                        if((i!=4) && (i!=8)){ // load / save
+                        if((i!=4) && (i!=8)) // load / save
                         {
                             button_cancelled[i] = 1;
                         }
