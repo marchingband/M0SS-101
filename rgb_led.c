@@ -166,7 +166,7 @@ const struct pixel_t pixel_off = { // moss green (div by 15)
     .blue = 0
 };
 
-const uint8_t number_select_lights = { 0, 2, 5, 7, 18, 10, 20, 21, 19, 13, 23, 16, 24, 25 };
+const uint8_t number_select_lights[NUM_PRESETS] = { 0, 2, 5, 7, 18, 10, 20, 21, 19, 13, 23, 16, 24, 25 };
 int ui_mode = { UI_MODE_PLAY };
 
 void set_ui_mode(int mode)
@@ -229,19 +229,20 @@ void render_lights(void)
                 pixel_buf[i] = pixel_off; 
             }
 
-            for(int i=0; i<sizeof(number_select_lights); i++)
+            for(int i=0; i<NUM_PRESETS; i++)
             {
+                uint8_t light_num = number_select_lights[i];
                 if(i == current_slot)
                 {
-                    pixel_buf[i] = pixel_blue;
+                    pixel_buf[light_num] = pixel_blue;
                 }
                 else if(config->empty[i])
                 {
-                    pixel_buf[i] = pixel_green;
+                    pixel_buf[light_num] = pixel_green;
                 }
                 else
                 {
-                    pixel_buf[i] = pixel_red;
+                    pixel_buf[light_num] = pixel_red;
                 }
             }
             break;
