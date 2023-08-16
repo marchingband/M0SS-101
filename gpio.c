@@ -57,7 +57,7 @@ void poll_gpio(void)
                     button_time[i] = now;
                     if(alt_held())
                     {
-                        button_cancelled[i] = 1;
+                        // button_cancelled[i] = 1;
                     }
                     printf("button %d pushed", i);
                     // handle_button_press(i);
