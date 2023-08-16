@@ -15,7 +15,7 @@ static int current_slot = -1;
 
 static struct Config default_config = {
     .empty = {true, true, true, true, true, true, true, true, true, true, true, true, true, true},
-    .magic = 125,
+    .magic = 126,
 };
 
 static struct Config current_config;
