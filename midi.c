@@ -318,7 +318,7 @@ void handle_midi(uint8_t *msg, uint8_t len)
         uint8_t cc_num_in = msg[1] & 0b01111111;
         uint8_t cc_val = msg[2] & 0b01111111;
         uint8_t *cc_map = &get_config()->cc_map[0];
-        uint8_t cc_num = cc_map[cc_num_in];
+        uint8_t cc_num = cc_map[cc_num_in - 1]; // -1 because ccs are indexed at 1
 
         int ui_mode = get_ui_mode();
 
@@ -326,7 +326,7 @@ void handle_midi(uint8_t *msg, uint8_t len)
         {
             if(mode_learn_current_cc > 0)
             {
-                cc_map[cc_num_in] = mode_learn_current_cc;
+                cc_map[cc_num_in - 1] = mode_learn_current_cc; // -1 because ccs are indexed at 1
             }
             printf("no cc_learn selected\n");
             break;

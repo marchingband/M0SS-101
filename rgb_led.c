@@ -290,7 +290,8 @@ void render_lights(void)
             for(int i=0; i < (NUM_CC - 1); i++)
             {
                 uint8_t light_num = number_select_lights[i];
-                if(i == current)
+                int cc = i + 1;
+                if(cc == current)
                 {
                     pixel_buf[light_num] = pixel_blue;
                 }
