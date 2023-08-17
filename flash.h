@@ -5,7 +5,7 @@
 #define NUM_CC_MAP 128
 
 struct Config {
-    bool empty[NUM_PRESETS];
+    uint8_t empty[NUM_PRESETS];
     uint8_t cc_map[NUM_CC_MAP];
     uint8_t magic;
 };
