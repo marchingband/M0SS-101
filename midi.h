@@ -56,6 +56,6 @@ struct Alt *get_alts(void);
 struct CC *get_ccs(void);
 struct Sigs *get_signals(void);
 uint8_t *get_cc_map(void);
-int get_mode_learn_current_cc(void)
+int get_mode_learn_current_cc(void);
 
 #endif
