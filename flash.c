@@ -43,6 +43,10 @@ void flash_init(void)
     {
         printf("the magic number in flash was correct\n");
         current_config = conf;
+        for(int i=0; i< 127; i++)
+        {
+            printf("%d : %d\n", i, current_config.cc_map[i]);
+        }
     }
     else
     {
