@@ -178,26 +178,29 @@ void *declare(UIGlue *uiInterface, float *p, const char* key, const char* val){
     }
     else if(strcmp("pitch", key) == 0) // its the pitch
     {
+        printf("got pitch pointer\n");
         Signals.pitch = p;
     }
     else if(strcmp("gate", key) == 0) // its the gate
     {
+        printf("got gate pointer\n");
         Signals.gate = p;
+        *Signals.gate = 1;
         // *gate = 1;
     }
     else if(strcmp("pitch_bend", key) == 0) // its the pitch bend
     {
-        printf("got pitch bend pointer");
+        printf("got pitch bend pointer\n");
         Signals.pitch_bend = p;
     }
     else if(strcmp("lfo", key) == 0) // its the lfo
     {
-        printf("got lfo pointer");
+        printf("got lfo pointer\n");
         Signals.lfo = p;
     }
     else if(strcmp("env", key) == 0) // its the lfo
     {
-        printf("got env pointer");
+        printf("got env pointer\n");
         Signals.env = p;
     }
 };
