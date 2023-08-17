@@ -192,7 +192,7 @@ void render_lights(void)
 {
     int current_slot = get_current_slot();
     struct Sel *sels = get_sels();
-    struct Mods *mods = get_mods();
+    struct Mod *mods = get_mods();
     struct Sigs *sigs = get_signals();
     struct Config *config = get_config();
 
