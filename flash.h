@@ -2,6 +2,7 @@
 #define FLASH_H
 
 #define NUM_PRESETS 14
+#define NUM_CC_MAP 128
 
 struct Config {
     bool empty[NUM_PRESETS];

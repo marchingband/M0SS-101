@@ -3,7 +3,6 @@
 
 #define NUM_SEL 20
 #define NUM_CC 9
-#define NUM_CC_MAP 128
 
 struct CC {
     float *p;
