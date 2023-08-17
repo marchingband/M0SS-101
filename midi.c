@@ -288,7 +288,7 @@ void handle_midi(uint8_t *msg, uint8_t len)
     {
         uint8_t note = msg[1] & 0b01111111;
         // stop(note);
-        if(Signals.pitch == note)
+        if(*Signals.pitch == note)
         {
             *Signals.gate = 0;
         }
