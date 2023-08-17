@@ -179,10 +179,21 @@ int get_ui_mode(void)
     return ui_mode;
 }
 
+// lfo2pitch    = hslider("lfo-to-osc[mod:4]",     0, 0, 1, 0.001) <: attach(vbargraph("lfo-to-osc-led[led-lfo:18]", 0 , 1));   // button 4    // GPIO 16
+// lfo2vca      = hslider("lfo-to-vca[mod:6]",     0, 0, 1, 0.001) <: attach(vbargraph("lfo-to-vca-led[led-lfo:20]", 0 , 1));   // button 6    // GPIO 12
+// lfo2env      = hslider("lfo-to-env[mod:7]",     0, 0, 1, 1)     <: attach(vbargraph("lfo-to-env-led[led-lfo:21]", 0 , 1));   // button 7    // GPIO 10 
+// lfo2vcf      = hslider("lfo-to-vcf[mod:8]",     0, 0, 1, 0.001) <: attach(vbargraph("lfo-to-vcf-led[led-lfo:19]", 0 , 1));   // button 8    // GPIO 13
+// env2volume   = hslider("env-to-vca[mod:10]",    1, 0, 1, 0.001) <: attach(vbargraph("env-to-vca-led[led-env:23]", 0 , 1));   // button 10   // GPIO 3
+// env2cutoff   = hslider("env-to-vcf[mod:12]",    0, 0, 1, 0.001) <: attach(vbargraph("env-to-vcf-led[led-env:24]", 0 , 1));   // button 12   // GPIO 1
+// env2pitch    = hslider("env-to-osc[mod:13]",    0, 0, 1, 0.001) <: attach(vbargraph("env-to-osc-led[led-env:25]", 0 , 1));   // button 13   // GPIO 0
+
+
 void render_lights(void)
 {
-    struct Sel *sels = get_sels();
     int current_slot = get_current_slot();
+    struct Sel *sels = get_sels();
+    struct Mods *mods = get_mods();
+    struct Sigs *sigs = get_signals();
     struct Config *config = get_config();
 
     switch(ui_mode){
@@ -210,16 +221,17 @@ void render_lights(void)
             pixel_buf[16] = *(sels[11].p) == 0 ? pixel_on : pixel_off; // envasr
             pixel_buf[17] = *(sels[11].p) == 1 ? pixel_on : pixel_off; // envar
 
-            pixel_buf[18] = pixel_off; // lfo.osc
-            pixel_buf[19] = pixel_off; // lfo.vcf
-            pixel_buf[20] = pixel_off; // lfo.vcA
-            pixel_buf[21] = pixel_off; // lfo.env
+            pixel_buf[18] = ( (*(sigs->lfo)  < 0.5) || (*mods[4].p == 0) ) ? pixel_off : pixel_on; // lfo.osc
+            pixel_buf[19] = ( (*(sigs->lfo)  < 0.5) || (*mods[8].p == 0) ) ? pixel_off : pixel_on; // lfo.osc
+            pixel_buf[20] = ( (*(sigs->lfo)  < 0.5) || (*mods[6].p == 0) ) ? pixel_off : pixel_on; // lfo.osc
+            pixel_buf[21] = ( (*(sigs->lfo)  < 0.5) || (*mods[7].p == 0) ) ? pixel_off : pixel_on; // lfo.osc
 
             pixel_buf[22] = pixel_off; // vca
 
-            pixel_buf[23] = pixel_off; // env.vca
-            pixel_buf[24] = pixel_off; // env.vcf
-            pixel_buf[25] = pixel_off; // env.osc
+            pixel_buf[23] = ( (*(sigs->env)  < 0.5) || (*mods[10].p == 0) ) ? pixel_off : pixel_on; // lfo.osc
+            pixel_buf[24] = ( (*(sigs->env)  < 0.5) || (*mods[12].p == 0) ) ? pixel_off : pixel_on; // lfo.osc
+            pixel_buf[25] = ( (*(sigs->env)  < 0.5) || (*mods[13].p == 0) ) ? pixel_off : pixel_on; // lfo.osc
+
             break;
         case UI_MODE_SAVE:
         {

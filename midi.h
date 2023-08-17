@@ -42,9 +42,18 @@ struct Sel {
     char name[20];
 };
 
+struct Sigs {
+    float *pitch;
+    float *gate;
+    float *lfo;
+    float *env;
+    float *pitch_bend;
+};
+
 struct Sel *get_sels(void);
 struct Mod *get_mods(void);
 struct Alt *get_alts(void);
 struct CC *get_ccs(void);
+struct Sigs *get_signals(void);
 
 #endif

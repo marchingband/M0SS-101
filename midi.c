@@ -46,10 +46,14 @@ struct CC CCs[NUM_CC] = {0};
 struct Mod Mods[NUM_BUTTONS] = {0};
 struct Alt Alts[NUM_BUTTONS] = {0};
 struct Sel Sels[NUM_SEL] = {0};
+struct Sigs Signals = {
+    .pitch = 0,
+    .gate = 0,
+    .lfo = 0,
+    .env = 0,
+    .pitch_bend = 0,
+};
 
-float *pitch = 0;
-float *gate = 0;
-float *pitch_bend = 0;
 float pitch_bend_constant = 100.0 / 8192.0;
 
 struct Sel *get_sels(void)
@@ -70,6 +74,11 @@ struct Alt *get_alts(void)
 struct CC *get_ccs(void)
 {
     return &CCs[0];
+}
+
+struct Sigs *get_signals(void)
+{
+    return &Signals;
 }
 
 void extract(const char *name, float *p, float init, float min, float max, float step)
@@ -169,16 +178,27 @@ void *declare(UIGlue *uiInterface, float *p, const char* key, const char* val){
     }
     else if(strcmp("pitch", key) == 0) // its the pitch
     {
-        pitch = p;
+        Signals.pitch = p;
     }
     else if(strcmp("gate", key) == 0) // its the gate
     {
-        gate = p;
-        *gate = 1;
+        Signals.gate = p;
+        // *gate = 1;
     }
     else if(strcmp("pitch_bend", key) == 0) // its the pitch bend
     {
-        pitch_bend = p;
+        printf("got pitch bend pointer");
+        Signals.pitch_bend = p;
+    }
+    else if(strcmp("lfo", key) == 0) // its the lfo
+    {
+        printf("got lfo pointer");
+        Signals.lfo = p;
+    }
+    else if(strcmp("env", key) == 0) // its the lfo
+    {
+        printf("got env pointer");
+        Signals.env = p;
     }
 };
 
@@ -256,8 +276,8 @@ void handle_midi(uint8_t *msg, uint8_t len)
             // uint8_t velocity = msg[2] & 0b01111111;
             // set_note(note);
             // play(note);
-            *gate = 1;
-            *pitch = note; // the dsp converts to hz
+            *Signals.gate = 1;
+            *Signals.pitch = note; // the dsp converts to hz
         }
         break;
     }
@@ -265,9 +285,9 @@ void handle_midi(uint8_t *msg, uint8_t len)
     {
         uint8_t note = msg[1] & 0b01111111;
         // stop(note);
-        if(*pitch == note)
+        if(Signals.pitch == note)
         {
-            *gate = 0;
+            *Signals.gate = 0;
         }
         break;
     }
@@ -350,7 +370,7 @@ void handle_midi(uint8_t *msg, uint8_t len)
     {
         uint16_t val = msg[1] | (msg[2] << 7);  // 0 to 16,383
         int16_t bend = val - 8192; // +/- 8192
-        *pitch_bend = (float)bend * pitch_bend_constant;
+        *Signals.pitch_bend = (float)bend * pitch_bend_constant;
     }
     default:
         break;
