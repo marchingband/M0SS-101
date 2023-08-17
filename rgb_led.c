@@ -167,7 +167,7 @@ const struct pixel_t pixel_off = { // moss green (div by 15)
 };
 
 const uint8_t number_select_lights[NUM_PRESETS] = { 0, 2, 5, 7, 18, 10, 20, 21, 19, 13, 23, 16, 24, 25 };
-int ui_mode = { UI_MODE_PLAY };
+int ui_mode = UI_MODE_PLAY;
 
 void set_ui_mode(int mode)
 {
