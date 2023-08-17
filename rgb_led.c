@@ -279,6 +279,28 @@ void render_lights(void)
             }
             break;
         }
+        case UI_MODE_LEARN:
+        {
+            int current = get_mode_learn_current_cc();
+            for(int i=0; i<NUM_LED; i++)
+            {
+                pixel_buf[i] = pixel_off; 
+            }
+
+            for(int i=0; i < (NUM_CC - 1); i++)
+            {
+                uint8_t light_num = number_select_lights[i];
+                if(i == current)
+                {
+                    pixel_buf[light_num] = pixel_blue;
+                }
+                else
+                {
+                    pixel_buf[light_num] = pixel_green;
+                }
+            }
+            break;
+        }
         default: break;
     }
 

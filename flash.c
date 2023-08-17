@@ -15,7 +15,8 @@ static int current_slot = -1;
 
 static struct Config default_config = {
     .empty = {true, true, true, true, true, true, true, true, true, true, true, true, true, true},
-    .magic = 125,
+    .cc_map = { 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8 },
+    .magic = 126,
 };
 
 static struct Config current_config;
@@ -63,7 +64,7 @@ void save(int slot)
 
     floats_buf = (float *)&buf[0];
 
-    struct CC *ccs = get_ccs();
+    struct CC *ccs   = get_ccs();
     struct Mod *mods = get_mods();
     struct Alt *alts = get_alts();
     struct Sel *sels = get_sels();

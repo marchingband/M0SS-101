@@ -37,16 +37,13 @@ void set_filter(uint8_t val);
 
 static struct bflb_device_s *uart0;
 int ch;
+int mode_learn_current_cc = 0;
 
-// struct CC CCs[127] = {0};
-// struct Mod Mods[127] = {0};
-// struct Alt Alts[127] = {0};
-// struct Sel Sels[NUM_SEL] = {0};
-struct CC CCs[NUM_CC] = {0};
-struct Mod Mods[NUM_BUTTONS] = {0};
-struct Alt Alts[NUM_BUTTONS] = {0};
-struct Sel Sels[NUM_SEL] = {0};
-struct Sigs Signals = {
+static struct CC CCs[NUM_CC] = {0};
+static struct Mod Mods[NUM_BUTTONS] = {0};
+static struct Alt Alts[NUM_BUTTONS] = {0};
+static struct Sel Sels[NUM_SEL] = {0};
+static struct Sigs Signals = {
     .pitch = 0,
     .gate = 0,
     .lfo = 0,
@@ -79,6 +76,11 @@ struct CC *get_ccs(void)
 struct Sigs *get_signals(void)
 {
     return &Signals;
+}
+
+int get_mode_learn_current_cc(void)
+{
+    return mode_learn_current_cc;
 }
 
 void extract(const char *name, float *p, float init, float min, float max, float step)
@@ -222,7 +224,19 @@ void handle_button_press(int num)
         {
             set_ui_mode(UI_MODE_SAVE);
         }
+        else if(num == 13)
+        {
+            set_ui_mode(UI_MODE_LEARN);
+            mode_learn_current_cc = 0;
+        }
     } 
+    else if(ui_mode == UI_MODE_LEARN)
+    {
+        if(num < 8)
+        {
+            mode_learn_current_cc = num + 1;
+        }
+    }
     else if(ui_mode == UI_MODE_PLAY)
     {
         struct Sel *sel = &Sels[num];
@@ -301,13 +315,29 @@ void handle_midi(uint8_t *msg, uint8_t len)
     }
     case MIDI_CC:
     {
-        uint8_t cc_num = msg[1] & 0b01111111;
+        uint8_t cc_num_in = msg[1] & 0b01111111;
         uint8_t cc_val = msg[2] & 0b01111111;
+        uint8_t *cc_map = &get_config()->cc_map[0];
+        uint8_t cc_num = cc_map[cc_num_in];
+
+        int ui_mode = get_ui_mode();
+
+        if(ui_mode == UI_MODE_LEARN)
+        {
+            if(mode_learn_current_cc > 0)
+            {
+                cc_map[cc_num_in] = mode_learn_current_cc;
+            }
+            printf("no cc_learn selected\n");
+            break;
+        }
+        
         if(cc_num >= NUM_CC)
         {
             printf("CC %s is too high", cc_num);
             break;
         }
+        
         if(cc_num == 8) // maybe a modifier
         {
             uint8_t should_set_volume = true;

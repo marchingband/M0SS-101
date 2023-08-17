@@ -1,9 +1,10 @@
 #ifndef RGB_LED_H
 #define REG_LED_H
 
-#define UI_MODE_PLAY 0
-#define UI_MODE_LOAD 1
-#define UI_MODE_SAVE 2
+#define UI_MODE_PLAY  0
+#define UI_MODE_LOAD  1
+#define UI_MODE_SAVE  2
+#define UI_MODE_LEARN 3
 
 struct pixel_t {
   uint8_t green;

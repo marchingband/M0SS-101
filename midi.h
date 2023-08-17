@@ -3,6 +3,7 @@
 
 #define NUM_SEL 20
 #define NUM_CC 9
+#define NUM_CC_MAP 128
 
 struct CC {
     float *p;
@@ -55,5 +56,7 @@ struct Mod *get_mods(void);
 struct Alt *get_alts(void);
 struct CC *get_ccs(void);
 struct Sigs *get_signals(void);
+uint8_t *get_cc_map(void);
+int get_mode_learn_current_cc(void)
 
 #endif
