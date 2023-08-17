@@ -61,7 +61,7 @@ void poll_gpio(void)
                         {
                             handle_button_press(i);
                         }
-                        else if((i != 4) && (i != 8)) // load / save
+                        else if((i != 4) && (i != 8) && (i != 13)) // load / save / learn
                         {
                             button_cancelled[i] = 1;
                         }
