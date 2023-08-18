@@ -42,7 +42,7 @@ void test_flash(void)
     printf("1024:%d\n", read_buf[1024 * 2]);
     printf("768:%d\n", read_buf[1024 * 3]);
 
-    ret = bflb_flash_erase(base, 1);
+    ret = bflb_flash_erase(base, 256);
     if(ret < 0){printf("6 %d", ret);}
 
     ret = bflb_flash_read(base, read_buf, 1024 * 4);
