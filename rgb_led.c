@@ -47,69 +47,62 @@ static struct bflb_device_s *dma0_ch1;
 static struct bflb_dma_channel_lli_pool_s tx_llipool[1];
 static struct bflb_dma_channel_lli_transfer_s tx_transfers[1];
 
-// void dma0_ch1_isr(void *arg)
-// {
-//     // dma_tc_flag0++;
-//     // bflb_dma_channel_stop(dma0_ch1);
-//     rgb_rendering = false;
-//     // bflb_i2s_feature_control(i2s0, I2S_CMD_DATA_ENABLE, false);
-// }
+void dma0_ch1_isr(void *arg)
+{
+    // dma_tc_flag0++;
+    // bflb_dma_channel_stop(dma0_ch1);
+    // rgb_rendering = false;
+    // bflb_i2s_feature_control(i2s0, I2S_CMD_DATA_ENABLE, false);
+    bflb_i2s_deinit(i2s0);
+}
 
-void rgb_led_init(){
-    i2s_gpio_init();
+static struct bflb_i2s_config_s i2s_cfg = {
+    // .bclk_freq_hz = 130000 * 16 * 2, /* bclk = Sampling_rate * frame_width * channel_num */
+    .bclk_freq_hz = 93750 * 16 * 2, /* bclk = Sampling_rate * frame_width * channel_num */
+    .role = I2S_ROLE_MASTER,
+    .format_mode = I2S_MODE_LEFT_JUSTIFIED,
+    .channel_mode = I2S_CHANNEL_MODE_NUM_2,
+    .frame_width = I2S_SLOT_WIDTH_16,
+    .data_width = I2S_SLOT_WIDTH_16,
+    .fs_offset_cycle = 0,
+    .tx_fifo_threshold = 0,
+    .rx_fifo_threshold = 0,
+};
 
-    struct bflb_i2s_config_s i2s_cfg = {
-        // .bclk_freq_hz = 130000 * 16 * 2, /* bclk = Sampling_rate * frame_width * channel_num */
-        .bclk_freq_hz = 93750 * 16 * 2, /* bclk = Sampling_rate * frame_width * channel_num */
-        .role = I2S_ROLE_MASTER,
-        .format_mode = I2S_MODE_LEFT_JUSTIFIED,
-        .channel_mode = I2S_CHANNEL_MODE_NUM_1,
-        .frame_width = I2S_SLOT_WIDTH_32,
-        .data_width = I2S_SLOT_WIDTH_16,
-        .fs_offset_cycle = 0,
-        .tx_fifo_threshold = 0,
-        .rx_fifo_threshold = 0,
-    };
+static struct bflb_dma_channel_config_s tx_config = {
+    .direction = DMA_MEMORY_TO_PERIPH,
+    .src_req = DMA_REQUEST_NONE,
+    .dst_req = DMA_REQUEST_I2S_TX,
+    .src_addr_inc = DMA_ADDR_INCREMENT_ENABLE,
+    .dst_addr_inc = DMA_ADDR_INCREMENT_DISABLE,
+    .src_burst_count = DMA_BURST_INCR1,
+    .dst_burst_count = DMA_BURST_INCR1,
+    .src_width = DMA_DATA_WIDTH_16BIT,
+    .dst_width = DMA_DATA_WIDTH_16BIT,
+};
 
-    struct bflb_dma_channel_config_s tx_config = {
-        .direction = DMA_MEMORY_TO_PERIPH,
-        .src_req = DMA_REQUEST_NONE,
-        .dst_req = DMA_REQUEST_I2S_TX,
-        .src_addr_inc = DMA_ADDR_INCREMENT_ENABLE,
-        .dst_addr_inc = DMA_ADDR_INCREMENT_DISABLE,
-        .src_burst_count = DMA_BURST_INCR1,
-        .dst_burst_count = DMA_BURST_INCR1,
-        .src_width = DMA_DATA_WIDTH_16BIT,
-        .dst_width = DMA_DATA_WIDTH_16BIT,
-    };
-
-    struct bflb_dma_channel_config_s rx_config = {
-        .direction = DMA_PERIPH_TO_MEMORY,
-        .src_req = DMA_REQUEST_I2S_RX,
-        .dst_req = DMA_REQUEST_NONE,
-        .src_addr_inc = DMA_ADDR_INCREMENT_DISABLE,
-        .dst_addr_inc = DMA_ADDR_INCREMENT_ENABLE,
-        .src_burst_count = DMA_BURST_INCR1,
-        .dst_burst_count = DMA_BURST_INCR1,
-        .src_width = DMA_DATA_WIDTH_16BIT,
-        .dst_width = DMA_DATA_WIDTH_16BIT,
-    };
-
-    i2s0 = bflb_device_get_by_name("i2s0");
+void rgb_led_start(){
     bflb_i2s_init(i2s0, &i2s_cfg);
     bflb_i2s_link_txdma(i2s0, true);
 
-    dma0_ch1 = bflb_device_get_by_name("dma0_ch1");
     bflb_dma_channel_init(dma0_ch1, &tx_config);
     // bflb_dma_channel_irq_attach(dma0_ch1, dma0_ch1_isr, NULL);
     bflb_i2s_feature_control(i2s0, I2S_CMD_DATA_ENABLE, I2S_CMD_DATA_ENABLE_TX);
-    printf("rgb setup done\n");
+    // printf("rgb setup done\n");
+}
+
+void rgb_led_init(){
+    i2s_gpio_init();
+    i2s0 = bflb_device_get_by_name("i2s0");
+    dma0_ch1 = bflb_device_get_by_name("dma0_ch1");
+    rgb_led_start();
 }
 
 void i2s_send(void)
 {
+    rgb_led_start();
     // bflb_i2s_feature_control(i2s0, I2S_CMD_DATA_ENABLE, I2S_CMD_DATA_ENABLE_TX);
-    bflb_i2s_feature_control(i2s0, I2S_CMD_CLEAR_TX_FIFO, true);
+    // bflb_i2s_feature_control(i2s0, I2S_CMD_CLEAR_TX_FIFO, true);
     uint16_t *buf = ping_pong == 0 ? tx_buffer_a : tx_buffer_b;
     tx_transfers[0].src_addr = ping_pong == 0 ? (uint32_t)tx_buffer_a : (uint32_t)tx_buffer_b;
     tx_transfers[0].dst_addr = (uint32_t)DMA_ADDR_I2S_TDR;
