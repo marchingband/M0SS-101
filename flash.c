@@ -20,47 +20,47 @@ void test_flash(void)
     for(int i=0; i< 256; i++){write_buf[i] = 0;}
 
     ret = bflb_flash_erase(base, 4096 * 2);
-    printf("1 %d", ret);
+    printf("1 %d\n", ret);
 
     ret = bflb_flash_write(base, write_buf, 256);
-    printf("2 %d", ret);
+    printf("2 %d\n", ret);
 
     ret = bflb_flash_write(base + 4096, write_buf, 256);
-    printf("3 %d", ret);
+    printf("3 %d\n", ret);
 
     ret = bflb_flash_read(base, read_buf, 256);
-    printf("4 %d", ret);
+    printf("4 %d\n", ret);
 
     printf("0:%d\n", read_buf[0]);
 
     ret = bflb_flash_read(base + 4096, read_buf, 256);
-    printf("5 %d", ret);
+    printf("5 %d\n", ret);
 
     printf("4096:%d\n", read_buf[0]);
 
     ret = bflb_flash_erase(base, 1);
-    printf("6 %d", ret);
+    printf("6 %d\n", ret);
 
     ret = bflb_flash_read(base, read_buf, 256);
-    printf("7 %d", ret);
+    printf("7 %d\n", ret);
 
     printf("0:%d\n", read_buf[0]);
 
     ret = bflb_flash_read(base + 4096, read_buf, 256);
-    printf("8 %d", ret);
+    printf("8 %d\n", ret);
 
     printf("4096:%d\n", read_buf[0]);
 
-    ret = bflb_flash_erase(base, 2);
-    printf("6 %d", ret);
+    ret = bflb_flash_erase(base, 4096);
+    printf("6 %d\n", ret);
 
     ret = bflb_flash_read(base, read_buf, 256);
-    printf("7 %d", ret);
+    printf("7 %d\n", ret);
 
     printf("0:%d\n", read_buf[0]);
 
     ret = bflb_flash_read(base + 4096, read_buf, 256);
-    printf("8 %d", ret);
+    printf("8 %d\n", ret);
 
     printf("4096:%d\n", read_buf[0]);
 
