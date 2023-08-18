@@ -136,34 +136,100 @@ void rgb_set_color(struct pixel_t *pixels){
 
 struct pixel_t pixel_buf[NUM_LED];
 
-const struct pixel_t pixel_red = { // moss green (div by 15)
+const struct pixel_t pixel_red = {
     .red = 1,
     .green = 0,
     .blue = 0
 };
 
-const struct pixel_t pixel_green = { // moss green (div by 15)
+const struct pixel_t pixel_green = {
     .red = 0,
     .green = 1,
     .blue = 0
 };
 
-const struct pixel_t pixel_blue = { // moss green (div by 15)
+const struct pixel_t pixel_blue = {
     .red = 0,
     .green = 0,
     .blue = 1
 };
 
-const struct pixel_t pixel_on = { // moss green (div by 15)
+const struct pixel_t pixel_on = {
     .red = 2,
     .green = 1,
     .blue = 0
 };
 
-const struct pixel_t pixel_off = { // moss green (div by 15)
+const struct pixel_t pixel_off = {
     .red = 0,
     .green = 0,
     .blue = 0
+};
+
+const struct pixel_t p1 = {
+    .red = 1,
+    .green = 1,
+    .blue = 0
+};
+const struct pixel_t p2 = {
+    .red = 0,
+    .green = 1,
+    .blue = 1
+};
+const struct pixel_t p3 = {
+    .red = 1,
+    .green = 0,
+    .blue = 1
+};
+const struct pixel_t p4 = {
+    .red = 1,
+    .green = 1,
+    .blue = 1
+};
+const struct pixel_t p5 = {
+    .red = 2,
+    .green = 1,
+    .blue = 1
+};
+const struct pixel_t p6 = {
+    .red = 2,
+    .green = 0,
+    .blue = 1
+};
+const struct pixel_t p7 = {
+    .red = 2,
+    .green = 1,
+    .blue = 0
+};
+const struct pixel_t p8 = {
+    .red = 1,
+    .green = 2,
+    .blue = 1
+};
+const struct pixel_t p9 = {
+    .red = 1,
+    .green = 2,
+    .blue = 0
+};
+const struct pixel_t p10 = {
+    .red = 0,
+    .green = 2,
+    .blue = 1
+};
+const struct pixel_t p11 = {
+    .red = 1,
+    .green = 1,
+    .blue = 2
+};
+const struct pixel_t p12 = {
+    .red = 1,
+    .green = 0,
+    .blue = 2
+};
+const struct pixel_t p13 = {
+    .red = 0,
+    .green = 1,
+    .blue = 2
 };
 
 const uint8_t number_select_lights[NUM_PRESETS] = { 0, 2, 5, 7, 18, 10, 20, 21, 19, 13, 23, 16, 24, 25 };
@@ -198,21 +264,34 @@ void render_lights(void)
 
     switch(ui_mode){
         case UI_MODE_PLAY:
-            pixel_buf[0] = *(sels[0].p)   == 0 ? pixel_on : pixel_off; // o1sqr
-            pixel_buf[1] = *(sels[0].p)   == 1 ? pixel_on : pixel_off;  // o1saw
-            pixel_buf[2] = *(sels[1].p)   == 0 ? pixel_on : pixel_off;  // o1oct0
-            pixel_buf[3] = *(sels[1].p)   == 1 ? pixel_on : pixel_off;  // o1oct-1
-            pixel_buf[4] = *(sels[1].p)   == 2 ? pixel_on : pixel_off;  // o1oct-2
+            pixel_buf[0] = p1;
+            pixel_buf[1] = p2;
+            pixel_buf[2] = p3;
+            pixel_buf[3] = p4;
+            pixel_buf[4] = p5;
+            pixel_buf[5] = p6;
+            pixel_buf[6] = p7;
+            pixel_buf[7] = p8;
+            pixel_buf[8] = p9;
+            pixel_buf[9] = p10;
+            pixel_buf[10] =p11;
+            pixel_buf[11] =p12;
+            pixel_buf[12] =p13;
+            // pixel_buf[0] = *(sels[0].p)   == 0 ? pixel_on : pixel_off; // o1sqr
+            // pixel_buf[1] = *(sels[0].p)   == 1 ? pixel_on : pixel_off;  // o1saw
+            // pixel_buf[2] = *(sels[1].p)   == 0 ? pixel_on : pixel_off;  // o1oct0
+            // pixel_buf[3] = *(sels[1].p)   == 1 ? pixel_on : pixel_off;  // o1oct-1
+            // pixel_buf[4] = *(sels[1].p)   == 2 ? pixel_on : pixel_off;  // o1oct-2
 
-            pixel_buf[5] = *(sels[2].p)   == 0 ? pixel_on : pixel_off;  // o2sqr
-            pixel_buf[6] = *(sels[2].p)   == 1 ? pixel_on : pixel_off;  // o2saw
-            pixel_buf[7] = *(sels[3].p)   == 0 ? pixel_on : pixel_off;  // o2oct0
-            pixel_buf[8] = *(sels[3].p)   == 1 ? pixel_on : pixel_off;  // o2oct-1
-            pixel_buf[9] = *(sels[3].p)   == 2 ? pixel_on : pixel_off;  // o2oct-2
+            // pixel_buf[5] = *(sels[2].p)   == 0 ? pixel_on : pixel_off;  // o2sqr
+            // pixel_buf[6] = *(sels[2].p)   == 1 ? pixel_on : pixel_off;  // o2saw
+            // pixel_buf[7] = *(sels[3].p)   == 0 ? pixel_on : pixel_off;  // o2oct0
+            // pixel_buf[8] = *(sels[3].p)   == 1 ? pixel_on : pixel_off;  // o2oct-1
+            // pixel_buf[9] = *(sels[3].p)   == 2 ? pixel_on : pixel_off;  // o2oct-2
 
-            pixel_buf[10] = *(sels[5].p)  == 0 ? pixel_on : pixel_off; // lfotri
-            pixel_buf[11] = *(sels[5].p)  == 1 ? pixel_on : pixel_off; // lfosqr
-            pixel_buf[12] = *(sels[5].p)  == 2 ? pixel_on : pixel_off; // lfornd
+            // pixel_buf[10] = *(sels[5].p)  == 0 ? pixel_on : pixel_off; // lfotri
+            // pixel_buf[11] = *(sels[5].p)  == 1 ? pixel_on : pixel_off; // lfosqr
+            // pixel_buf[12] = *(sels[5].p)  == 2 ? pixel_on : pixel_off; // lfornd
 
             pixel_buf[13] = *(sels[9].p)  == 0 ? pixel_on : pixel_off; // vcfhp
             pixel_buf[14] = *(sels[9].p)  == 1 ? pixel_on : pixel_off; // vcflp
