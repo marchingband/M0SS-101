@@ -51,7 +51,7 @@ void test_flash(void)
 
     printf("4096:%d\n", read_buf[0]);
 
-    ret = bflb_flash_erase(base, 4096);
+    ret = bflb_flash_erase(base, 4096 * 2);
     printf("6 %d\n", ret);
 
     ret = bflb_flash_read(base, read_buf, 256);
