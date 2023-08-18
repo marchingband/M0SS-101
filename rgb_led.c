@@ -12,6 +12,8 @@
 #define PIXEL_SIZE 6 // each colour takes 4 bytes
 #define NUM_LED 26
 
+struct bflb_device_s *i2s0;
+
 bool rgb_rendering = false;
 
 void rgb_task(void *pvParameters)
@@ -53,7 +55,6 @@ void dma0_ch1_isr(void *arg)
 }
 
 void rgb_led_init(){
-    struct bflb_device_s *i2s0;
     i2s_gpio_init();
 
     struct bflb_i2s_config_s i2s_cfg = {
