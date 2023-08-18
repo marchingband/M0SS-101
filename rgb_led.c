@@ -37,7 +37,9 @@ static void i2s_gpio_init()
     bflb_gpio_init(gpio, GPIO_PIN_11, GPIO_FUNC_I2S | GPIO_ALTERNATE | GPIO_PULLUP | GPIO_SMT_EN | GPIO_DRV_1);
 }
 
-static ATTR_NOCACHE_NOINIT_RAM_SECTION uint16_t tx_buffer[256] __ALIGNED(4);
+static ATTR_NOCACHE_NOINIT_RAM_SECTION uint16_t tx_buffer_a[256] __ALIGNED(4);
+static ATTR_NOCACHE_NOINIT_RAM_SECTION uint16_t tx_buffer_b[256] __ALIGNED(4);
+static uint8_t ping_pong = 0;
 static volatile uint8_t dma_tc_flag0 = 0;
 static struct bflb_device_s *dma0_ch1;
 static struct bflb_dma_channel_lli_pool_s tx_llipool[1];
@@ -45,7 +47,7 @@ static struct bflb_dma_channel_lli_transfer_s tx_transfers[1];
 
 void dma0_ch1_isr(void *arg)
 {
-    dma_tc_flag0++;
+    // dma_tc_flag0++;
     // bflb_dma_channel_stop(dma0_ch1);
     rgb_rendering = false;
 }
@@ -106,30 +108,33 @@ void rgb_led_init(){
 
 void i2s_send(void)
 {
-    tx_transfers[0].src_addr = (uint32_t)tx_buffer;
+    tx_transfers[0].src_addr = ping_pong == 0 ? (uint32_t)tx_buffer_a : (uint32_t)tx_buffer_b;
     tx_transfers[0].dst_addr = (uint32_t)DMA_ADDR_I2S_TDR;
     tx_transfers[0].nbytes = sizeof(tx_buffer);
 
     bflb_dma_channel_lli_reload(dma0_ch1, tx_llipool, 1, tx_transfers, 1);
     bflb_dma_channel_start(dma0_ch1);
+    
+    ping_pong = ping_pong == 0 ? 1 : 0;
 }
 
 static const uint16_t bitpatterns[4] = {0x88, 0x8e, 0xe8, 0xee};
 static uint8_t out_buffer[NUM_LED * PIXEL_SIZE] = {0};
 
 void rgb_set_color(struct pixel_t *pixels){
-    memset(tx_buffer, 0, sizeof tx_buffer);
+    uint16_t *buf = ping_pong == 0 ? tx_buffer_a : tx_buffer_b;
+    memset(buf, 0, sizeof tx_buffer_a);
     for (uint16_t i = 0; i < NUM_LED; i++) {
         int loc = i * PIXEL_SIZE;
 
-        tx_buffer[loc]     = (bitpatterns[pixels[i].green >> 6 & 0x03] << 8) | bitpatterns[pixels[i].green >> 4 & 0x03];
-        tx_buffer[loc + 1] = (bitpatterns[pixels[i].green >> 2 & 0x03] << 8) | bitpatterns[pixels[i].green & 0x03];
+        buf[loc]     = (bitpatterns[pixels[i].green >> 6 & 0x03] << 8) | bitpatterns[pixels[i].green >> 4 & 0x03];
+        buf[loc + 1] = (bitpatterns[pixels[i].green >> 2 & 0x03] << 8) | bitpatterns[pixels[i].green & 0x03];
 
-        tx_buffer[loc + 2] = (bitpatterns[pixels[i].red   >> 6 & 0x03] << 8) | bitpatterns[pixels[i].red >> 4 & 0x03];
-        tx_buffer[loc + 3] = (bitpatterns[pixels[i].red   >> 2 & 0x03] << 8) | bitpatterns[pixels[i].red & 0x03];
+        buf[loc + 2] = (bitpatterns[pixels[i].red   >> 6 & 0x03] << 8) | bitpatterns[pixels[i].red >> 4 & 0x03];
+        buf[loc + 3] = (bitpatterns[pixels[i].red   >> 2 & 0x03] << 8) | bitpatterns[pixels[i].red & 0x03];
 
-        tx_buffer[loc + 4] = (bitpatterns[pixels[i].blue  >> 6 & 0x03] << 8) | bitpatterns[pixels[i].blue >> 4 & 0x03];
-        tx_buffer[loc + 5] = (bitpatterns[pixels[i].blue  >> 2 & 0x03] << 8) | bitpatterns[pixels[i].blue & 0x03];
+        buf[loc + 4] = (bitpatterns[pixels[i].blue  >> 6 & 0x03] << 8) | bitpatterns[pixels[i].blue >> 4 & 0x03];
+        buf[loc + 5] = (bitpatterns[pixels[i].blue  >> 2 & 0x03] << 8) | bitpatterns[pixels[i].blue & 0x03];
     }
     i2s_send();
 }
