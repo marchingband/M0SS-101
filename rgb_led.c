@@ -99,7 +99,7 @@ void rgb_led_init(){
     bflb_i2s_init(i2s0, &i2s_cfg);
     bflb_i2s_link_txdma(i2s0, true);
 
-    dma0_ch1 = bflb_device_get_by_name("dma0_ch3");
+    dma0_ch1 = bflb_device_get_by_name("dma0_ch4");
     bflb_dma_channel_init(dma0_ch1, &tx_config);
     bflb_dma_channel_irq_attach(dma0_ch1, dma0_ch1_isr, NULL);
     bflb_i2s_feature_control(i2s0, I2S_CMD_DATA_ENABLE, I2S_CMD_DATA_ENABLE_TX);
