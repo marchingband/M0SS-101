@@ -171,7 +171,7 @@ const struct pixel_t p1 = {
     .green = 1,
     .blue = 0
 };
-const struct pixel_t p2 = {
+const struct pixel_t light_blue = {
     .red = 0,
     .green = 1,
     .blue = 1
@@ -186,7 +186,7 @@ const struct pixel_t p4 = {
     .green = 1,
     .blue = 1
 };
-const struct pixel_t p5 = {
+const struct pixel_t light_pink = {
     .red = 2,
     .green = 1,
     .blue = 1
@@ -206,7 +206,7 @@ const struct pixel_t p8 = {
     .green = 2,
     .blue = 1
 };
-const struct pixel_t p9 = {
+const struct pixel_t light_green = {
     .red = 1,
     .green = 2,
     .blue = 0
@@ -264,34 +264,34 @@ void render_lights(void)
 
     switch(ui_mode){
         case UI_MODE_PLAY:
-            pixel_buf[0] = p1;
-            pixel_buf[1] = p2;
-            pixel_buf[2] = p3;
-            pixel_buf[3] = p4;
-            pixel_buf[4] = p5;
-            pixel_buf[5] = p6;
-            pixel_buf[6] = p7;
-            pixel_buf[7] = p8;
-            pixel_buf[8] = p9;
-            pixel_buf[9] = p10;
-            pixel_buf[10] =p11;
-            pixel_buf[11] =p12;
-            pixel_buf[12] =p13;
-            // pixel_buf[0] = *(sels[0].p)   == 0 ? pixel_on : pixel_off; // o1sqr
-            // pixel_buf[1] = *(sels[0].p)   == 1 ? pixel_on : pixel_off;  // o1saw
-            // pixel_buf[2] = *(sels[1].p)   == 0 ? pixel_on : pixel_off;  // o1oct0
-            // pixel_buf[3] = *(sels[1].p)   == 1 ? pixel_on : pixel_off;  // o1oct-1
-            // pixel_buf[4] = *(sels[1].p)   == 2 ? pixel_on : pixel_off;  // o1oct-2
+            // pixel_buf[0] = p1;
+            // pixel_buf[1] = p2;
+            // pixel_buf[2] = p3;
+            // pixel_buf[3] = p4;
+            // pixel_buf[4] = p5;
+            // pixel_buf[5] = p6;
+            // pixel_buf[6] = p7;
+            // pixel_buf[7] = p8;
+            // pixel_buf[8] = p9;
+            // pixel_buf[9] = p10;
+            // pixel_buf[10] =p11;
+            // pixel_buf[11] =p12;
+            // pixel_buf[12] =p13;
+            pixel_buf[0] = *(sels[0].p)   == 0 ? pixel_on : pixel_off; // o1sqr
+            pixel_buf[1] = *(sels[0].p)   == 1 ? pixel_on : pixel_off;  // o1saw
+            pixel_buf[2] = *(sels[1].p)   == 0 ? pixel_on : pixel_off;  // o1oct0
+            pixel_buf[3] = *(sels[1].p)   == 1 ? pixel_on : pixel_off;  // o1oct-1
+            pixel_buf[4] = *(sels[1].p)   == 2 ? pixel_on : pixel_off;  // o1oct-2
 
-            // pixel_buf[5] = *(sels[2].p)   == 0 ? pixel_on : pixel_off;  // o2sqr
-            // pixel_buf[6] = *(sels[2].p)   == 1 ? pixel_on : pixel_off;  // o2saw
-            // pixel_buf[7] = *(sels[3].p)   == 0 ? pixel_on : pixel_off;  // o2oct0
-            // pixel_buf[8] = *(sels[3].p)   == 1 ? pixel_on : pixel_off;  // o2oct-1
-            // pixel_buf[9] = *(sels[3].p)   == 2 ? pixel_on : pixel_off;  // o2oct-2
+            pixel_buf[5] = *(sels[2].p)   == 0 ? pixel_on : pixel_off;  // o2sqr
+            pixel_buf[6] = *(sels[2].p)   == 1 ? pixel_on : pixel_off;  // o2saw
+            pixel_buf[7] = *(sels[3].p)   == 0 ? pixel_on : pixel_off;  // o2oct0
+            pixel_buf[8] = *(sels[3].p)   == 1 ? pixel_on : pixel_off;  // o2oct-1
+            pixel_buf[9] = *(sels[3].p)   == 2 ? pixel_on : pixel_off;  // o2oct-2
 
-            // pixel_buf[10] = *(sels[5].p)  == 0 ? pixel_on : pixel_off; // lfotri
-            // pixel_buf[11] = *(sels[5].p)  == 1 ? pixel_on : pixel_off; // lfosqr
-            // pixel_buf[12] = *(sels[5].p)  == 2 ? pixel_on : pixel_off; // lfornd
+            pixel_buf[10] = *(sels[5].p)  == 0 ? pixel_on : pixel_off; // lfotri
+            pixel_buf[11] = *(sels[5].p)  == 1 ? pixel_on : pixel_off; // lfosqr
+            pixel_buf[12] = *(sels[5].p)  == 2 ? pixel_on : pixel_off; // lfornd
 
             pixel_buf[13] = *(sels[9].p)  == 0 ? pixel_on : pixel_off; // vcfhp
             pixel_buf[14] = *(sels[9].p)  == 1 ? pixel_on : pixel_off; // vcflp
@@ -300,16 +300,16 @@ void render_lights(void)
             pixel_buf[16] = *(sels[11].p) == 0 ? pixel_on : pixel_off; // envasr
             pixel_buf[17] = *(sels[11].p) == 1 ? pixel_on : pixel_off; // envar
 
-            pixel_buf[18] = ( (*(sigs->lfo)  < 0.5) || (*mods[4].p == 0) ) ? pixel_off : pixel_on; // lfo.osc
-            pixel_buf[19] = ( (*(sigs->lfo)  < 0.5) || (*mods[8].p == 0) ) ? pixel_off : pixel_on; // lfo.osc
-            pixel_buf[20] = ( (*(sigs->lfo)  < 0.5) || (*mods[6].p == 0) ) ? pixel_off : pixel_on; // lfo.osc
-            pixel_buf[21] = ( (*(sigs->lfo)  < 0.5) || (*mods[7].p == 0) ) ? pixel_off : pixel_on; // lfo.osc
+            pixel_buf[18] = ( (*(sigs->lfo)  < 0.5) || (*mods[4].p == 0) ) ? pixel_off : light_green; // lfo.osc
+            pixel_buf[19] = ( (*(sigs->lfo)  < 0.5) || (*mods[8].p == 0) ) ? pixel_off : light_green; // lfo.osc
+            pixel_buf[20] = ( (*(sigs->lfo)  < 0.5) || (*mods[6].p == 0) ) ? pixel_off : light_green; // lfo.osc
+            pixel_buf[21] = ( (*(sigs->lfo)  < 0.5) || (*mods[7].p == 0) ) ? pixel_off : light_green; // lfo.osc
 
             pixel_buf[22] = pixel_off; // vca
 
-            pixel_buf[23] = ( (*(sigs->env)  < 0.5) || (*mods[10].p == 0) ) ? pixel_off : pixel_on; // lfo.osc
-            pixel_buf[24] = ( (*(sigs->env)  < 0.5) || (*mods[12].p == 0) ) ? pixel_off : pixel_on; // lfo.osc
-            pixel_buf[25] = ( (*(sigs->env)  < 0.5) || (*mods[13].p == 0) ) ? pixel_off : pixel_on; // lfo.osc
+            pixel_buf[23] = ( (*(sigs->env)  < 0.5) || (*mods[10].p == 0) ) ? pixel_off : light_pink; // lfo.osc
+            pixel_buf[24] = ( (*(sigs->env)  < 0.5) || (*mods[12].p == 0) ) ? pixel_off : light_pink; // lfo.osc
+            pixel_buf[25] = ( (*(sigs->env)  < 0.5) || (*mods[13].p == 0) ) ? pixel_off : light_pink; // lfo.osc
 
             break;
         case UI_MODE_SAVE:
@@ -324,15 +324,15 @@ void render_lights(void)
                 uint8_t light_num = number_select_lights[i];
                 if(i == current_slot)
                 {
-                    pixel_buf[light_num] = pixel_blue;
+                    pixel_buf[light_num] = light_blue;
                 }
                 else if(config->empty[i])
                 {
-                    pixel_buf[light_num] = pixel_green;
+                    pixel_buf[light_num] = light_green;
                 }
                 else
                 {
-                    pixel_buf[light_num] = pixel_red;
+                    pixel_buf[light_num] = light_pink;
                 }
             }
             break;
@@ -349,11 +349,11 @@ void render_lights(void)
                 uint8_t light_num = number_select_lights[i];
                 if(i == current_slot)
                 {
-                    pixel_buf[light_num] = pixel_blue;
+                    pixel_buf[light_num] = light_blue;
                 }
                 else if(!config->empty[i])
                 {
-                    pixel_buf[light_num] = pixel_green;
+                    pixel_buf[light_num] = light_green;
                 }
             }
             break;
@@ -372,11 +372,11 @@ void render_lights(void)
                 int cc = i + 1;
                 if(cc == current)
                 {
-                    pixel_buf[light_num] = pixel_blue;
+                    pixel_buf[light_num] = light_blue;
                 }
                 else
                 {
-                    pixel_buf[light_num] = pixel_green;
+                    pixel_buf[light_num] = light_green;
                 }
             }
             break;
