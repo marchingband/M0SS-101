@@ -64,7 +64,7 @@ void rgb_led_init(){
         .role = I2S_ROLE_MASTER,
         .format_mode = I2S_MODE_LEFT_JUSTIFIED,
         .channel_mode = I2S_CHANNEL_MODE_NUM_1,
-        .frame_width = I2S_SLOT_WIDTH_16,
+        .frame_width = I2S_SLOT_WIDTH_32,
         .data_width = I2S_SLOT_WIDTH_16,
         .fs_offset_cycle = 0,
         .tx_fifo_threshold = 0,
