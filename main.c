@@ -368,10 +368,16 @@ void gpio_sig_init(void)
 // static const struct pixel_t pix_red[1] = {p_red};
 // static const struct pixel_t pix_green[1] = {p_green};
 
+void test_flash(void);
+
 int main(void)
 {
     /* board init */
     board_init();
+
+    test_flash();
+
+    while(1){;}
 
     /* load the config struct or initialize it */
     printf("flash_init\r\n");

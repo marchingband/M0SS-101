@@ -11,6 +11,76 @@
 #define NUM_BYTES_PER_PRESET (NUM_FLOATS * sizeof(float))
 #define TOTAL_BYTES (NUM_BYTES_PER_PRESET * NUM_PRESETS)
 
+void test_flash(void)
+{
+    int ret;
+    uint32_t base = 0x10000;
+    uint8_t read_buf[256 * 4];
+    uint8_t write_buf[256];
+    for(int i=0; i< 256; i++){write_buf[i] = 0;}
+
+    ret = bflb_flash_erase(base, 256 * 4);
+    if(ret < 0){printf("1 %d", ret);}
+
+    ret = bflb_flash_write(base, write_buf, 256);
+    if(ret < 0){printf("2 %d", ret);}
+
+    ret = bflb_flash_write(base + 256, write_buf, 256);
+    if(ret < 0){printf("3 %d", ret);}
+
+    ret = bflb_flash_write(base + 256 * 2, write_buf, 256);
+    if(ret < 0){printf("4 %d", ret);}
+
+    ret = bflb_flash_write(base + 256 * 3, write_buf, 256);
+    if(ret < 0){printf("5 %d", ret);}
+
+    ret = bflb_flash_erase(base, 1);
+    if(ret < 0){printf("6 %d", ret);}
+
+    ret = bflb_flash_read(base, read_buf, 256 * 4);
+    if(ret < 0){printf("7 %d", ret);}
+
+    printf("0:%d\n", read_buf[0]);
+    printf("256:%d\n", read_buf[256]);
+    printf("512:%d\n", read_buf[256 * 2]);
+    printf("768:%d\n", read_buf[256 * 3]);
+
+    ret = bflb_flash_erase(base, 2);
+    if(ret < 0){printf("8 %d", ret);}
+
+    ret = bflb_flash_read(base, read_buf, 256 * 4);
+    if(ret < 0){printf("9 %d", ret);}
+
+    printf("0:%d\n", read_buf[0]);
+    printf("256:%d\n", read_buf[256]);
+    printf("512:%d\n", read_buf[256 * 2]);
+    printf("768:%d\n", read_buf[256 * 3]);
+
+    ret = bflb_flash_erase(base, 256);
+    if(ret < 0){printf("10 %d", ret);}
+
+    ret = bflb_flash_read(base, read_buf, 256 * 4);
+    if(ret < 0){printf("11 %d", ret);}
+
+    printf("0:%d\n", read_buf[0]);
+    printf("256:%d\n", read_buf[256]);
+    printf("512:%d\n", read_buf[256 * 2]);
+    printf("768:%d\n", read_buf[256 * 3]);
+
+    ret = bflb_flash_erase(base, 256 * 2);
+    if(ret < 0){printf("12 %d", ret);}
+
+    ret = bflb_flash_read(base, read_buf, 256 * 4);
+    if(ret < 0){printf("13 %d", ret);}
+
+    printf("0:%d\n", read_buf[0]);
+    printf("256:%d\n", read_buf[256]);
+    printf("512:%d\n", read_buf[256 * 2]);
+    printf("768:%d\n", read_buf[256 * 3]);
+
+
+}
+
 static int current_slot = -1;
 
 static struct Config default_config = {
