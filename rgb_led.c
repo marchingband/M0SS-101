@@ -112,6 +112,11 @@ void i2s_send(void)
     tx_transfers[0].dst_addr = (uint32_t)DMA_ADDR_I2S_TDR;
     tx_transfers[0].nbytes = sizeof(tx_buffer_a);
 
+    if(tx_transfers[0].src_addr[0] == 0)
+    {
+        printf("fuvk\n");
+    }
+
     bflb_dma_channel_lli_reload(dma0_ch1, tx_llipool, 1, tx_transfers, 1);
     bflb_dma_channel_start(dma0_ch1);
 

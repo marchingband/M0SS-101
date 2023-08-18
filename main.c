@@ -350,7 +350,7 @@ int main(void)
 
     /* setup button scanners */
     printf("gpio_init\r\n");
-    gpio_init();
+    // gpio_init();
 
     /* start rgb task */
     printf("start rgb_task\r\n");
