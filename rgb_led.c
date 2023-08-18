@@ -63,7 +63,7 @@ void rgb_led_init(){
         .bclk_freq_hz = 93750 * 16 * 2, /* bclk = Sampling_rate * frame_width * channel_num */
         .role = I2S_ROLE_MASTER,
         .format_mode = I2S_MODE_LEFT_JUSTIFIED,
-        .channel_mode = I2S_CHANNEL_MODE_NUM_2,
+        .channel_mode = I2S_CHANNEL_MODE_NUM_1,
         .frame_width = I2S_SLOT_WIDTH_16,
         .data_width = I2S_SLOT_WIDTH_16,
         .fs_offset_cycle = 0,
