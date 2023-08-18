@@ -15,76 +15,76 @@ void test_flash(void)
 {
     int ret;
     uint32_t base = 0x10000;
-    uint8_t read_buf[512 * 4];
-    uint8_t write_buf[512];
-    for(int i=0; i< 512; i++){write_buf[i] = 0;}
+    uint8_t read_buf[1024 * 4];
+    uint8_t write_buf[1024];
+    for(int i=0; i< 1024; i++){write_buf[i] = 0;}
 
-    ret = bflb_flash_erase(base, 512 * 2);
+    ret = bflb_flash_erase(base, 1024 * 2);
     if(ret < 0){printf("1 %d", ret);}
 
-    ret = bflb_flash_write(base, write_buf, 512);
+    ret = bflb_flash_write(base, write_buf, 1024);
     if(ret < 0){printf("2 %d", ret);}
 
-    ret = bflb_flash_write(base + 512, write_buf, 512);
+    ret = bflb_flash_write(base + 1024, write_buf, 1024);
     if(ret < 0){printf("3 %d", ret);}
 
-    ret = bflb_flash_write(base + 512 * 2, write_buf, 512);
+    ret = bflb_flash_write(base + 1024 * 2, write_buf, 1024);
     if(ret < 0){printf("4 %d", ret);}
 
-    ret = bflb_flash_write(base + 512 * 3, write_buf, 512);
+    ret = bflb_flash_write(base + 1024 * 3, write_buf, 1024);
     if(ret < 0){printf("5 %d", ret);}
 
-    ret = bflb_flash_read(base, read_buf, 512 * 4);
+    ret = bflb_flash_read(base, read_buf, 1024 * 4);
     if(ret < 0){printf("55 %d", ret);}
 
     printf("0:%d\n", read_buf[0]);
-    printf("512:%d\n", read_buf[512]);
-    printf("512:%d\n", read_buf[512 * 2]);
-    printf("768:%d\n", read_buf[512 * 3]);
+    printf("1024:%d\n", read_buf[1024]);
+    printf("1024:%d\n", read_buf[1024 * 2]);
+    printf("768:%d\n", read_buf[1024 * 3]);
 
     ret = bflb_flash_erase(base, 1);
     if(ret < 0){printf("6 %d", ret);}
 
-    ret = bflb_flash_read(base, read_buf, 512 * 4);
+    ret = bflb_flash_read(base, read_buf, 1024 * 4);
     if(ret < 0){printf("7 %d", ret);}
 
     printf("0:%d\n", read_buf[0]);
-    printf("512:%d\n", read_buf[512]);
-    printf("1024:%d\n", read_buf[512 * 2]);
-    printf("1536:%d\n", read_buf[512 * 3]);
+    printf("1024:%d\n", read_buf[1024]);
+    printf("1024:%d\n", read_buf[1024 * 2]);
+    printf("1536:%d\n", read_buf[1024 * 3]);
 
     ret = bflb_flash_erase(base, 2);
     if(ret < 0){printf("8 %d", ret);}
 
-    ret = bflb_flash_read(base, read_buf, 512 * 4);
+    ret = bflb_flash_read(base, read_buf, 1024 * 4);
     if(ret < 0){printf("9 %d", ret);}
 
     printf("0:%d\n", read_buf[0]);
-    printf("512:%d\n", read_buf[512]);
-    printf("1024:%d\n", read_buf[512 * 2]);
-    printf("1536:%d\n", read_buf[512 * 3]);
+    printf("1024:%d\n", read_buf[1024]);
+    printf("1024:%d\n", read_buf[1024 * 2]);
+    printf("1536:%d\n", read_buf[1024 * 3]);
 
-    ret = bflb_flash_erase(base, 512);
+    ret = bflb_flash_erase(base, 1024);
     if(ret < 0){printf("10 %d", ret);}
 
-    ret = bflb_flash_read(base, read_buf, 512 * 4);
+    ret = bflb_flash_read(base, read_buf, 1024 * 4);
     if(ret < 0){printf("11 %d", ret);}
 
     printf("0:%d\n", read_buf[0]);
-    printf("512:%d\n", read_buf[512]);
-    printf("1024:%d\n", read_buf[512 * 2]);
-    printf("1536:%d\n", read_buf[512 * 3]);
+    printf("1024:%d\n", read_buf[1024]);
+    printf("1024:%d\n", read_buf[1024 * 2]);
+    printf("1536:%d\n", read_buf[1024 * 3]);
 
-    ret = bflb_flash_erase(base, 512 * 2);
+    ret = bflb_flash_erase(base, 1024 * 2);
     if(ret < 0){printf("12 %d", ret);}
 
-    ret = bflb_flash_read(base, read_buf, 512 * 4);
+    ret = bflb_flash_read(base, read_buf, 1024 * 4);
     if(ret < 0){printf("13 %d", ret);}
 
     printf("0:%d\n", read_buf[0]);
-    printf("512:%d\n", read_buf[512]);
-    printf("1024:%d\n", read_buf[512 * 2]);
-    printf("1536:%d\n", read_buf[512 * 3]);
+    printf("1024:%d\n", read_buf[1024]);
+    printf("1024:%d\n", read_buf[1024 * 2]);
+    printf("1536:%d\n", read_buf[1024 * 3]);
 
 
 }
