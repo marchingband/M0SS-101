@@ -375,10 +375,6 @@ int main(void)
     /* board init */
     board_init();
 
-    test_flash();
-
-    while(1){;}
-
     /* load the config struct or initialize it */
     printf("flash_init\r\n");
     flash_init();

@@ -4,69 +4,14 @@
 #include "gpio.h"
 #include "flash.h"
 
-#define CONFIG_BASE 0x30000
+#define CONFIG_BASE 0x40000
 #define PRESET_BASE 0x20000
+
+#define SECTOR_SIZE 0x1000 // 4096
 
 #define NUM_FLOATS (NUM_CC + NUM_BUTTONS + NUM_BUTTONS + NUM_SEL)
 #define NUM_BYTES_PER_PRESET (NUM_FLOATS * sizeof(float))
 #define TOTAL_BYTES (NUM_BYTES_PER_PRESET * NUM_PRESETS)
-
-void test_flash(void)
-{
-    int ret;
-    uint32_t base = 0x10000;
-    uint8_t read_buf[256];
-    uint8_t write_buf[256];
-    for(int i=0; i< 256; i++){write_buf[i] = 0;}
-
-    ret = bflb_flash_erase(base, 4096 * 2);
-    printf("1 %d\n", ret);
-
-    ret = bflb_flash_write(base, write_buf, 256);
-    printf("2 %d\n", ret);
-
-    ret = bflb_flash_write(base + 4096, write_buf, 256);
-    printf("3 %d\n", ret);
-
-    ret = bflb_flash_read(base, read_buf, 256);
-    printf("4 %d\n", ret);
-
-    printf("0:%d\n", read_buf[0]);
-
-    ret = bflb_flash_read(base + 4096, read_buf, 256);
-    printf("5 %d\n", ret);
-
-    printf("4096:%d\n", read_buf[0]);
-
-    ret = bflb_flash_erase(base, 1);
-    printf("6 %d\n", ret);
-
-    ret = bflb_flash_read(base, read_buf, 256);
-    printf("7 %d\n", ret);
-
-    printf("0:%d\n", read_buf[0]);
-
-    ret = bflb_flash_read(base + 4096, read_buf, 256);
-    printf("8 %d\n", ret);
-
-    printf("4096:%d\n", read_buf[0]);
-
-    ret = bflb_flash_erase(base, 4096 * 2);
-    printf("6 %d\n", ret);
-
-    ret = bflb_flash_read(base, read_buf, 256);
-    printf("7 %d\n", ret);
-
-    printf("0:%d\n", read_buf[0]);
-
-    ret = bflb_flash_read(base + 4096, read_buf, 256);
-    printf("8 %d\n", ret);
-
-    printf("4096:%d\n", read_buf[0]);
-
-
-
-}
 
 static int current_slot = -1;
 
@@ -121,7 +66,7 @@ void save(int slot)
     printf("saving slot %d\n", slot);
     current_slot = slot;
     int ret;
-    uint32_t base = PRESET_BASE + (NUM_BYTES_PER_PRESET * slot);
+    uint32_t base = PRESET_BASE + (SECTOR_SIZE * slot);
 
     floats_buf = (float *)&buf[0];
 
@@ -160,8 +105,14 @@ void save(int slot)
         floats_buf[idx++] = val;
     }
 
+    printf("erase slot\n");
+    ret = bflb_flash_erase(base, sizeof(buf));
+    if(ret < 0)
+    {
+        printf("bflb_flash_erase returned %d\n", ret);
+        return;
+    }
     printf("write buf\n");
-    // ret = bflb_flash_erase(base, sizeof(buf));
     ret = bflb_flash_write(base, buf, sizeof(buf));
     if(ret < 0)
     {
@@ -169,6 +120,13 @@ void save(int slot)
         return;
     }
 
+    printf("erase config\n");
+    ret = bflb_flash_erase(CONFIG_BASE, sizeof(struct Config));
+    if(ret < 0)
+    {
+        printf("bflb_flash_erase returned %d\n", ret);
+        return;
+    }
     printf("write config\n");
     current_config.empty[slot] = false;
     ret = bflb_flash_write(CONFIG_BASE, &current_config, sizeof(struct Config));
@@ -191,7 +149,7 @@ void load(int slot)
 
     printf("loading slot %d\n", slot);
     int ret;
-    uint32_t base = PRESET_BASE + (NUM_BYTES_PER_PRESET * slot);
+    uint32_t base = PRESET_BASE + (SECTOR_SIZE * slot);
 
     struct CC *ccs = get_ccs();
     struct Mod *mods = get_mods();
