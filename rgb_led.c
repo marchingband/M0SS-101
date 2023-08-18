@@ -52,6 +52,7 @@ void dma0_ch1_isr(void *arg)
     // dma_tc_flag0++;
     // bflb_dma_channel_stop(dma0_ch1);
     rgb_rendering = false;
+    bflb_i2s_feature_control(i2s0, I2S_CMD_DATA_ENABLE, false);
 }
 
 void rgb_led_init(){
@@ -107,6 +108,7 @@ void rgb_led_init(){
 
 void i2s_send(void)
 {
+    bflb_i2s_feature_control(i2s0, I2S_CMD_DATA_ENABLE, I2S_CMD_DATA_ENABLE_TX);
     bflb_i2s_feature_control(i2s0, I2S_CMD_CLEAR_TX_FIFO, true);
     uint16_t *buf = ping_pong == 0 ? tx_buffer_a : tx_buffer_b;
     tx_transfers[0].src_addr = ping_pong == 0 ? (uint32_t)tx_buffer_a : (uint32_t)tx_buffer_b;
