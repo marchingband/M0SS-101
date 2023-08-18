@@ -34,6 +34,14 @@ void test_flash(void)
     ret = bflb_flash_write(base + 256 * 3, write_buf, 256);
     if(ret < 0){printf("5 %d", ret);}
 
+    ret = bflb_flash_read(base, read_buf, 256 * 4);
+    if(ret < 0){printf("55 %d", ret);}
+
+    printf("0:%d\n", read_buf[0]);
+    printf("256:%d\n", read_buf[256]);
+    printf("512:%d\n", read_buf[256 * 2]);
+    printf("768:%d\n", read_buf[256 * 3]);
+
     ret = bflb_flash_erase(base, 1);
     if(ret < 0){printf("6 %d", ret);}
 
