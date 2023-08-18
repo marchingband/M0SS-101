@@ -47,13 +47,13 @@ static struct bflb_device_s *dma0_ch1;
 static struct bflb_dma_channel_lli_pool_s tx_llipool[1];
 static struct bflb_dma_channel_lli_transfer_s tx_transfers[1];
 
-void dma0_ch1_isr(void *arg)
-{
-    // dma_tc_flag0++;
-    // bflb_dma_channel_stop(dma0_ch1);
-    rgb_rendering = false;
-    // bflb_i2s_feature_control(i2s0, I2S_CMD_DATA_ENABLE, false);
-}
+// void dma0_ch1_isr(void *arg)
+// {
+//     // dma_tc_flag0++;
+//     // bflb_dma_channel_stop(dma0_ch1);
+//     rgb_rendering = false;
+//     // bflb_i2s_feature_control(i2s0, I2S_CMD_DATA_ENABLE, false);
+// }
 
 void rgb_led_init(){
     i2s_gpio_init();
@@ -99,9 +99,9 @@ void rgb_led_init(){
     bflb_i2s_init(i2s0, &i2s_cfg);
     bflb_i2s_link_txdma(i2s0, true);
 
-    dma0_ch1 = bflb_device_get_by_name("dma0_ch4");
+    dma0_ch1 = bflb_device_get_by_name("dma0_ch1");
     bflb_dma_channel_init(dma0_ch1, &tx_config);
-    bflb_dma_channel_irq_attach(dma0_ch1, dma0_ch1_isr, NULL);
+    // bflb_dma_channel_irq_attach(dma0_ch1, dma0_ch1_isr, NULL);
     bflb_i2s_feature_control(i2s0, I2S_CMD_DATA_ENABLE, I2S_CMD_DATA_ENABLE_TX);
     printf("rgb setup done\n");
 }
