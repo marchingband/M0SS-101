@@ -258,53 +258,6 @@ static void adc_read(void)
     adc_2 = result.millivolt;
 }
 
-static void handle_pots(void)
-{
-    // fHslider0 = (float) adc_1;
-    // float vol = -(((float) adc_2 / 3200.0f ) * 96.0f);
-    // fHslider1 = vol;
-}
-
-/* MAIN */
-
-// char led_msg[16] = {
-//     0b0110110,
-//     0b0110110,
-//     0b0110110,
-//     0b0110110,
-//     0b0110110,
-//     0b0110110,
-//     0b0110110,
-//     0b0110110,
-//     0b0110110,
-//     0b0110110,
-//     0b0110110,
-//     0b0110110,
-//     0b0110110,
-//     0b0110110,
-//     0b0110110,
-//     0b0000110,
-// };
-
-// char led_msg2[16] = {
-//     0b0010010,
-//     0b0010010,
-//     0b0010010,
-//     0b0010010,
-//     0b0010010,
-//     0b0010010,
-//     0b0010010,
-//     0b0010010,
-//     0b0010010,
-//     0b0010010,
-//     0b0010010,
-//     0b0010010,
-//     0b0010010,
-//     0b0010010,
-//     0b0010010,
-//     0b0000010,
-// };
-
 uint16_t data[16] = {0b1010101010101010, 0b1010101010101010, 0b1010101010101010, 0b1010101010101010, 0b1010101010101010, 0b1010101010101010, 0b1010101010101010, 0b1010101010101010, 0b1010101010101010, 0b1010101010101010, 0b1010101010101010, 0b1010101010101010, 0b1010101010101010, 0b1010101010101010, 0b1010101010101010, 0b1010101010101010};
 
 void swgpio_send(void)
@@ -345,30 +298,6 @@ void gpio_sig_init(void)
     // GLB_GPIO_Fifo_Enable();
 
 }
-
-// static const struct pixel_t p_blue = {
-//     .blue = 5,
-//     .green = 10,
-//     .red = 0
-// };
-
-// static const struct pixel_t p_red = {
-//     .blue = 10,
-//     .green = 15,
-//     .red = 0
-// };
-
-// static const struct pixel_t p_green = {
-//     .blue = 15,
-//     .green = 5,
-//     .red = 0
-// };
-
-// static const struct pixel_t pix_blue[1] = {p_blue};
-// static const struct pixel_t pix_red[1] = {p_red};
-// static const struct pixel_t pix_green[1] = {p_green};
-
-void test_flash(void);
 
 int main(void)
 {

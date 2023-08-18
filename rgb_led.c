@@ -46,7 +46,7 @@ static struct bflb_dma_channel_lli_transfer_s tx_transfers[1];
 void dma0_ch1_isr(void *arg)
 {
     dma_tc_flag0++;
-    bflb_dma_channel_stop(dma0_ch1);
+    // bflb_dma_channel_stop(dma0_ch1);
     rgb_rendering = false;
 }
 
