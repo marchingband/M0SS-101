@@ -86,7 +86,7 @@ void rgb_led_start(){
     bflb_i2s_link_txdma(i2s0, true);
 
     bflb_dma_channel_init(dma0_ch1, &tx_config);
-    // bflb_dma_channel_irq_attach(dma0_ch1, dma0_ch1_isr, NULL);
+    bflb_dma_channel_irq_attach(dma0_ch1, dma0_ch1_isr, NULL);
     bflb_i2s_feature_control(i2s0, I2S_CMD_DATA_ENABLE, I2S_CMD_DATA_ENABLE_TX);
     // printf("rgb setup done\n");
 }
