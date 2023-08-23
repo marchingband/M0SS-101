@@ -210,7 +210,7 @@ void *declare(UIGlue *uiInterface, float *p, const char* key, const char* val){
 void handle_button_press(int num)
 {
     int ui_mode = get_ui_mode();
-    if(num == 14) // alt button down
+    if(num == 14) // alt button
     {
         set_ui_mode(UI_MODE_PLAY);
     }

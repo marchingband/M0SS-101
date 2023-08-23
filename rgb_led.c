@@ -115,16 +115,6 @@ void i2s_send(void)
     tx_transfers[0].nbytes = sizeof(tx_buffer_a);
     bflb_dma_channel_lli_reload(dma0_ch1, tx_llipool, 1, tx_transfers, 1);
     bflb_dma_channel_start(dma0_ch1);
-
-    if(buf[0] == 0)
-    {
-        printf("fuck\n");
-    }
-    else if ((buf[0] & 0xF0) == 0)
-    {
-        printf("1/2 fuck\n");
-    }
-
     ping_pong = ping_pong == 0 ? 1 : 0;
 }
 
@@ -137,9 +127,20 @@ void rgb_set_color(struct pixel_t *pixels){
     for (int i = 0; i < NUM_LED; i++) {
         int loc = i * PIXEL_SIZE;
 
-        buf[loc]     = (bitpatterns[pixels[i].green >> 6 & 0x03] << 24) | (bitpatterns[pixels[i].green >> 4 & 0x03] << 16) | (bitpatterns[pixels[i].green >> 2 & 0x03] << 8) | bitpatterns[pixels[i].green & 0x03];
-        buf[loc + 1] = (bitpatterns[pixels[i].red >> 6 & 0x03] << 24) | (bitpatterns[pixels[i].red >> 4 & 0x03] << 16) | (bitpatterns[pixels[i].red   >> 2 & 0x03] << 8) | bitpatterns[pixels[i].red & 0x03];
-        buf[loc + 2] = (bitpatterns[pixels[i].blue >> 6 & 0x03] << 24) | (bitpatterns[pixels[i].blue >> 4 & 0x03] << 16) | (bitpatterns[pixels[i].blue  >> 2 & 0x03] << 8) | bitpatterns[pixels[i].blue & 0x03];
+        buf[loc]     = (bitpatterns[pixels[i].green >> 6 & 0x03]  << 24) | 
+                        (bitpatterns[pixels[i].green >> 4 & 0x03] << 16) | 
+                        (bitpatterns[pixels[i].green >> 2 & 0x03] << 8)  | 
+                         bitpatterns[pixels[i].green & 0x03];
+
+        buf[loc + 1] = (bitpatterns[pixels[i].red >> 6 & 0x03]    << 24) | 
+                        (bitpatterns[pixels[i].red >> 4 & 0x03]   << 16) |
+                        (bitpatterns[pixels[i].red   >> 2 & 0x03] << 8)  | 
+                         bitpatterns[pixels[i].red & 0x03];
+                         
+        buf[loc + 2] = (bitpatterns[pixels[i].blue >> 6 & 0x03]   << 24) | 
+                        (bitpatterns[pixels[i].blue >> 4 & 0x03]  << 16) |
+                        (bitpatterns[pixels[i].blue  >> 2 & 0x03] << 8)  |
+                         bitpatterns[pixels[i].blue & 0x03];
         // buf[loc]     = (bitpatterns[pixels[i].green >> 6 & 0x03] << 8) | bitpatterns[pixels[i].green >> 4 & 0x03];
         // buf[loc + 1] = (bitpatterns[pixels[i].green >> 2 & 0x03] << 8) | bitpatterns[pixels[i].green & 0x03];
 
@@ -263,14 +264,6 @@ int get_ui_mode(void)
     return ui_mode;
 }
 
-// lfo2pitch    = hslider("lfo-to-osc[mod:4]",     0, 0, 1, 0.001) <: attach(vbargraph("lfo-to-osc-led[led-lfo:18]", 0 , 1));   // button 4    // GPIO 16
-// lfo2vca      = hslider("lfo-to-vca[mod:6]",     0, 0, 1, 0.001) <: attach(vbargraph("lfo-to-vca-led[led-lfo:20]", 0 , 1));   // button 6    // GPIO 12
-// lfo2env      = hslider("lfo-to-env[mod:7]",     0, 0, 1, 1)     <: attach(vbargraph("lfo-to-env-led[led-lfo:21]", 0 , 1));   // button 7    // GPIO 10 
-// lfo2vcf      = hslider("lfo-to-vcf[mod:8]",     0, 0, 1, 0.001) <: attach(vbargraph("lfo-to-vcf-led[led-lfo:19]", 0 , 1));   // button 8    // GPIO 13
-// env2volume   = hslider("env-to-vca[mod:10]",    1, 0, 1, 0.001) <: attach(vbargraph("env-to-vca-led[led-env:23]", 0 , 1));   // button 10   // GPIO 3
-// env2cutoff   = hslider("env-to-vcf[mod:12]",    0, 0, 1, 0.001) <: attach(vbargraph("env-to-vcf-led[led-env:24]", 0 , 1));   // button 12   // GPIO 1
-// env2pitch    = hslider("env-to-osc[mod:13]",    0, 0, 1, 0.001) <: attach(vbargraph("env-to-osc-led[led-env:25]", 0 , 1));   // button 13   // GPIO 0
-
 
 void render_lights(void)
 {
@@ -319,15 +312,15 @@ void render_lights(void)
             pixel_buf[17] = *(sels[11].p) == 1 ? pixel_on : pixel_off; // envar
 
             pixel_buf[18] = ( (*(sigs->lfo)  < 0.5) || (*mods[4].p == 0) ) ? pixel_off : light_green; // lfo.osc
-            pixel_buf[19] = ( (*(sigs->lfo)  < 0.5) || (*mods[8].p == 0) ) ? pixel_off : light_green; // lfo.osc
-            pixel_buf[20] = ( (*(sigs->lfo)  < 0.5) || (*mods[6].p == 0) ) ? pixel_off : light_green; // lfo.osc
-            pixel_buf[21] = ( (*(sigs->lfo)  < 0.5) || (*mods[7].p == 0) ) ? pixel_off : light_green; // lfo.osc
+            pixel_buf[20] = ( (*(sigs->lfo)  < 0.5) || (*mods[6].p == 0) ) ? pixel_off : light_green; // lfo.vca
+            pixel_buf[19] = ( (*(sigs->lfo)  < 0.5) || (*mods[8].p == 0) ) ? pixel_off : light_green; // lfo.vcf
+            pixel_buf[21] = ( (*(sigs->lfo)  < 0.5) || (*sels[7].p == 0) ) ? pixel_off : light_green; // lfo.env
 
             pixel_buf[22] = pixel_off; // vca
 
-            pixel_buf[23] = ( (*(sigs->env)  < 0.5) || (*mods[10].p == 0) ) ? pixel_off : light_pink; // lfo.osc
-            pixel_buf[24] = ( (*(sigs->env)  < 0.5) || (*mods[12].p == 0) ) ? pixel_off : light_pink; // lfo.osc
-            pixel_buf[25] = ( (*(sigs->env)  < 0.5) || (*mods[13].p == 0) ) ? pixel_off : light_pink; // lfo.osc
+            pixel_buf[23] = ( (*(sigs->env)  < 0.5) || (*mods[10].p == 0) ) ? pixel_off : light_pink; // env.vcf
+            pixel_buf[24] = ( (*(sigs->env)  < 0.5) || (*mods[12].p == 0) ) ? pixel_off : light_pink; // env.vca
+            pixel_buf[25] = ( (*(sigs->env)  < 0.5) || (*mods[13].p == 0) ) ? pixel_off : light_pink; // env.osc
 
             break;
         case UI_MODE_SAVE:
