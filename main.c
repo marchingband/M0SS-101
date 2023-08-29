@@ -306,72 +306,72 @@ int main(void)
 
     /* load the config struct or initialize it */
     printf("flash_init\r\n");
-    flash_init();
+    // flash_init();
 
-    /* start usb */
-    printf("usbh_initialize\r\n");
-    usbh_initialize();
+    // /* start usb */
+    // printf("usbh_initialize\r\n");
+    // usbh_initialize();
 
-    /* dsp init */
-    printf("dsp_init\r\n");
-    dsp_init(BUF_SIZE);
+    // /* dsp init */
+    // printf("dsp_init\r\n");
+    // dsp_init(BUF_SIZE);
 
-    /* gpio init */
-    printf("audac_gpio_init\r\n");
-    audac_gpio_init();
+    // /* gpio init */
+    // printf("audac_gpio_init\r\n");
+    // audac_gpio_init();
 
-    /* adc init */
-    // adc_init();
+    // /* adc init */
+    // // adc_init();
 
-    /* audac init */
-    printf("audac_init\r\n");
-    audac_init();
+    // /* audac init */
+    // printf("audac_init\r\n");
+    // audac_init();
 
-    /* dma init */
-    printf("audac_dma_init\r\n");
-    audac_dma_init();
-    bflb_dma_channel_start(audac_dma_hd);
+    // /* dma init */
+    // printf("audac_dma_init\r\n");
+    // audac_dma_init();
+    // bflb_dma_channel_start(audac_dma_hd);
 
-    /* audac start */
-    printf("bflb_audac_feature_control\r\n");
-    bflb_audac_feature_control(audac_hd, AUDAC_CMD_PLAY_START, 0);
+    // /* audac start */
+    // printf("bflb_audac_feature_control\r\n");
+    // bflb_audac_feature_control(audac_hd, AUDAC_CMD_PLAY_START, 0);
 
-    /* uart midi */
-    printf("uart_receive_init\r\n");
-    uart_receive_init();
+    // /* uart midi */
+    // printf("uart_receive_init\r\n");
+    // uart_receive_init();
 
-    /* usb midi host */
-    printf("usb_midi_start\r\n");
-    usb_midi_start();
+    // /* usb midi host */
+    // printf("usb_midi_start\r\n");
+    // usb_midi_start();
 
-    /* start the LEDs */
-    printf("rgb_led_init\r\n");
-    rgb_led_init();
+    // /* start the LEDs */
+    // printf("rgb_led_init\r\n");
+    // rgb_led_init();
 
-    /* setup button scanners */
-    printf("gpio_init\r\n");
-    gpio_init();
+    // /* setup button scanners */
+    // printf("gpio_init\r\n");
+    // gpio_init();
 
-    /* start rgb task */
-    printf("start rgb_task\r\n");
-    xTaskCreate(rgb_task, (char *)"rgb_task", 512, NULL, 2, NULL);
-    // // printf("uart is irq %d with prio %d\n", uart_int_num, uart_prio);
-    // // printf("audac is irq %d with prio %d\n", audac_int_num, audac_prio);
-    // // int cnt = 0;
-    // // bool bench = true;
-        // bflb_mtimer_delay_ms(500);
-        // printf("send blue\n");
-    // rgb_set_color(pix_blue);
-    // bflb_mtimer_delay_ms(500);
-        // printf("send green\n");
-    // rgb_set_color(pix_blue);
-        // // rgb_set_color(pix_green);
-        // bflb_mtimer_delay_ms(500);
-        // printf("send red\n");
-        // rgb_set_color(pix_blue);
-        // rgb_set_color(pix_red);
+    // /* start rgb task */
+    // printf("start rgb_task\r\n");
+    // xTaskCreate(rgb_task, (char *)"rgb_task", 512, NULL, 2, NULL);
+    // // // printf("uart is irq %d with prio %d\n", uart_int_num, uart_prio);
+    // // // printf("audac is irq %d with prio %d\n", audac_int_num, audac_prio);
+    // // // int cnt = 0;
+    // // // bool bench = true;
+    //     // bflb_mtimer_delay_ms(500);
+    //     // printf("send blue\n");
+    // // rgb_set_color(pix_blue);
+    // // bflb_mtimer_delay_ms(500);
+    //     // printf("send green\n");
+    // // rgb_set_color(pix_blue);
+    //     // // rgb_set_color(pix_green);
+    //     // bflb_mtimer_delay_ms(500);
+    //     // printf("send red\n");
+    //     // rgb_set_color(pix_blue);
+    //     // rgb_set_color(pix_red);
 
-    vTaskStartScheduler();
+    // vTaskStartScheduler();
     
     // gpio_sig_init();
 
