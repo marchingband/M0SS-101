@@ -628,7 +628,7 @@ void computemydsp(mydsp* dsp, int count, FAUSTFLOAT** RESTRICT inputs, FAUSTFLOA
 			dsp->fVbargraph1 = (FAUSTFLOAT)(fTemp13);
 			float fTemp14 = fTemp13;
 			float fTemp15 = fTemp14 + -0.5f;
-			dsp->fRec9[0] = dsp->fConst1 * fminf(fmaxf(0.0f, fSlow14 * powf(2.0f, fSlow15 * fTemp15) * powf(2.0f, fSlow19 * fTemp10)), 1.0f) + dsp->fConst2 * dsp->fRec9[1];
+			dsp->fRec9[0] = dsp->fConst1 * mydsp_faustpower2_f(fminf(fmaxf(0.0f, fSlow14 * powf(2.0f, fSlow15 * fTemp15) * powf(2.0f, fSlow19 * fTemp10)), 1.0f)) + dsp->fConst2 * dsp->fRec9[1];
 			float fTemp16 = tanf(dsp->fConst5 * powf(1e+01f, 3.0f * dsp->fRec9[0] + 1.0f));
 			float fTemp17 = (float)(dsp->iVec0[1]);
 			dsp->fRec13[0] = fSlow28 * fSlow32 * powf(2.0f, fSlow33 * fTemp15) * powf(2.0f, fSlow34 * fTemp10) + fSlow31 * dsp->fRec13[1];
