@@ -145,21 +145,6 @@ void audac_dma_init(void)
     bflb_l1c_dcache_clean_range(tic, sizeof(tic));
     dma_lli_cnt_tic = bflb_dma_channel_lli_reload(audac_dma_hd, lli_pool_tic, 10, transfers_tic, 1);
     bflb_dma_channel_start(audac_dma_hd);
-    // dma_lli_cnt = bflb_dma_channel_lli_reload(audac_dma_hd, lli_pool, 10, transfers, 2);
-    // bflb_dma_channel_lli_link_head(audac_dma_hd, lli_pool, dma_lli_cnt);
-
-    // transfers[0].src_addr = (uint32_t)sin_0db_l32_r16_2ch;
-    // transfers[0].dst_addr = (uint32_t)DMA_ADDR_AUDAC_TDR;
-    // transfers[0].nbytes = sizeof(sin_0db_l32_r16_2ch);
-
-    // transfers[1].src_addr = (uint32_t)sin_0db_l32_r16_2ch_2;
-    // transfers[1].dst_addr = (uint32_t)DMA_ADDR_AUDAC_TDR;
-    // transfers[1].nbytes = sizeof(sin_0db_l32_r16_2ch_2);
-
-    // bflb_l1c_dcache_clean_range(sin_0db_l32_r16_2ch, sizeof(sin_0db_l32_r16_2ch));
-    // bflb_l1c_dcache_clean_range(sin_0db_l32_r16_2ch_2, sizeof(sin_0db_l32_r16_2ch_2));
-    // dma_lli_cnt = bflb_dma_channel_lli_reload(audac_dma_hd, lli_pool, 10, transfers, 2);
-    // bflb_dma_channel_lli_link_head(audac_dma_hd, lli_pool, dma_lli_cnt);
 }
 
 /* audio dac init */
