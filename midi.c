@@ -293,6 +293,7 @@ void handle_midi(uint8_t *msg, uint8_t len)
             // play(note);
             *Signals.gate = 1;
             *Signals.pitch = note; // the dsp converts to hz
+            printf("noteon %d", note);
         }
         break;
     }
@@ -401,7 +402,8 @@ void handle_midi(uint8_t *msg, uint8_t len)
     {
         uint16_t val = msg[1] | (msg[2] << 7);  // 0 to 16,383
         *Signals.pitch_bend = (float)val;
-        printf("pitchbend %f", val) ;
+        printf("pitchbend %d", val) ;
+        break;
     }
     default:
         break;
