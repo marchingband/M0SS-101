@@ -401,6 +401,7 @@ void handle_midi(uint8_t *msg, uint8_t len)
     {
         uint16_t val = msg[1] | (msg[2] << 7);  // 0 to 16,383
         *Signals.pitch_bend = (float)val;
+        printf("pitchbend %f", val) ;
     }
     default:
         break;
