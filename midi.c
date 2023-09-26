@@ -188,7 +188,7 @@ void *declare(UIGlue *uiInterface, float *p, const char* key, const char* val){
         *Signals.gate = 1;
         // *gate = 1;
     }
-    else if(strcmp("pitch_bend", key) == 0) // its the pitch bend
+    else if(strcmp("pitch-bend", key) == 0) // its the pitch bend
     {
         printf("got pitch bend pointer\n");
         Signals.pitch_bend = p;
