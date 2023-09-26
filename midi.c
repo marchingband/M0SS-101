@@ -51,8 +51,6 @@ static struct Sigs Signals = {
     .pitch_bend = 0,
 };
 
-float pitch_bend_constant = 100.0 / 8192.0;
-
 struct Sel *get_sels(void)
 {
     return &Sels[0];
@@ -402,8 +400,7 @@ void handle_midi(uint8_t *msg, uint8_t len)
     case MIDI_PITCH_BEND:
     {
         uint16_t val = msg[1] | (msg[2] << 7);  // 0 to 16,383
-        int16_t bend = val - 8192; // +/- 8192
-        *Signals.pitch_bend = (float)bend * pitch_bend_constant;
+        *Signals.pitch_bend = (float)val;
     }
     default:
         break;
