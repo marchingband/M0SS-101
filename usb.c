@@ -13,7 +13,7 @@
 void usb_midi_in(char ch);
 
 USB_NOCACHE_RAM_SECTION USB_MEM_ALIGNX uint8_t midi_buffer[512];
-bool midi_run = false;
+int midi_run = 1;
 
 struct usbh_urb cdc_bulkin_urb;
 struct usbh_urb cdc_bulkout_urb;
@@ -67,7 +67,7 @@ static int usbh_midi_connect(struct usbh_hubport *hport, uint8_t intf)
 
     USB_LOG_INFO("Register MIDI Class:%s\r\n", hport->config.intf[intf].devname);
 
-    midi_run = true;
+    midi_run = 1;
 
     // return ret;
     return 0;
@@ -77,7 +77,7 @@ static int usbh_midi_disconnect(struct usbh_hubport *hport, uint8_t intf)
 {
     int ret = 0;
 
-    midi_run = false;
+    // midi_run = false;
 
     struct usbh_midi *midi_class = (struct usbh_midi *)hport->config.intf[intf].priv;
 
@@ -132,21 +132,20 @@ void usbh_cdc_acm_callback(void *arg, int nbytes)
         //     USB_LOG_RAW("0x%02x ", midi_buffer[i]);
         // }
         // USB_LOG_RAW("nbytes:%d\r\n", nbytes);
-        for (int i=0; i< nbytes; i+=4)
+        if(midi_run == 1)
         {
-            if(midi_buffer[i] == 0x00)
+            for (int i=0; i< nbytes; i+=4)
             {
-                // USB_LOG_RAW("x");
-                break;
+                if(midi_buffer[i] == 0x00)
+                {
+                    // USB_LOG_RAW("x");
+                    break;
+                }
+                usb_midi_in(midi_buffer[i + 1]);
+                usb_midi_in(midi_buffer[i + 2]);
+                usb_midi_in(midi_buffer[i + 3]);
+                // USB_LOG_RAW(".");
             }
-            if(!midi_run)
-            {
-                break;
-            }
-            usb_midi_in(midi_buffer[i + 1]);
-            usb_midi_in(midi_buffer[i + 2]);
-            usb_midi_in(midi_buffer[i + 3]);
-            // USB_LOG_RAW(".");
         }
     }
 }
