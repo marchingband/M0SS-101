@@ -185,7 +185,7 @@ void *declare(UIGlue *uiInterface, float *p, const char* key, const char* val){
     {
         printf("got gate pointer\n");
         Signals.gate = p;
-        *Signals.gate = 1;
+        *Signals.gate = 0;
         // *gate = 1;
     }
     else if(strcmp("pitch-bend", key) == 0) // its the pitch bend
