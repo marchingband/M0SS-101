@@ -13,7 +13,7 @@
 void usb_midi_in(char ch);
 
 USB_NOCACHE_RAM_SECTION USB_MEM_ALIGNX uint8_t midi_buffer[512];
-int midi_run = 1;
+int midi_run = 0;
 
 struct usbh_urb cdc_bulkin_urb;
 struct usbh_urb cdc_bulkout_urb;
@@ -77,8 +77,6 @@ static int usbh_midi_disconnect(struct usbh_hubport *hport, uint8_t intf)
 {
     int ret = 0;
 
-    // midi_run = false;
-
     struct usbh_midi *midi_class = (struct usbh_midi *)hport->config.intf[intf].priv;
 
     if (midi_class)
@@ -96,6 +94,7 @@ static int usbh_midi_disconnect(struct usbh_hubport *hport, uint8_t intf)
         if (hport->config.intf[intf].devname[0] != '\0')
         {
             USB_LOG_INFO("Unregister MIDI Class:%s\r\n", hport->config.intf[intf].devname);
+            midi_run = 0;
         }
 
         memset(midi_class, 0, sizeof(struct usbh_midi));
@@ -226,11 +225,6 @@ static void usbh_midi_thread(void *argument)
             usb_osal_msleep(10);
         }
     }
-}
-
-void usb_midi_start(void)
-{
-    midi_run = true;
 }
 
 void usb_midi_init(void)
