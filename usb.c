@@ -13,6 +13,7 @@
 void usb_midi_in(char ch);
 
 USB_NOCACHE_RAM_SECTION USB_MEM_ALIGNX uint8_t midi_buffer[512];
+bool midi_run = false;
 
 struct usbh_urb cdc_bulkin_urb;
 struct usbh_urb cdc_bulkout_urb;
@@ -131,8 +132,11 @@ void usbh_cdc_acm_callback(void *arg, int nbytes)
         {
             if(midi_buffer[i] == 0x00)
             {
-
                 // USB_LOG_RAW("x");
+                break;
+            }
+            if(!midi_run)
+            {
                 break;
             }
             usb_midi_in(midi_buffer[i + 1]);
@@ -222,6 +226,11 @@ static void usbh_midi_thread(void *argument)
 }
 
 void usb_midi_start(void)
+{
+    midi_run = true;
+}
+
+void usb_midi_init(void)
 {
     usb_osal_thread_create("usbh_midi", 2048, CONFIG_USBHOST_PSC_PRIO + 1, usbh_midi_thread, NULL);
 }

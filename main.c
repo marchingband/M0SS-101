@@ -28,6 +28,7 @@ void dsp_run(int16_t *dest);
 void dsp_init(size_t buf_size);
 void uart_receive_init(void);
 void poll_uart(void);
+void usb_midi_init(void);
 void usb_midi_start(void);
 
 void test(void);
@@ -326,8 +327,8 @@ int main(void)
     uart_receive_init();
 
     /* usb midi host */
-    printf("usb_midi_start\r\n");
-    usb_midi_start();
+    printf("usb_midi_init\r\n");
+    usb_midi_init();
 
     /* start the LEDs */
     printf("rgb_led_init\r\n");
@@ -358,6 +359,11 @@ int main(void)
 
     vTaskStartScheduler();
     
+    // wait for usb to settle
+    bflb_mtimer_delay_ms(1000);
+
+    // start listening for midi
+    usb_midi_start();
     // gpio_sig_init();
 
     while (1)
