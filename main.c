@@ -363,7 +363,7 @@ int main(void)
     bflb_mtimer_delay_ms(1000);
 
     // start listening for midi
-    usb_midi_start();
+    // usb_midi_start();
     // gpio_sig_init();
 
     while (1)

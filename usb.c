@@ -67,6 +67,8 @@ static int usbh_midi_connect(struct usbh_hubport *hport, uint8_t intf)
 
     USB_LOG_INFO("Register MIDI Class:%s\r\n", hport->config.intf[intf].devname);
 
+    midi_start();
+
     // return ret;
     return 0;
 }
