@@ -340,7 +340,8 @@ int main(void)
 
     /* start rgb task */
     printf("start rgb_task\r\n");
-    xTaskCreate(rgb_task, (char *)"rgb_task", 512, NULL, 2, NULL);
+    xTaskCreate(rgb_task, (char *)"rgb_task", 512, NULL, 30, NULL);
+    // xTaskCreate(rgb_task, (char *)"rgb_task", 512, NULL, 2, NULL);
     // // printf("uart is irq %d with prio %d\n", uart_int_num, uart_prio);
     // // printf("audac is irq %d with prio %d\n", audac_int_num, audac_prio);
     // // int cnt = 0;
@@ -358,13 +359,11 @@ int main(void)
         // rgb_set_color(pix_red);
 
     vTaskStartScheduler();
-    
-    // wait for usb to settle
-    bflb_mtimer_delay_ms(1000);
-
-    // start listening for midi
-    // usb_midi_start();
-    // gpio_sig_init();
+    /***************************/
+    /*                         */
+    // no code past here will run
+    /*                         */
+    /***************************/
 
     while (1)
     {
