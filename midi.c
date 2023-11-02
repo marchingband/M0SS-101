@@ -280,21 +280,21 @@ void handle_midi(uint8_t *msg, uint8_t len)
     case MIDI_NOTE_ON:
     {
         uint8_t note = msg[1] & 0b01111111;
-        if(note < NUM_SEL)
-        {
-            struct Sel *sel = &Sels[note];
-            int next = *sel->p + 1;
-            *sel->p = next > sel->max ? 0 : next;
-        }
-        else
-        {
+        // if(note < NUM_SEL)
+        // {
+        //     struct Sel *sel = &Sels[note];
+        //     int next = *sel->p + 1;
+        //     *sel->p = next > sel->max ? 0 : next;
+        // }
+        // else
+        // {
             // uint8_t velocity = msg[2] & 0b01111111;
             // set_note(note);
             // play(note);
             *Signals.gate = 1;
             *Signals.pitch = note; // the dsp converts to hz
             // printf("noteon %d", note);
-        }
+        // }
         break;
     }
     case MIDI_NOTE_OFF:
