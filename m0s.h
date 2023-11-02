@@ -93,15 +93,15 @@ typedef struct {
 	FAUSTFLOAT fHslider21;
 	float fConst9;
 	FAUSTFLOAT fHslider22;
-	FAUSTFLOAT fHslider23;
 	float fRec14[2];
 	float fVec3[2];
 	int IOTA0;
 	float fVec4[4096];
-	FAUSTFLOAT fHslider24;
+	FAUSTFLOAT fHslider23;
 	float fRec15[2];
 	float fRec16[2];
 	float fVec5[2];
+	FAUSTFLOAT fHslider24;
 	FAUSTFLOAT fHslider25;
 	FAUSTFLOAT fHslider26;
 	float fRec17[2];
@@ -116,8 +116,8 @@ typedef struct {
 	FAUSTFLOAT fHslider29;
 	float fRec21[2];
 	float fRec5[2];
-	float fRec6[2];
 	float fRec7[2];
+	float fRec8[2];
 	float fRec22[2];
 	float fRec23[2];
 	float fRec24[2];
@@ -229,8 +229,8 @@ void instanceResetUserInterfacemydsp(mydsp* dsp) {
 	dsp->fHslider20 = (FAUSTFLOAT)(0.5f);
 	dsp->fHslider21 = (FAUSTFLOAT)(0.0f);
 	dsp->fHslider22 = (FAUSTFLOAT)(0.0f);
-	dsp->fHslider23 = (FAUSTFLOAT)(0.0f);
-	dsp->fHslider24 = (FAUSTFLOAT)(0.5f);
+	dsp->fHslider23 = (FAUSTFLOAT)(0.5f);
+	dsp->fHslider24 = (FAUSTFLOAT)(0.0f);
 	dsp->fHslider25 = (FAUSTFLOAT)(0.0f);
 	dsp->fHslider26 = (FAUSTFLOAT)(0.0f);
 	dsp->fHslider27 = (FAUSTFLOAT)(0.5f);
@@ -441,14 +441,14 @@ void instanceClearmydsp(mydsp* dsp) {
 	{
 		int l28;
 		for (l28 = 0; l28 < 2; l28 = l28 + 1) {
-			dsp->fRec6[l28] = 0.0f;
+			dsp->fRec7[l28] = 0.0f;
 		}
 	}
 	/* C99 loop */
 	{
 		int l29;
 		for (l29 = 0; l29 < 2; l29 = l29 + 1) {
-			dsp->fRec7[l29] = 0.0f;
+			dsp->fRec8[l29] = 0.0f;
 		}
 	}
 	/* C99 loop */
@@ -526,8 +526,8 @@ void buildUserInterfacemydsp(mydsp* dsp, UIGlue* ui_interface) {
 	ui_interface->addHorizontalSlider(ui_interface->uiInterface, "attack", &dsp->fHslider6, (FAUSTFLOAT)0.01f, (FAUSTFLOAT)0.01f, (FAUSTFLOAT)1.0f, (FAUSTFLOAT)0.0001f);
 	ui_interface->declare(ui_interface->uiInterface, &dsp->fHslider16, "midi", "2");
 	ui_interface->addHorizontalSlider(ui_interface->uiInterface, "cutoff", &dsp->fHslider16, (FAUSTFLOAT)0.5f, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)1.0f, (FAUSTFLOAT)0.0001f);
-	ui_interface->declare(ui_interface->uiInterface, &dsp->fHslider22, "midi", "7");
-	ui_interface->addHorizontalSlider(ui_interface->uiInterface, "detune", &dsp->fHslider22, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)1.0f, (FAUSTFLOAT)0.0001f);
+	ui_interface->declare(ui_interface->uiInterface, &dsp->fHslider25, "midi", "7");
+	ui_interface->addHorizontalSlider(ui_interface->uiInterface, "detune", &dsp->fHslider25, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)1.0f, (FAUSTFLOAT)0.0001f);
 	ui_interface->declare(ui_interface->uiInterface, &dsp->fHslider12, "mod", "13");
 	ui_interface->addHorizontalSlider(ui_interface->uiInterface, "env-to-osc", &dsp->fHslider12, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)1.0f, (FAUSTFLOAT)0.001f);
 	ui_interface->declare(ui_interface->uiInterface, &dsp->fHslider0, "mod", "10");
@@ -562,18 +562,18 @@ void buildUserInterfacemydsp(mydsp* dsp, UIGlue* ui_interface) {
 	ui_interface->addHorizontalSlider(ui_interface->uiInterface, "mix", &dsp->fHslider20, (FAUSTFLOAT)0.5f, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)1.0f, (FAUSTFLOAT)0.0001f);
 	ui_interface->declare(ui_interface->uiInterface, &dsp->fHslider28, "alt", "5");
 	ui_interface->addHorizontalSlider(ui_interface->uiInterface, "noise-vol", &dsp->fHslider28, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)1.0f, (FAUSTFLOAT)0.0001f);
-	ui_interface->declare(ui_interface->uiInterface, &dsp->fHslider27, "alt", "0");
-	ui_interface->addHorizontalSlider(ui_interface->uiInterface, "osc-1-pw", &dsp->fHslider27, (FAUSTFLOAT)0.5f, (FAUSTFLOAT)0.1f, (FAUSTFLOAT)0.9f, (FAUSTFLOAT)0.0001f);
-	ui_interface->declare(ui_interface->uiInterface, &dsp->fHslider24, "alt", "2");
-	ui_interface->addHorizontalSlider(ui_interface->uiInterface, "osc-2-pw", &dsp->fHslider24, (FAUSTFLOAT)0.5f, (FAUSTFLOAT)0.1f, (FAUSTFLOAT)0.9f, (FAUSTFLOAT)0.0001f);
-	ui_interface->declare(ui_interface->uiInterface, &dsp->fHslider26, "sel", "1");
-	ui_interface->addHorizontalSlider(ui_interface->uiInterface, "osc1-oct", &dsp->fHslider26, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)2.0f, (FAUSTFLOAT)1.0f);
-	ui_interface->declare(ui_interface->uiInterface, &dsp->fHslider25, "sel", "0");
-	ui_interface->addHorizontalSlider(ui_interface->uiInterface, "osc1-wavform", &dsp->fHslider25, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)1.0f, (FAUSTFLOAT)1.0f);
-	ui_interface->declare(ui_interface->uiInterface, &dsp->fHslider23, "sel", "3");
-	ui_interface->addHorizontalSlider(ui_interface->uiInterface, "osc2-oct", &dsp->fHslider23, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)2.0f, (FAUSTFLOAT)1.0f);
-	ui_interface->declare(ui_interface->uiInterface, &dsp->fHslider21, "sel", "2");
-	ui_interface->addHorizontalSlider(ui_interface->uiInterface, "osc2-wavform", &dsp->fHslider21, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)1.0f, (FAUSTFLOAT)1.0f);
+	ui_interface->declare(ui_interface->uiInterface, &dsp->fHslider23, "alt", "0");
+	ui_interface->addHorizontalSlider(ui_interface->uiInterface, "osc-1-pw", &dsp->fHslider23, (FAUSTFLOAT)0.5f, (FAUSTFLOAT)0.1f, (FAUSTFLOAT)0.9f, (FAUSTFLOAT)0.0001f);
+	ui_interface->declare(ui_interface->uiInterface, &dsp->fHslider27, "alt", "2");
+	ui_interface->addHorizontalSlider(ui_interface->uiInterface, "osc-2-pw", &dsp->fHslider27, (FAUSTFLOAT)0.5f, (FAUSTFLOAT)0.1f, (FAUSTFLOAT)0.9f, (FAUSTFLOAT)0.0001f);
+	ui_interface->declare(ui_interface->uiInterface, &dsp->fHslider22, "sel", "1");
+	ui_interface->addHorizontalSlider(ui_interface->uiInterface, "osc1-oct", &dsp->fHslider22, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)2.0f, (FAUSTFLOAT)1.0f);
+	ui_interface->declare(ui_interface->uiInterface, &dsp->fHslider21, "sel", "0");
+	ui_interface->addHorizontalSlider(ui_interface->uiInterface, "osc1-wavform", &dsp->fHslider21, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)1.0f, (FAUSTFLOAT)1.0f);
+	ui_interface->declare(ui_interface->uiInterface, &dsp->fHslider26, "sel", "3");
+	ui_interface->addHorizontalSlider(ui_interface->uiInterface, "osc2-oct", &dsp->fHslider26, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)2.0f, (FAUSTFLOAT)1.0f);
+	ui_interface->declare(ui_interface->uiInterface, &dsp->fHslider24, "sel", "2");
+	ui_interface->addHorizontalSlider(ui_interface->uiInterface, "osc2-wavform", &dsp->fHslider24, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)1.0f, (FAUSTFLOAT)1.0f);
 	ui_interface->declare(ui_interface->uiInterface, &dsp->fHslider14, "asb", "1");
 	ui_interface->addHorizontalSlider(ui_interface->uiInterface, "pbend_dn", &dsp->fHslider14, (FAUSTFLOAT)12.0f, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)24.0f, (FAUSTFLOAT)1.0f);
 	ui_interface->declare(ui_interface->uiInterface, &dsp->fHslider15, "asb", "0");
@@ -630,14 +630,14 @@ void computemydsp(mydsp* dsp, int count, FAUSTFLOAT** RESTRICT inputs, FAUSTFLOA
 	float fSlow32 = 24.293f * fSlow31 + 0.707f;
 	float fSlow33 = 0.21521576f * (0.33333334f * fSlow32 + -0.707f);
 	float fSlow34 = (float)(dsp->fHslider20);
-	float fSlow35 = 1.0f - fSlow34;
-	int iSlow36 = (float)(dsp->fHslider21) >= 1.0f;
-	float fSlow37 = powf(2.0f, mydsp_faustpower2_f((float)(dsp->fHslider22)));
-	float fSlow38 = (float)(dsp->fHslider23);
-	int iSlow39 = fSlow38 >= 2.0f;
-	int iSlow40 = fSlow38 >= 1.0f;
-	float fSlow41 = dsp->fConst1 * (float)(dsp->fHslider24);
-	int iSlow42 = (float)(dsp->fHslider25) >= 1.0f;
+	int iSlow35 = (float)(dsp->fHslider21) >= 1.0f;
+	float fSlow36 = (float)(dsp->fHslider22);
+	int iSlow37 = fSlow36 >= 2.0f;
+	int iSlow38 = fSlow36 >= 1.0f;
+	float fSlow39 = dsp->fConst1 * (float)(dsp->fHslider23);
+	float fSlow40 = 1.0f - fSlow34;
+	int iSlow41 = (float)(dsp->fHslider24) >= 1.0f;
+	float fSlow42 = powf(2.0f, mydsp_faustpower2_f((float)(dsp->fHslider25)));
 	float fSlow43 = (float)(dsp->fHslider26);
 	int iSlow44 = fSlow43 >= 2.0f;
 	int iSlow45 = fSlow43 >= 1.0f;
@@ -688,7 +688,7 @@ void computemydsp(mydsp* dsp, int count, FAUSTFLOAT** RESTRICT inputs, FAUSTFLOA
 			float fTemp19 = (float)(dsp->iVec0[1]);
 			float fTemp20 = 0.5f * fTemp16;
 			float fTemp21 = 0.25f * fTemp16;
-			float fTemp22 = fSlow37 * ((iSlow39) ? fTemp21 : ((iSlow40) ? fTemp20 : fTemp16));
+			float fTemp22 = ((iSlow37) ? fTemp21 : ((iSlow38) ? fTemp20 : fTemp16));
 			float fTemp23 = fmaxf(fTemp22, 23.44895f);
 			float fTemp24 = fmaxf(2e+01f, fabsf(fTemp23));
 			float fTemp25 = ((iTemp0) ? 0.0f : dsp->fRec14[1] + dsp->fConst3 * fTemp24);
@@ -697,7 +697,7 @@ void computemydsp(mydsp* dsp, int count, FAUSTFLOAT** RESTRICT inputs, FAUSTFLOA
 			dsp->fVec3[0] = fTemp26;
 			float fTemp27 = fTemp19 * (fTemp26 - dsp->fVec3[1]) / fTemp24;
 			dsp->fVec4[dsp->IOTA0 & 4095] = fTemp27;
-			dsp->fRec15[0] = fSlow41 + dsp->fConst2 * dsp->fRec15[1];
+			dsp->fRec15[0] = fSlow39 + dsp->fConst2 * dsp->fRec15[1];
 			float fTemp28 = fmaxf(0.0f, fminf(2047.0f, dsp->fConst0 * (dsp->fRec15[0] / fTemp23)));
 			int iTemp29 = (int)(fTemp28);
 			float fTemp30 = floorf(fTemp28);
@@ -707,7 +707,7 @@ void computemydsp(mydsp* dsp, int count, FAUSTFLOAT** RESTRICT inputs, FAUSTFLOA
 			dsp->fRec16[0] = fTemp33 - floorf(fTemp33);
 			float fTemp34 = mydsp_faustpower2_f(2.0f * dsp->fRec16[0] + -1.0f);
 			dsp->fVec5[0] = fTemp34;
-			float fTemp35 = ((iSlow44) ? fTemp21 : ((iSlow45) ? fTemp20 : fTemp16));
+			float fTemp35 = fSlow42 * ((iSlow44) ? fTemp21 : ((iSlow45) ? fTemp20 : fTemp16));
 			float fTemp36 = fmaxf(fTemp35, 23.44895f);
 			float fTemp37 = fmaxf(2e+01f, fabsf(fTemp36));
 			float fTemp38 = ((iTemp0) ? 0.0f : dsp->fRec17[1] + dsp->fConst3 * fTemp37);
@@ -728,17 +728,17 @@ void computemydsp(mydsp* dsp, int count, FAUSTFLOAT** RESTRICT inputs, FAUSTFLOA
 			dsp->fVec8[0] = fTemp47;
 			dsp->fRec20[0] = fSlow47 + dsp->fConst2 * dsp->fRec20[1];
 			dsp->fRec21[0] = fSlow48 + dsp->fConst2 * dsp->fRec21[1];
-			float fTemp48 = fSlow35 * ((iSlow36) ? dsp->fConst9 * (fTemp19 * (fTemp34 - dsp->fVec5[1]) / fTemp32) : fTemp31) + fSlow34 * ((iSlow42) ? dsp->fConst9 * (fTemp19 * (fTemp47 - dsp->fVec8[1]) / fTemp45) : fTemp44) + 4.656613e-10f * dsp->fRec20[0] * fTemp12 + dsp->fRec21[0] * (float)((int)(fTemp44) ^ (int)(fTemp31));
-			float fTemp49 = (fTemp48 - dsp->fRec7[1]) * fTemp18;
+			float fTemp48 = fSlow34 * ((iSlow35) ? dsp->fConst9 * (fTemp19 * (fTemp34 - dsp->fVec5[1]) / fTemp32) : fTemp31) + fSlow40 * ((iSlow41) ? dsp->fConst9 * (fTemp19 * (fTemp47 - dsp->fVec8[1]) / fTemp45) : fTemp44) + 4.656613e-10f * dsp->fRec20[0] * fTemp12 + dsp->fRec21[0] * (float)((int)(fTemp31) ^ (int)(fTemp44));
+			float fTemp49 = (fTemp48 - dsp->fRec8[1]) * fTemp18;
 			float fTemp50 = fTemp18 + 1.0f;
 			float fTemp51 = fTemp18 / fTemp50;
-			float fTemp52 = (fTemp48 - (dsp->fRec7[1] + (fTemp49 - dsp->fRec5[1] - dsp->fRec6[1] * (0.0f - fTemp51)) / fTemp50)) / (1.0f - fSlow33 * (fTemp18 * (1.0f - fTemp51) / fTemp50));
+			float fTemp52 = (fTemp48 - (dsp->fRec8[1] + (fTemp49 - dsp->fRec5[1] - dsp->fRec7[1] * (0.0f - fTemp51)) / fTemp50)) / (1.0f - fSlow33 * (fTemp18 * (1.0f - fTemp51) / fTemp50));
 			float fTemp53 = fSlow33 * fTemp52;
-			float fTemp54 = fTemp18 * (fTemp53 - dsp->fRec6[1]) / fTemp50;
-			dsp->fRec5[0] = dsp->fRec5[1] + 2.0f * (fTemp18 * (fTemp53 - (fTemp54 + dsp->fRec5[1] + dsp->fRec6[1])) / fTemp50);
-			dsp->fRec6[0] = dsp->fRec6[1] + 2.0f * fTemp54;
-			dsp->fRec7[0] = dsp->fRec7[1] + 2.0f * (fTemp49 / fTemp50);
-			float fRec8 = fTemp52;
+			float fTemp54 = fTemp18 * (fTemp53 - dsp->fRec7[1]) / fTemp50;
+			dsp->fRec5[0] = dsp->fRec5[1] + 2.0f * (fTemp18 * (fTemp53 - (fTemp54 + dsp->fRec5[1] + dsp->fRec7[1])) / fTemp50);
+			float fRec6 = fTemp52;
+			dsp->fRec7[0] = dsp->fRec7[1] + 2.0f * fTemp54;
+			dsp->fRec8[0] = dsp->fRec8[1] + 2.0f * (fTemp49 / fTemp50);
 			float fTemp55 = tanf(1.5707964f * fTemp17);
 			float fTemp56 = fTemp55 + 1.0f;
 			float fTemp57 = fTemp55 * ((fTemp48 - fSlow49 * (1.0f - fTemp55 / fTemp56) * (dsp->fRec25[1] + fTemp55 * (dsp->fRec24[1] + fTemp55 * (dsp->fRec23[1] + fTemp55 * dsp->fRec22[1] / fTemp56) / fTemp56) / fTemp56)) / (fSlow49 * (mydsp_faustpower4_f(fTemp55) / mydsp_faustpower4_f(fTemp56)) + 1.0f) - dsp->fRec22[1]) / fTemp56;
@@ -761,7 +761,7 @@ void computemydsp(mydsp* dsp, int count, FAUSTFLOAT** RESTRICT inputs, FAUSTFLOA
 			float fTemp68 = fTemp18 * fTemp65 * fTemp66;
 			dsp->fRec28[0] = dsp->fRec28[1] + 2.0f * fTemp68;
 			dsp->fRec29[0] = fTemp64 + fTemp67;
-			output0[i0] = (FAUSTFLOAT)(fSlow0 * dsp->fRec0[0] * fTemp10 * ((iSlow14) ? fRec27 : ((iSlow15) ? fRec26 : fRec8)) * (fSlow51 * fTemp14 + 1.0f));
+			output0[i0] = (FAUSTFLOAT)(fSlow0 * dsp->fRec0[0] * fTemp10 * ((iSlow14) ? fRec27 : ((iSlow15) ? fRec26 : fRec6)) * (fSlow51 * fTemp14 + 1.0f));
 			dsp->iVec0[1] = dsp->iVec0[0];
 			dsp->fRec0[1] = dsp->fRec0[0];
 			dsp->fRec2[1] = dsp->fRec2[0];
@@ -789,8 +789,8 @@ void computemydsp(mydsp* dsp, int count, FAUSTFLOAT** RESTRICT inputs, FAUSTFLOA
 			dsp->fRec20[1] = dsp->fRec20[0];
 			dsp->fRec21[1] = dsp->fRec21[0];
 			dsp->fRec5[1] = dsp->fRec5[0];
-			dsp->fRec6[1] = dsp->fRec6[0];
 			dsp->fRec7[1] = dsp->fRec7[0];
+			dsp->fRec8[1] = dsp->fRec8[0];
 			dsp->fRec22[1] = dsp->fRec22[0];
 			dsp->fRec23[1] = dsp->fRec23[0];
 			dsp->fRec24[1] = dsp->fRec24[0];

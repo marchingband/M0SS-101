@@ -288,14 +288,14 @@ void render_lights(void)
             // pixel_buf[10] =p11;
             // pixel_buf[11] =p12;
             // pixel_buf[12] =p13;
-            pixel_buf[0] = *(sels[0].p)   == 0 ? pixel_on : pixel_off; // o1sqr
-            pixel_buf[1] = *(sels[0].p)   == 1 ? pixel_on : pixel_off;  // o1saw
+            pixel_buf[0] = ((*(sels[0].p) == 0) || (*(sels[0].p) == 2)) ? pixel_on : pixel_off; // o1sqr
+            pixel_buf[1] = ((*(sels[0].p) == 1) || (*(sels[0].p) == 2)) ? pixel_on : pixel_off;  // o1saw
             pixel_buf[2] = *(sels[1].p)   == 0 ? pixel_on : pixel_off;  // o1oct0
             pixel_buf[3] = *(sels[1].p)   == 1 ? pixel_on : pixel_off;  // o1oct-1
             pixel_buf[4] = *(sels[1].p)   == 2 ? pixel_on : pixel_off;  // o1oct-2
 
-            pixel_buf[5] = *(sels[2].p)   == 0 ? pixel_on : pixel_off;  // o2sqr
-            pixel_buf[6] = *(sels[2].p)   == 1 ? pixel_on : pixel_off;  // o2saw
+            pixel_buf[5] = ((*(sels[2].p) == 0) || (*(sels[2].p) == 2)) ? pixel_on : pixel_off;  // o2sqr
+            pixel_buf[6] = ((*(sels[2].p) == 1) || (*(sels[2].p) == 2)) ? pixel_on : pixel_off;  // o2saw
             pixel_buf[7] = *(sels[3].p)   == 0 ? pixel_on : pixel_off;  // o2oct0
             pixel_buf[8] = *(sels[3].p)   == 1 ? pixel_on : pixel_off;  // o2oct-1
             pixel_buf[9] = *(sels[3].p)   == 2 ? pixel_on : pixel_off;  // o2oct-2
