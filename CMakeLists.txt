@@ -14,6 +14,7 @@ target_sources(app PRIVATE
     rgb_led.c
     gpio.c
     flash.c
+    mux.c
 )
 
 sdk_set_main_file(main.c)
