@@ -70,15 +70,15 @@ void debug_mux(void){
 
         if(!a0)
         {
-            printf("press %d", i);
+            printf("%d\n", i);
         }
         if(!a1)
         {
-            printf("press %d", i + 8);
+            printf("%d\n", i + 8);
         }
         if(!a2)
         {
-            printf("press %d", i + 16);
+            printf("%d\n", i + 16);
         }
 
         // if(a0 == false || a1 == false || a2 == false)
