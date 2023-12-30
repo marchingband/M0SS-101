@@ -174,9 +174,9 @@ const struct pixel_t pixel_blue = {
 };
 
 const struct pixel_t pixel_on = {
-    .red = 64,
-    .green = 64,
-    .blue = 64
+    .red = 32,
+    .green = 32,
+    .blue = 32
     // .red = 2,
     // .green = 1,
     // .blue = 0
