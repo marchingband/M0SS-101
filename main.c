@@ -295,7 +295,7 @@ int main(void)
     mux_gpio_init();
     while(1){
         debug_mux();
-        bflb_mtimer_delay_ms(500);
+        bflb_mtimer_delay_ms(100);
     }
 
     /* load the config struct or initialize it */
