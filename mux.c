@@ -81,7 +81,7 @@ void debug_mux(void){
         }
         if(!a2)
         {
-            printf("%d\n", mux_pins[i + 24]);
+            printf("%d\n", mux_pins[i + 16]);
             // printf("%d\n", i + 16);
         }
     }
