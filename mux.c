@@ -44,18 +44,18 @@ void debug_mux(void){
         {
             if(mux_code[i][j])
             {
-                bflb_gpio_set(mux_gpio, GPIO_PIN_0);
+                bflb_gpio_set(mux_gpio, MUX_A0 + j);
             }
             else
             {
-                bflb_gpio_reset(mux_gpio, GPIO_PIN_0);
+                bflb_gpio_reset(mux_gpio, MUX_A0 + j);
             }
         }
         bflb_mtimer_delay_ms(5); // let it settle
 
-        bool a0 = bflb_gpio_read(mux_gpio, MUX_A0);
-        bool a1 = bflb_gpio_read(mux_gpio, MUX_A1);
-        bool a2 = bflb_gpio_read(mux_gpio, MUX_A2);
+        bool a0 = bflb_gpio_read(mux_gpio, MUX_1_DRAIN);
+        bool a1 = bflb_gpio_read(mux_gpio, MUX_2_DRAIN);
+        bool a2 = bflb_gpio_read(mux_gpio, MUX_3_DRAIN);
 
         if(a0 == false || a1 == false || a2 == false)
         {
