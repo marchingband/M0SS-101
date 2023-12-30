@@ -23,6 +23,7 @@
 #include "rgb_led.h"
 #include "gpio.h"
 #include "flash.h"
+#include "mux.h"
 
 void dsp_run(int16_t *dest);
 void dsp_init(size_t buf_size);
@@ -289,6 +290,13 @@ int main(void)
 {
     /* board init */
     board_init();
+
+    // mux init
+    mux_gpio_init();
+    while(1){
+        debug_mux();
+        bflb_mtimer_delay_ms(500);
+    }
 
     /* load the config struct or initialize it */
     printf("flash_init\r\n");
