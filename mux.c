@@ -14,6 +14,17 @@ const uint8_t mux_code[8][3] = {
     {1,1,0},
     {1,1,1}
 };
+const uint8_t mux_pins[8][3] = {
+    // 2,1,0
+    {0,1,2},    // {0,1,2}
+    {3,4,5},    // {3,4,5}
+    {6,7,8},    // {6,7,8}
+    {9,10,11},  // {9,10,11}
+    {12,13,14}, // {12,13,14}
+    {15,26,17}, // {15,26,17}
+    {18,18,20}, // {18,18,20}
+    {21,22,23}  // {21,22,23}
+};
 
 #define MUX_A0 27
 #define MUX_A1 28
@@ -57,13 +68,26 @@ void debug_mux(void){
         bool a1 = bflb_gpio_read(mux_gpio, MUX_2_DRAIN);
         bool a2 = bflb_gpio_read(mux_gpio, MUX_3_DRAIN);
 
-        if(a0 == false || a1 == false || a2 == false)
+        if(!a0)
         {
-            printf("%d -> %d | %d | %d\n", i, a0, a1, a2);
+            printf("press %d", i);
         }
-        else
+        if(!a1)
         {
-            printf(".");
+            printf("press %d", i + 8);
         }
+        if(!a2)
+        {
+            printf("press %d", i + 16);
+        }
+
+        // if(a0 == false || a1 == false || a2 == false)
+        // {
+        //     printf("%d -> %d | %d | %d\n", i, a0, a1, a2);
+        // }
+        // else
+        // {
+        //     printf(".");
+        // }
     }
 }
