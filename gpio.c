@@ -91,9 +91,9 @@ static void mux_gpio_init(void){
 }
 
 static void connected_buttons_init(){
-    bflb_gpio_init(b_gpio, ENCODER_BUTTON_PIN, GPIO_INPUT | GPIO_FLOAT | GPIO_SMT_EN | GPIO_DRV_0);
     bflb_gpio_init(b_gpio, BUTTON_25_PIN, GPIO_INPUT | GPIO_PULLUP | GPIO_SMT_EN | GPIO_DRV_0);
     bflb_gpio_init(b_gpio, BUTTON_26_PIN, GPIO_INPUT | GPIO_PULLUP | GPIO_SMT_EN | GPIO_DRV_0);
+    // bflb_gpio_init(b_gpio, ENCODER_BUTTON_PIN, GPIO_INPUT | GPIO_FLOAT | GPIO_SMT_EN | GPIO_DRV_0);
 }
 
 const uint8_t mux_drain_pins[] = { MUX_0_DRAIN_PIN, MUX_1_DRAIN_PIN, MUX_2_DRAIN_PIN };
@@ -119,7 +119,7 @@ static void read_buttons(){
     }
     button_state[24] = bflb_gpio_read(b_gpio, BUTTON_25_PIN);
     button_state[25] = bflb_gpio_read(b_gpio, BUTTON_26_PIN);
-    button_state[26] = bflb_gpio_read(b_gpio, ENCODER_BUTTON_PIN);
+    // button_state[26] = bflb_gpio_read(b_gpio, ENCODER_BUTTON_PIN);
 }
 
 bool alt_held(void)

@@ -1,7 +1,7 @@
 #ifndef MUX_H
 #define MUX_H
 
-#define NUM_BUTTONS 27
+#define NUM_BUTTONS 26
 
 #define BUTTON_NUM_SAVE 15
 #define BUTTON_NUM_LOAD 18

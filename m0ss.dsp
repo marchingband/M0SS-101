@@ -120,10 +120,10 @@ vcf = _ <: hpf, lpf, bpf : ba.selectn(3, filter_type) ;
 env_trig = gate, lfo_sq : ba.selectn(2, lfo2env);
 // bias = 0.7;
 // asr = en.adsr_bias(attack, 0, 1, release, bias, bias, bias, 1, env_trig);
-asr = en.asre(attack, 1, release, env_trig);
-ar_trig = env_trig : \(x).(x > x');
-ar = AR(attack, release, ar_trig);
-env = asr <: attach(vbargraph("env[env:0]", 0 , 1));
+env = en.asre(attack, 1, release, env_trig) <: attach(vbargraph("env[env:0]", 0 , 1));
+// ar_trig = env_trig : \(x).(x > x');
+// ar = AR(attack, release, ar_trig);
+// env = asr <: attach(vbargraph("env[env:0]", 0 , 1));
 // env = asr, ar : ba.selectn(2, asr_ar) <: attach(vbargraph("env[env:0]", 0 , 1));
 
 env_to_pitch  = env * env2pitch * 100 : ba.cent2ratio;
