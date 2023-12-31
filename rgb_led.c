@@ -18,6 +18,8 @@ struct bflb_device_s *i2s0;
 
 bool rgb_rendering = false;
 
+struct pixel_t pixel_buf[NUM_LED];
+
 void test_rgb_lights(){
     pixel_buf[0]  = pixel_on;
     pixel_buf[1]  = pixel_on;
@@ -173,7 +175,7 @@ void rgb_set_color(struct pixel_t *pixels){
     i2s_send();
 }
 
-struct pixel_t pixel_buf[NUM_LED];
+// struct pixel_t pixel_buf[NUM_LED];
 
 const struct pixel_t pixel_red = {
     .red = 1,
