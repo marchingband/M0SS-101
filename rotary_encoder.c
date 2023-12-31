@@ -201,14 +201,14 @@ static void _isr_rotenc(void * args)
         xQueueOverwriteFromISR(info->queue, &queue_event, &task_woken);
         if (task_woken)
         {
-            portYIELD_FROM_ISR();
+            portYIELD_FROM_ISR(false); // false?
         }
     }
 }
 
 struct bflb_device_s *enc_gpio;
 
-void rotary_encoder_init(rotary_encoder_info_t * info, gpio_num_t pin_a, gpio_num_t pin_b)
+void rotary_encoder_init(rotary_encoder_info_t * info, int pin_a, int pin_b)
 {
     if (info)
     {
@@ -280,7 +280,7 @@ void rotary_encoder_flip_direction(rotary_encoder_info_t * info)
 {
     if (info)
     {
-        gpio_num_t temp = info->pin_a;
+        int temp = info->pin_a;
         info->pin_a = info->pin_b;
         info->pin_b = temp;
     }
@@ -294,8 +294,8 @@ void rotary_encoder_uninit(rotary_encoder_info_t * info)
 {
     if (info)
     {
-        gpio_isr_handler_remove(info->pin_a);
-        gpio_isr_handler_remove(info->pin_b);
+        // gpio_isr_handler_remove(info->pin_a);
+        // gpio_isr_handler_remove(info->pin_b);
     }
     else
     {
