@@ -67,6 +67,8 @@ lfo2vcf      = hslider("lfo-to-vcf[mod:11]",     0, 0, 1, 0.001) ;   // button 8
 env2volume   = hslider("env-to-vca[mod:15]",    1, 0, 1, 0.001) ;   // button 10   // GPIO 3
 env2cutoff   = hslider("env-to-vcf[mod:18]",    0, 0, 1, 0.001) ;   // button 12   // GPIO 1
 env2pitch    = hslider("env-to-osc[mod:20]",    0, 0, 1, 0.001) ;   // button 13   // GPIO 0
+decay        = hslider("decay[mod:19]",         0, 0, 1, 0.001) ;   // button 13   // GPIO 0
+sustain      = hslider("sustain[mod:21]",       1, 0, 1, 0.001) ;   // button 13   // GPIO 0
 
 // alts
 osc_1_pw     = hslider("osc-1-pw[alt:0]",     0.5,   0.1,   0.9,  0.0001) : si.smooth(0.1);      // button 0    // GPIO 30
@@ -120,7 +122,8 @@ vcf = _ <: hpf, lpf, bpf : ba.selectn(3, filter_type) ;
 env_trig = gate, lfo_sq : ba.selectn(2, lfo2env);
 // bias = 0.7;
 // asr = en.adsr_bias(attack, 0, 1, release, bias, bias, bias, 1, env_trig);
-env = en.asre(attack, 1, release, env_trig) <: attach(vbargraph("env[env:0]", 0 , 1));
+env = en.adsre(attack, decay, sustain, release, env_trig) <: attach(vbargraph("env[env:0]", 0 , 1));
+// env = en.asre(attack, 1, release, env_trig) <: attach(vbargraph("env[env:0]", 0 , 1));
 // ar_trig = env_trig : \(x).(x > x');
 // ar = AR(attack, release, ar_trig);
 // env = asr <: attach(vbargraph("env[env:0]", 0 , 1));
