@@ -201,5 +201,5 @@ static void button_task(void* arg){
 void buttons_init(){
     mux_gpio_init();
     connected_buttons_init();
-    xTaskCreate(button_task, "button_task", 2048, NULL, 2, NULL);
+    // xTaskCreate(button_task, "button_task", 2048, NULL, 2, NULL);
 }
