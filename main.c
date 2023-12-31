@@ -293,6 +293,7 @@ int main(void)
     board_init();
 
     encoder_init();
+    buttons_init();
     vTaskStartScheduler();
 
     // mux init

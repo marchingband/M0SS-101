@@ -19,6 +19,13 @@
 static ATTR_NOCACHE_NOINIT_RAM_SECTION rotary_encoder_info_t info = { 0 };
 QueueHandle_t event_queue;
 
+int encoder_state = 0;
+
+static void on_encoder(bool up){
+    encoder_state = up ? encoder_state + 1 : encoder_state - 1;
+    printf("encoder -> %d\n", encoder_state);
+}
+
 static void encoder_task(void* arg)
 {
     for(;;)
@@ -26,9 +33,9 @@ static void encoder_task(void* arg)
         rotary_encoder_event_t event = { 0 };
         if (xQueueReceive(event_queue, &event, portMAX_DELAY))
         {
-            // on_encoder(event.state.direction == ROTARY_ENCODER_DIRECTION_CLOCKWISE);
-            printf("Event: position %d, direction %s\n", event.state.position,
-                     event.state.direction ? (event.state.direction == ROTARY_ENCODER_DIRECTION_CLOCKWISE ? "CW" : "CCW") : "NOT_SET");
+            on_encoder(event.state.direction == ROTARY_ENCODER_DIRECTION_CLOCKWISE);
+            // printf("Event: position %d, direction %s\n", event.state.position,
+            //          event.state.direction ? (event.state.direction == ROTARY_ENCODER_DIRECTION_CLOCKWISE ? "CW" : "CCW") : "NOT_SET");
         }    
     }
 }
