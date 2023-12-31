@@ -12,7 +12,6 @@ target_sources(app PRIVATE
     dsp.c
     usb.c
     rgb_led.c
-    gpio.c
     flash.c
     mux.c
     encoder.c
