@@ -128,8 +128,8 @@ void i2s_send(void)
     ping_pong = ping_pong == 0 ? 1 : 0;
 }
 
-static const uint16_t bitpatterns[4] = {0x88, 0x8c, 0xc8, 0xcc};
-// static const uint16_t bitpatterns[4] = {0x88, 0x8e, 0xe8, 0xee};
+// static const uint16_t bitpatterns[4] = {0x88, 0x8c, 0xc8, 0xcc};
+static const uint16_t bitpatterns[4] = {0x88, 0x8e, 0xe8, 0xee};
 
 void rgb_set_color(struct pixel_t *pixels){
     printf("rgb set color");
