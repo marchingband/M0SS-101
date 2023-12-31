@@ -11,7 +11,8 @@
 // #define PIXEL_SIZE 12 // each colour takes 4 bytes
 #define PIXEL_SIZE 3 // each colour takes 4 bytes
 // #define PIXEL_SIZE 6 // each colour takes 4 bytes
-#define NUM_LED 26
+#define NUM_LED 3
+// #define NUM_LED 26
 
 struct bflb_device_s *i2s0;
 
@@ -418,28 +419,28 @@ void test_rgb_lights(){
     pixel_buf[0]  = pixel_on;
     pixel_buf[1]  = pixel_on;
     pixel_buf[2]  = pixel_on;
-    pixel_buf[3]  = pixel_on;
-    pixel_buf[4]  = pixel_on;
-    pixel_buf[5]  = pixel_on;
-    pixel_buf[6]  = pixel_on;
-    pixel_buf[7]  = pixel_on;
-    pixel_buf[8]  = pixel_on;
-    pixel_buf[9]  = pixel_on;
-    pixel_buf[10] = pixel_on;
-    pixel_buf[11] = pixel_on;
-    pixel_buf[12] = pixel_on;
-    pixel_buf[13]  = pixel_on;
-    pixel_buf[14]  = pixel_on;
-    pixel_buf[15]  = pixel_on;
-    pixel_buf[16]  = pixel_on;
-    pixel_buf[17]  = pixel_on;
-    pixel_buf[18]  = pixel_on;
-    pixel_buf[19]  = pixel_on;
-    pixel_buf[20]  = pixel_on;
-    pixel_buf[21]  = pixel_on;
-    pixel_buf[22]  = pixel_on;
-    pixel_buf[23] = pixel_on;
-    pixel_buf[24] = pixel_on;
-    pixel_buf[25] = pixel_on;
+    // pixel_buf[3]  = pixel_on;
+    // pixel_buf[4]  = pixel_on;
+    // pixel_buf[5]  = pixel_on;
+    // pixel_buf[6]  = pixel_on;
+    // pixel_buf[7]  = pixel_on;
+    // pixel_buf[8]  = pixel_on;
+    // pixel_buf[9]  = pixel_on;
+    // pixel_buf[10] = pixel_on;
+    // pixel_buf[11] = pixel_on;
+    // pixel_buf[12] = pixel_on;
+    // pixel_buf[13]  = pixel_on;
+    // pixel_buf[14]  = pixel_on;
+    // pixel_buf[15]  = pixel_on;
+    // pixel_buf[16]  = pixel_on;
+    // pixel_buf[17]  = pixel_on;
+    // pixel_buf[18]  = pixel_on;
+    // pixel_buf[19]  = pixel_on;
+    // pixel_buf[20]  = pixel_on;
+    // pixel_buf[21]  = pixel_on;
+    // pixel_buf[22]  = pixel_on;
+    // pixel_buf[23] = pixel_on;
+    // pixel_buf[24] = pixel_on;
+    // pixel_buf[25] = pixel_on;
     rgb_set_color(pixel_buf);
 }
