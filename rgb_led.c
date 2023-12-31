@@ -138,7 +138,17 @@ static const uint16_t bitpatterns[4] = {0x88, 0x8c, 0xc8, 0xcc};
 uint32_t onezero1 = 0x86218862;
 uint32_t onezero2 = 0x18862188;
 uint32_t onezero3 = 0x62188621;
-uint32_t onezero4 = 0x88621800;
+uint32_t onezero4 = 0x88621886;
+uint32_t onezero5 = 0x21886218;
+uint32_t onezero6 = 0x86218862;
+uint32_t onezero7 = 0x18862188;
+uint32_t onezero8 = 0x62188621;
+uint32_t onezero9 = 0x88621886;
+uint32_t onezero10 = 0x21886218;
+uint32_t onezero11 = 0x86218862;
+uint32_t onezero12 = 0x18862188;
+
+
 
 void rgb_set_color(struct pixel_t *pixels){
     printf("rgb set color");
@@ -149,6 +159,14 @@ void rgb_set_color(struct pixel_t *pixels){
     buf[1] = onezero2;
     buf[2] = onezero3;
     buf[3] = onezero4;
+    buf[4] = onezero5;
+    buf[5] = onezero6;
+    buf[6] = onezero7;
+    buf[7] = onezero8;
+    buf[8] = onezero9;
+    buf[9] = onezero10;
+    buf[10] = onezero11;
+    buf[11] = onezero12;
 
     // for (int i = 0; i < NUM_LED; i++) {
     //     int loc = i * PIXEL_SIZE;
