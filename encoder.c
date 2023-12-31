@@ -1,6 +1,10 @@
 #include <FreeRTOS.h>
 #include "queue.h"
 #include "portmacro.h"
+#include "bflb_dma.h"
+#include "bl616_glb_gpio.h"
+#include "bl616_irq.h"
+#include "board.h"
 
 #include "stdbool.h"
 
