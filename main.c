@@ -23,7 +23,6 @@
 #include "rgb_led.h"
 #include "gpio.h"
 #include "flash.h"
-#include "mux.h"
 #include "encoder.h"
 #include "audac.h"
 

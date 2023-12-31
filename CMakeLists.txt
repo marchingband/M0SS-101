@@ -13,10 +13,10 @@ target_sources(app PRIVATE
     usb.c
     rgb_led.c
     flash.c
-    mux.c
     encoder.c
     rotary_encoder.c
     audac.c
+    gpio.c
 )
 
 sdk_set_main_file(main.c)
