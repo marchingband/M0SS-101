@@ -1,5 +1,8 @@
 #include <FreeRTOS.h>
 #include "queue.h"
+#include "portmacro.h"
+
+#include "stdbool.h"
 
 #include "rotary_encoder.h"
 

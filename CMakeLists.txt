@@ -15,8 +15,8 @@ target_sources(app PRIVATE
     gpio.c
     flash.c
     mux.c
-    rotary_encoder.c
     encoder.c
+    rotary_encoder.c
 )
 
 sdk_set_main_file(main.c)
