@@ -22,8 +22,10 @@ struct pixel_t pixel_buf[NUM_LED];
 void rgb_task(void *pvParameters)
 {
     while (1) {
+        printf("ttt");
         if(!rgb_rendering)
         {
+            printf("sss");
             // rgb_rendering = true;
             // render_lights();
             test_rgb_lights();
