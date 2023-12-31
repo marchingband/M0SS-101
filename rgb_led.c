@@ -18,7 +18,7 @@ struct bflb_device_s *i2s0;
 
 bool rgb_rendering = false;
 
-void test_rgb(){
+void test_rgb_lights(){
     pixel_buf[0]  = pixel_on;
     pixel_buf[1]  = pixel_on;
     pixel_buf[2]  = pixel_on;
@@ -42,7 +42,7 @@ void rgb_task(void *pvParameters)
         {
             // rgb_rendering = true;
             // render_lights();
-            test_rgb();
+            test_rgb_lights();
         }
         // vTaskDelay(10);
         vTaskDelay(1000);
