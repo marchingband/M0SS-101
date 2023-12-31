@@ -20,23 +20,6 @@ bool rgb_rendering = false;
 
 struct pixel_t pixel_buf[NUM_LED];
 
-void test_rgb_lights(){
-    pixel_buf[0]  = pixel_on;
-    pixel_buf[1]  = pixel_on;
-    pixel_buf[2]  = pixel_on;
-    pixel_buf[3]  = pixel_on;
-    pixel_buf[4]  = pixel_on;
-    pixel_buf[5]  = pixel_on;
-    pixel_buf[6]  = pixel_on;
-    pixel_buf[7]  = pixel_on;
-    pixel_buf[8]  = pixel_on;
-    pixel_buf[9]  = pixel_on;
-    pixel_buf[10] = pixel_on;
-    pixel_buf[11] = pixel_on;
-    pixel_buf[12] = pixel_on;
-    rgb_set_color(pixel_buf);
-}
-
 void rgb_task(void *pvParameters)
 {
     while (1) {
@@ -438,7 +421,7 @@ void render_lights(void)
     rgb_set_color(pixel_buf);
 }
 
-void test_rgb(){
+void test_rgb_lights(){
     pixel_buf[0]  = pixel_on;
     pixel_buf[1]  = pixel_on;
     pixel_buf[2]  = pixel_on;
