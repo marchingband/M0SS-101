@@ -119,6 +119,10 @@ int main(void)
     printf("dsp_init\r\n");
     dsp_init(BUF_SIZE);
 
+    /* setup button scanners */
+    printf("gpio_init\r\n");
+    buttons_init();
+
     /* audio dac init */
     printf("audio_dac_init\r\n");
     audio_dac_init();
@@ -137,11 +141,6 @@ int main(void)
     /* start the LEDs */
     printf("rgb_led_init\r\n");
     rgb_led_init();
-
-    /* setup button scanners */
-    printf("gpio_init\r\n");
-    buttons_init();
-    // gpio_init();
 
     /* setup encoder */
     printf("encoder_init\r\n");
