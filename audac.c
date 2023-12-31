@@ -6,14 +6,15 @@
 #include "bflb_dma.h"
 #include "bl616_irq.h"
 
-// #include "bl616_glb.h"
+#include "bl616_glb.h"
 // #include "bflb_i2s.h"
-// #include "bl616_glb_gpio.h"
+#include "bl616_glb_gpio.h"
 #include "board.h"
 
 #include "bflb_core.h"
 
-// #define BUF_SIZE 64
+#include "audac.h"
+#include "dsp.h"
 
 static int min(int a, int b)
 {
