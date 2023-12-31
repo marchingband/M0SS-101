@@ -69,8 +69,8 @@ void dma0_ch1_isr(void *arg)
 static struct bflb_i2s_config_s i2s_cfg = {
     // .bclk_freq_hz = 130000 * 16 * 2, /* bclk = Sampling_rate * frame_width * channel_num */
     // .bclk_freq_hz = 8000 * 32, /* bclk = Sampling_rate * frame_width */
-    // .bclk_freq_hz = 93750 * 8 * 2, /* bclk = Sampling_rate * frame_width * channel_num */
-    .bclk_freq_hz = 93750 * 16 * 2, /* bclk = Sampling_rate * frame_width * channel_num */
+    .bclk_freq_hz = 93750 * 32 * 2, /* bclk = Sampling_rate * frame_width * channel_num */
+    // .bclk_freq_hz = 93750 * 16 * 2, /* bclk = Sampling_rate * frame_width * channel_num */ original
     .role = I2S_ROLE_MASTER,
     .format_mode = I2S_MODE_LEFT_JUSTIFIED,
     // .channel_mode = I2S_CHANNEL_MODE_NUM_1,
@@ -135,26 +135,27 @@ static const uint16_t bitpatterns[4] = {0x88, 0x8c, 0xc8, 0xcc};
 // uint8_t one = 0b110
 // uint8_t two = 0b100
 
-uint32_t onezero1 = 0x86218862;
-uint32_t onezero2 = 0x18862188;
-uint32_t onezero3 = 0x62188621;
-uint32_t onezero4 = 0x88621886;
-uint32_t onezero5 = 0x21886218;
-uint32_t onezero6 = 0x86218862;
-uint32_t onezero7 = 0x18862188;
-uint32_t onezero8 = 0x62188621;
-uint32_t onezero9 = 0x88621886;
-uint32_t onezero10 = 0x21886218;
-uint32_t onezero11 = 0x86218862;
-uint32_t onezero12 = 0x18862188;
-uint32_t onezero13 = 0x62188621;
-uint32_t onezero14 = 0x88621886;
-uint32_t onezero15 = 0x21886218;
-uint32_t onezero16 = 0x86218862;
-uint32_t onezero17 = 0x18862188;
-uint32_t onezero18 = 0x62188621;
-uint32_t onezero19 = 0x88621886;
-uint32_t onezero20 = 0x21886218;
+uint32_t onezero1 = 0xE03E0E03;
+uint32_t onezero2 = 0xE0E03E0E;
+uint32_t onezero3 = 0x03E0E03E;
+uint32_t onezero4 = 0x0E03E0E0;
+uint32_t onezero5 = 0x3E0E03E0;
+
+uint32_t onezero6 =  0xE03E0E03;
+uint32_t onezero7 =  0xE0E03E0E;
+uint32_t onezero8 =  0x03E0E03E;
+uint32_t onezero9 =  0x0E03E0E0;
+uint32_t onezero10 = 0x3E0E03E0;
+uint32_t onezero11 = 0xE03E0E03;
+uint32_t onezero12 = 0xE0E03E0E;
+uint32_t onezero13 = 0x03E0E03E;
+uint32_t onezero14 = 0x0E03E0E0;
+uint32_t onezero15 = 0x3E0E03E0;
+uint32_t onezero16 = 0xE03E0E03;
+uint32_t onezero17 = 0xE0E03E0E;
+uint32_t onezero18 = 0x03E0E03E;
+uint32_t onezero19 = 0x0E03E0E0;
+uint32_t onezero20 = 0x3E0E03E0;
 
 
 
