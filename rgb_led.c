@@ -267,7 +267,6 @@ int get_ui_mode(void)
     return ui_mode;
 }
 
-
 void render_lights(void)
 {
     int current_slot = get_current_slot();

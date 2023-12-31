@@ -294,6 +294,9 @@ int main(void)
 
     encoder_init();
     buttons_init();
+    dsp_init();
+    rgb_led_init();
+    xTaskCreate(rgb_task, (char *)"rgb_task", 512, NULL, 2, NULL);
 
     vTaskStartScheduler();
 
