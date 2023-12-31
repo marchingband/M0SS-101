@@ -70,7 +70,7 @@ env2pitch    = hslider("env-to-osc[mod:20]",    0, 0, 1, 0.001) ;   // button 13
 
 // alts
 osc_1_pw     = hslider("osc-1-pw[alt:0]",     0.5,   0.1,   0.9,  0.0001) : si.smooth(0.1);      // button 0    // GPIO 30
-glide        = hslider("glide[alt:22]",        0.001, 0.001, 0.99, 0.0001);                 // button 1    // GPIO 29
+glide        = hslider("glide[alt:23]",        0.001, 0.001, 0.99, 0.0001);                 // button 1    // GPIO 29
 osc_2_pw     = hslider("osc-2-pw[alt:3]",     0.5,   0.1,   0.9,  0.0001) : si.smooth(0.1);      // button 2    // GPIO 28
 xor_volume   = hslider("xor-vol[alt:4]",      0,     0,     1,    0.0001) : si.smooth(0.1);      // button 3    // GPIO 27
 noise_volume = hslider("noise-vol[alt:5]",    0,     0,     1,    0.0001) : si.smooth(0.1);      // button 5    // GPIO 20
