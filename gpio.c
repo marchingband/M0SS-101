@@ -4,6 +4,7 @@
 #include "bflb_gpio.h"
 
 #include "midi.h"
+#include "gpio.h"
 
 struct bflb_device_s *b_gpio;
 
@@ -44,8 +45,6 @@ const uint8_t mux_pins[24] = {
 #define BUTTON_26_PIN 13
 
 #define DEBOUNCE_TIME 1000 * 50 // 50 ms
-
-#define NUM_BUTTONS 27
 
 // button roles
 #define BUTTON_NUM_SAVE 15

@@ -1,6 +1,8 @@
 #ifndef MUX_H
 #define MUX_H
 
+#define NUM_BUTTONS 27
+
 void buttons_init();
 void poll_buttons();
 
