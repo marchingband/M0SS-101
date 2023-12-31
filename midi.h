@@ -58,4 +58,6 @@ struct Sigs *get_signals(void);
 uint8_t *get_cc_map(void);
 int get_mode_learn_current_cc(void);
 
+void handle_button_press(int num);
+
 #endif
