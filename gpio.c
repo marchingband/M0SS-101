@@ -91,7 +91,7 @@ static void read_buttons(){
                 bflb_gpio_reset(b_gpio, MUX_A0_PIN + j);
         }
         
-        // bflb_mtimer_delay_ms(1); // let it settle
+        bflb_mtimer_delay_ms(1); // let it settle
 
         // read the pins
         for(int k=0; k<3; k++)
