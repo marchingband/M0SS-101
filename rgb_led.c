@@ -69,8 +69,8 @@ void dma0_ch1_isr(void *arg)
 static struct bflb_i2s_config_s i2s_cfg = {
     // .bclk_freq_hz = 130000 * 16 * 2, /* bclk = Sampling_rate * frame_width * channel_num */
     // .bclk_freq_hz = 8000 * 32, /* bclk = Sampling_rate * frame_width */
-    // .bclk_freq_hz = 93750 * 24 * 2, /* bclk = Sampling_rate * frame_width * channel_num */
-    .bclk_freq_hz = 93750 * 16 * 2, /* bclk = Sampling_rate * frame_width * channel_num */
+    .bclk_freq_hz = 93750 * 32 * 2, /* bclk = Sampling_rate * frame_width * channel_num */
+    // .bclk_freq_hz = 93750 * 16 * 2, /* bclk = Sampling_rate * frame_width * channel_num */
     .role = I2S_ROLE_MASTER,
     .format_mode = I2S_MODE_LEFT_JUSTIFIED,
     // .channel_mode = I2S_CHANNEL_MODE_NUM_1,
@@ -134,9 +134,12 @@ static const uint16_t bitpatterns[4] = {0x88, 0x8e, 0xe8, 0xee};
 // uint8_t one = 0b110
 // uint8_t two = 0b100
 
-uint32_t onezero1 = 0xD34D34D3;
-uint32_t onezero2 = 0x4D34D34D;
-uint32_t onezero3 = 0x34D34D34;
+uint32_t onezero1 = 0xAAAAAAAA;
+uint32_t onezero2 = 0xAAAAAAAA;
+uint32_t onezero3 = 0xAAAAAAAA;
+// uint32_t onezero1 = 0xD34D34D3;
+// uint32_t onezero2 = 0x4D34D34D;
+// uint32_t onezero3 = 0x34D34D34;
 
 
 void rgb_set_color(struct pixel_t *pixels){
