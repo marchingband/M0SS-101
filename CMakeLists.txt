@@ -16,6 +16,7 @@ target_sources(app PRIVATE
     mux.c
     encoder.c
     rotary_encoder.c
+    audac.c
 )
 
 sdk_set_main_file(main.c)
