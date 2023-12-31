@@ -47,10 +47,10 @@ const uint8_t mux_pins[24] = {
 #define DEBOUNCE_TIME 1000 * 50 // 50 ms
 
 // button roles
-#define BUTTON_NUM_SAVE 15
-#define BUTTON_NUM_LOAD 18
-#define BUTTON_NUM_ALT 23
-#define BUTTON_NUM_LEARN 25
+#define BUTTON_NUM_SAVE 14
+#define BUTTON_NUM_LOAD 17
+#define BUTTON_NUM_ALT 22
+#define BUTTON_NUM_LEARN 24
 
 uint8_t button_pushes[NUM_BUTTONS]    = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 uint8_t button_cancelled[NUM_BUTTONS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
