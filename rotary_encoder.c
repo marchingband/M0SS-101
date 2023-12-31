@@ -92,7 +92,7 @@
 #include <FreeRTOS.h>
 #include "queue.h"
 
-#define ROTARY_ENCODER_DEBUG
+// #define ROTARY_ENCODER_DEBUG
 
 // Use a single-item queue so that the last value can be easily overwritten by the interrupt handler
 #define EVENT_QUEUE_LENGTH 1
@@ -149,7 +149,7 @@ static uint8_t _process(rotary_encoder_info_t * info)
     {
         // Get state of input pins.
         // uint8_t pin_state = (gpio_get_level(info->pin_b) << 1) | gpio_get_level(info->pin_a);
-        uint8_t pin_state = (bflb_gpio_read(enc_gpio, info->pin_b) << 1) | bflb_gpio_read(enc_gpio, info->pin_a);
+        uint8_t pin_state = (((uint8_t)bflb_gpio_read(enc_gpio, info->pin_b)) << 1) | ((uint8_t)bflb_gpio_read(enc_gpio, info->pin_a));
 
         // Determine new state from the pins and state table.
 #ifdef ROTARY_ENCODER_DEBUG

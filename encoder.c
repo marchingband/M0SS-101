@@ -12,7 +12,7 @@
 #define RESET_AT          0      // Set to a positive non-zero number to reset the position if this value is exceeded
 #define FLIP_DIRECTION    false  // Set to true to reverse the clockwise/counterclockwise sense
 
-rotary_encoder_info_t info = { 0 };
+static ATTR_NOCACHE_NOINIT_RAM_SECTION rotary_encoder_info_t info = { 0 };
 QueueHandle_t event_queue;
 
 static void encoder_task(void* arg)
