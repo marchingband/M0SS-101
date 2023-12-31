@@ -295,10 +295,10 @@ int main(void)
     // encoder_init();
     // buttons_init();
     // dsp_init(BUF_SIZE);
-    rgb_led_init();
-    xTaskCreate(rgb_task, (char *)"rgb_task", 512, NULL, 2, NULL);
+    // rgb_led_init();
+    // xTaskCreate(rgb_task, (char *)"rgb_task", 512, NULL, 2, NULL);
 
-    vTaskStartScheduler();
+    // vTaskStartScheduler();
 
     /* load the config struct or initialize it */
     printf("flash_init\r\n");
