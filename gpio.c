@@ -1,7 +1,9 @@
 #include <stdlib.h>
 #include <stdint.h>
-#include "bflb_gpio.h"
 #include <FreeRTOS.h>
+#include "bflb_gpio.h"
+
+#include "midi.h"
 
 struct bflb_device_s *b_gpio;
 
