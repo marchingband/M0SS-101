@@ -167,7 +167,7 @@ static uint8_t _process(rotary_encoder_info_t * info)
     return event;
 }
 
-static void _isr_rotenc(void * args)
+static void _isr_rotenc(int irq, void *args)
 {
     printf("interrupt");
     rotary_encoder_info_t * info = (rotary_encoder_info_t *)args;
