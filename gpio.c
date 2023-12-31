@@ -57,6 +57,26 @@ uint8_t button_cancelled[NUM_BUTTONS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 uint8_t button_state[NUM_BUTTONS]     = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
 uint64_t button_time[NUM_BUTTONS]     = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
+int button_label(int num){
+    switch(num){
+        case 0: return 1;
+        case 1: return 2;
+        case 2: return 3;
+        case 3: return 4;
+        case 6: return 5;
+        case 7: return 6;
+        case 8: return 7;
+        case 9: return 8;
+        case 10: return 9;
+        case 11: return 10;
+        case 12: return 11;
+        case 13: return 12;
+        case 22: return 13;
+        default: return 0;
+    }
+    return 0;
+}
+
 static void mux_gpio_init(void){
     b_gpio = bflb_device_get_by_name("gpio");
 

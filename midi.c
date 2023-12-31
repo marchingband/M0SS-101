@@ -208,21 +208,21 @@ void *declare(UIGlue *uiInterface, float *p, const char* key, const char* val){
 void handle_button_press(int num)
 {
     int ui_mode = get_ui_mode();
-    if(num == 14) // alt button
+    if(num == BUTTON_NUM_ALT) // alt button
     {
         set_ui_mode(UI_MODE_PLAY);
     }
     else if(alt_held())
     {
-        if(num == 4)
+        if(num == BUTTON_NUM_LOAD)
         {
             set_ui_mode(UI_MODE_LOAD);
         }
-        else if(num == 8)
+        else if(num == BUTTON_NUM_SAVE)
         {
             set_ui_mode(UI_MODE_SAVE);
         }
-        else if(num == 13)
+        else if(num == BUTTON_NUM_LEARN)
         {
             set_ui_mode(UI_MODE_LEARN);
             mode_learn_current_cc = 0;
@@ -230,9 +230,10 @@ void handle_button_press(int num)
     } 
     else if(ui_mode == UI_MODE_LEARN)
     {
-        if(num < 8)
+        int label = button_label(num);
+        if(label < 8)
         {
-            mode_learn_current_cc = num + 1;
+            mode_learn_current_cc = label + 1;
         }
     }
     else if(ui_mode == UI_MODE_PLAY)
@@ -254,17 +255,19 @@ void handle_button_press(int num)
     }
     else if(ui_mode == UI_MODE_LOAD)
     {
-        if(num < NUM_PRESETS)
+        int label = button_label(num);
+        if(label < NUM_PRESETS)
         {
-            load(num);
+            load(label);
         }
         set_ui_mode(UI_MODE_PLAY);
     }
     else if(ui_mode == UI_MODE_SAVE)
     {
-        if(num < NUM_PRESETS)
+        int label = button_label(num);
+        if(label < NUM_PRESETS)
         {
-            save(num);
+            save(label);
         }
         set_ui_mode(UI_MODE_PLAY);
     }

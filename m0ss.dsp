@@ -53,26 +53,26 @@ master_volume = hslider("volume[midi:8]",    1,     0,     1,  0.001)  : si.smoo
 // selections
 osc1_wavform = hslider("osc1-wavform[sel:0]",   0, 0, 2, 1);       // button 0    // GPIO 30
 osc1_octave  = hslider("osc1-oct[sel:1]",       0, 0, 2, 1);       // button 1    // GPIO 29
-osc2_wavform = hslider("osc2-wavform[sel:2]",   0, 0, 2, 1);       // button 2    // GPIO 28
-osc2_octave  = hslider("osc2-oct[sel:3]",       0, 0, 2, 1);       // button 3    // GPIO 27
-lfo_wavform  = hslider("lfo-wavform[sel:5]",    0, 0, 2, 1);       // button 5    // GPIO 20
-lfo2env      = hslider("lfo-to-env[sel:7]",     0, 0, 1, 1);       // button 7    // GPIO 10 
-filter_type  = hslider("hp-lp-bp[sel:9]",       1, 0, 2, 1);       // button 9    // GPIO 17
-asr_ar       = hslider("env-type[sel:11]",      0, 0, 1, 1);       // button 11   // GPIO 15
+osc2_octave  = hslider("osc2-oct[sel:2]",       0, 0, 2, 1);       // button 3    // GPIO 27
+osc2_wavform = hslider("osc2-wavform[sel:3]",   0, 0, 2, 1);       // button 2    // GPIO 28
+lfo_wavform  = hslider("lfo-wavform[sel:7]",    0, 0, 2, 1);       // button 5    // GPIO 20
+lfo2env      = hslider("lfo-to-env[sel:9]",     0, 0, 1, 1);       // button 7    // GPIO 10 
+filter_type  = hslider("hp-lp-bp[sel:13]",       1, 0, 2, 1);       // button 9    // GPIO 17
+// asr_ar       = hslider("env-type[sel:1]",      0, 0, 1, 1);       // button 11   // GPIO 15
 
 // modifiers
-lfo2pitch    = hslider("lfo-to-osc[mod:4]",     0, 0, 1, 0.001) ;   // button 4    // GPIO 16
-lfo2vca      = hslider("lfo-to-vca[mod:6]",     0, 0, 1, 0.001) ;   // button 6    // GPIO 12
-lfo2vcf      = hslider("lfo-to-vcf[mod:8]",     0, 0, 1, 0.001) ;   // button 8    // GPIO 13
-env2volume   = hslider("env-to-vca[mod:10]",    1, 0, 1, 0.001) ;   // button 10   // GPIO 3
-env2cutoff   = hslider("env-to-vcf[mod:12]",    0, 0, 1, 0.001) ;   // button 12   // GPIO 1
-env2pitch    = hslider("env-to-osc[mod:13]",    0, 0, 1, 0.001) ;   // button 13   // GPIO 0
+lfo2pitch    = hslider("lfo-to-osc[mod:10]",     0, 0, 1, 0.001) ;   // button 4    // GPIO 16
+lfo2vca      = hslider("lfo-to-vca[mod:8]",     0, 0, 1, 0.001) ;   // button 6    // GPIO 12
+lfo2vcf      = hslider("lfo-to-vcf[mod:11]",     0, 0, 1, 0.001) ;   // button 8    // GPIO 13
+env2volume   = hslider("env-to-vca[mod:15]",    1, 0, 1, 0.001) ;   // button 10   // GPIO 3
+env2cutoff   = hslider("env-to-vcf[mod:18]",    0, 0, 1, 0.001) ;   // button 12   // GPIO 1
+env2pitch    = hslider("env-to-osc[mod:20]",    0, 0, 1, 0.001) ;   // button 13   // GPIO 0
 
 // alts
 osc_1_pw     = hslider("osc-1-pw[alt:0]",     0.5,   0.1,   0.9,  0.0001) : si.smooth(0.1);      // button 0    // GPIO 30
-glide        = hslider("glide[alt:1]",        0.001, 0.001, 0.99, 0.0001);                 // button 1    // GPIO 29
-osc_2_pw     = hslider("osc-2-pw[alt:2]",     0.5,   0.1,   0.9,  0.0001) : si.smooth(0.1);      // button 2    // GPIO 28
-xor_volume   = hslider("xor-vol[alt:3]",      0,     0,     1,    0.0001) : si.smooth(0.1);      // button 3    // GPIO 27
+glide        = hslider("glide[alt:22]",        0.001, 0.001, 0.99, 0.0001);                 // button 1    // GPIO 29
+osc_2_pw     = hslider("osc-2-pw[alt:3]",     0.5,   0.1,   0.9,  0.0001) : si.smooth(0.1);      // button 2    // GPIO 28
+xor_volume   = hslider("xor-vol[alt:4]",      0,     0,     1,    0.0001) : si.smooth(0.1);      // button 3    // GPIO 27
 noise_volume = hslider("noise-vol[alt:5]",    0,     0,     1,    0.0001) : si.smooth(0.1);      // button 5    // GPIO 20
 
 // assignables
@@ -123,7 +123,8 @@ env_trig = gate, lfo_sq : ba.selectn(2, lfo2env);
 asr = en.asre(attack, 1, release, env_trig);
 ar_trig = env_trig : \(x).(x > x');
 ar = AR(attack, release, ar_trig);
-env = asr, ar : ba.selectn(2, asr_ar) <: attach(vbargraph("env[env:0]", 0 , 1));
+env = asr <: attach(vbargraph("env[env:0]", 0 , 1));
+// env = asr, ar : ba.selectn(2, asr_ar) <: attach(vbargraph("env[env:0]", 0 , 1));
 
 env_to_pitch  = env * env2pitch * 100 : ba.cent2ratio;
 env_to_volume = (env * env2volume) ;
