@@ -1,8 +1,8 @@
 #ifndef MIDI_H
 #define MIDI_H
 
-#define NUM_SEL 20
-#define NUM_CC 9
+#define NUM_SEL 27
+#define NUM_CC 27
 
 struct CC {
     float *p;
