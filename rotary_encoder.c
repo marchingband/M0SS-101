@@ -171,6 +171,15 @@ static void _isr_rotenc(int irq, void *args)
 {
     printf("interrupt");
     rotary_encoder_info_t * info = (rotary_encoder_info_t *)args;
+
+    if (bflb_gpio_get_intstatus(enc_gpio, info->pin_a)) {
+        bflb_gpio_int_clear(enc_gpio, info->pin_a);
+    }
+
+    if (bflb_gpio_get_intstatus(enc_gpio, info->pin_b)) {
+        bflb_gpio_int_clear(enc_gpio, info->pin_b);
+    }
+
     uint8_t event = _process(info);
     bool send_event = false;
 
