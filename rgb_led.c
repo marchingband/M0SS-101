@@ -11,8 +11,8 @@
 // #define PIXEL_SIZE 12 // each colour takes 4 bytes
 #define PIXEL_SIZE 3 // each colour takes 4 bytes
 // #define PIXEL_SIZE 6 // each colour takes 4 bytes
-#define NUM_LED 3
-// #define NUM_LED 26
+// #define NUM_LED 3
+#define NUM_LED 26
 
 struct bflb_device_s *i2s0;
 
@@ -70,7 +70,7 @@ static struct bflb_i2s_config_s i2s_cfg = {
     // .bclk_freq_hz = 130000 * 16 * 2, /* bclk = Sampling_rate * frame_width * channel_num */
     // .bclk_freq_hz = 8000 * 32, /* bclk = Sampling_rate * frame_width */
     // .bclk_freq_hz = 93750 * 32 * 2, /* bclk = Sampling_rate * frame_width * channel_num */
-    .bclk_freq_hz = 93750 * 16 * 2, /* bclk = Sampling_rate * frame_width * channel_num */ original
+    .bclk_freq_hz = 93750 * 16 * 2, // bclk = Sampling_rate * frame_width * channel_num original
     .role = I2S_ROLE_MASTER,
     .format_mode = I2S_MODE_LEFT_JUSTIFIED,
     // .channel_mode = I2S_CHANNEL_MODE_NUM_1,
