@@ -1,16 +1,14 @@
 #include <math.h>
 #include <stdlib.h>
 
+#include "board.h"
+
 #include "bflb_audac.h"
 #include "bflb_gpio.h"
 #include "bflb_dma.h"
 #include "bl616_irq.h"
-
 #include "bl616_glb.h"
-// #include "bflb_i2s.h"
 #include "bl616_glb_gpio.h"
-#include "board.h"
-
 #include "bflb_core.h"
 
 #include "audac.h"

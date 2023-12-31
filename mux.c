@@ -90,7 +90,7 @@ static void poll_buttons(){
                 bflb_gpio_reset(b_gpio, MUX_A0_PIN + j);
         }
         
-        bflb_mtimer_delay_ms(1); // let it settle
+        // bflb_mtimer_delay_ms(1); // let it settle
 
         // read the pins
         for(int k=0; k<3; k++)
@@ -98,7 +98,7 @@ static void poll_buttons(){
     }
     button_state[24] = bflb_gpio_read(b_gpio, BUTTON_25_PIN);
     button_state[25] = bflb_gpio_read(b_gpio, BUTTON_26_PIN);
-    button_state[26]            = bflb_gpio_read(b_gpio, ENCODER_BUTTON_PIN);
+    button_state[26] = bflb_gpio_read(b_gpio, ENCODER_BUTTON_PIN);
 }
 
 bool alt_held(void)
@@ -197,34 +197,4 @@ void buttons_init(){
     mux_gpio_init();
     connected_buttons_init();
     xTaskCreate(button_task, "button_task", 2048, NULL, 2, NULL);
-}
-
-void debug_mux(void){
-    for(int i=0; i<8; i++)
-    {
-        // set the mux
-        for(int j=0; j<3; j++)
-        {
-            if(mux_code[i][j])
-            {
-                bflb_gpio_set(b_gpio, MUX_A0_PIN + j);
-            }
-            else
-            {
-                bflb_gpio_reset(b_gpio, MUX_A0_PIN + j);
-            }
-        }
-        bflb_mtimer_delay_ms(1); // let it settle
-
-        bool a0 = bflb_gpio_read(b_gpio, MUX_0_DRAIN_PIN);
-        bool a1 = bflb_gpio_read(b_gpio, MUX_1_DRAIN_PIN);
-        bool a2 = bflb_gpio_read(b_gpio, MUX_2_DRAIN_PIN);
-
-        if(!a0)
-            printf("%d\n", mux_pins[i]);
-        if(!a1)
-            printf("%d\n", mux_pins[i + 8]);
-        if(!a2)
-            printf("%d\n", mux_pins[i + 16]);
-    }
 }
