@@ -18,13 +18,31 @@ struct bflb_device_s *i2s0;
 
 bool rgb_rendering = false;
 
+void test_rgb(){
+    pixel_buf[0]  = pixel_on;
+    pixel_buf[1]  = pixel_on;
+    pixel_buf[2]  = pixel_on;
+    pixel_buf[3]  = pixel_on;
+    pixel_buf[4]  = pixel_on;
+    pixel_buf[5]  = pixel_on;
+    pixel_buf[6]  = pixel_on;
+    pixel_buf[7]  = pixel_on;
+    pixel_buf[8]  = pixel_on;
+    pixel_buf[9]  = pixel_on;
+    pixel_buf[10] = pixel_on;
+    pixel_buf[11] = pixel_on;
+    pixel_buf[12] = pixel_on;
+    rgb_set_color(pixel_buf);
+}
+
 void rgb_task(void *pvParameters)
 {
     while (1) {
         if(!rgb_rendering)
         {
             // rgb_rendering = true;
-            render_lights();
+            // render_lights();
+            test_rgb();
         }
         // vTaskDelay(10);
         vTaskDelay(1000);
@@ -110,7 +128,7 @@ void i2s_send(void)
     // rgb_led_start();
     // bflb_i2s_feature_control(i2s0, I2S_CMD_DATA_ENABLE, I2S_CMD_DATA_ENABLE_TX);
     // bflb_i2s_feature_control(i2s0, I2S_CMD_CLEAR_TX_FIFO, true);
-    uint32_t *buf = ping_pong == 0 ? tx_buffer_a : tx_buffer_b;
+    // uint32_t *buf = ping_pong == 0 ? tx_buffer_a : tx_buffer_b;
     // uint16_t *buf = ping_pong == 0 ? tx_buffer_a : tx_buffer_b;
     tx_transfers[0].src_addr = ping_pong == 0 ? (uint32_t)tx_buffer_a : (uint32_t)tx_buffer_b;
     tx_transfers[0].dst_addr = (uint32_t)DMA_ADDR_I2S_TDR;
@@ -415,5 +433,22 @@ void render_lights(void)
         default: break;
     }
 
+    rgb_set_color(pixel_buf);
+}
+
+void test_rgb(){
+    pixel_buf[0]  = pixel_on;
+    pixel_buf[1]  = pixel_on;
+    pixel_buf[2]  = pixel_on;
+    pixel_buf[3]  = pixel_on;
+    pixel_buf[4]  = pixel_on;
+    pixel_buf[5]  = pixel_on;
+    pixel_buf[6]  = pixel_on;
+    pixel_buf[7]  = pixel_on;
+    pixel_buf[8]  = pixel_on;
+    pixel_buf[9]  = pixel_on;
+    pixel_buf[10] = pixel_on;
+    pixel_buf[11] = pixel_on;
+    pixel_buf[12] = pixel_on;
     rgb_set_color(pixel_buf);
 }
