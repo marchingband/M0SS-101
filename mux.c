@@ -26,7 +26,7 @@ const uint8_t mux_pins[24] = {
     // {15,16,17}, // {10,24,22}
     // {18,19,20}, // {18,21,1}
     // {21,22,23}  // {14,23,2}
-    16,6,13,7,5,8,17,9,15,4,19,12,20,11,3,10,24,22,18,21,1,14,23,2
+    15,5,12,6,4,7,16,8,14,3,18,11,19,10,2,9,23,21,17,20,0,13,22,1
 };
 
 #define MUX_A0_PIN 27
@@ -96,8 +96,8 @@ static void poll_buttons(){
         for(int k=0; k<3; k++)
             button_state[mux_pins[i + (k * 8)]] = bflb_gpio_read(b_gpio, mux_drain_pins[k]);
     }
-    button_state[BUTTON_25_PIN] = bflb_gpio_read(b_gpio, BUTTON_25_PIN);
-    button_state[BUTTON_26_PIN] = bflb_gpio_read(b_gpio, BUTTON_26_PIN);
+    button_state[24] = bflb_gpio_read(b_gpio, BUTTON_25_PIN);
+    button_state[25] = bflb_gpio_read(b_gpio, BUTTON_26_PIN);
     button_state[26]            = bflb_gpio_read(b_gpio, ENCODER_BUTTON_PIN);
 }
 
