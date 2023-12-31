@@ -294,6 +294,7 @@ int main(void)
 
     encoder_init();
     buttons_init();
+    
     vTaskStartScheduler();
 
     /* load the config struct or initialize it */
