@@ -46,8 +46,9 @@ const uint8_t mux_pins[24] = {
 #define NUM_BUTTONS 27
 
 // button roles
-#define BUTTON_NUM_LOAD 18
 #define BUTTON_NUM_SAVE 15
+#define BUTTON_NUM_LOAD 18
+#define BUTTON_NUM_ALT 23
 #define BUTTON_NUM_LEARN 25
 
 uint8_t button_pushes[NUM_BUTTONS]    = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -100,6 +101,11 @@ static void poll_buttons(){
     button_state[26]            = bflb_gpio_read(b_gpio, ENCODER_BUTTON_PIN);
 }
 
+bool alt_held(void)
+{
+    return button_state[BUTTON_NUM_ALT] == 0;
+}
+
 static void process_buttons(){
     for (int i =0; i< NUM_BUTTONS; i++)
     {
@@ -116,11 +122,11 @@ static void process_buttons(){
                     button_time[i] = now;
                     if(alt_held())
                     {
-                        if(i == 14) // its the alt button
+                        if(i == BUTTON_NUM_ALT) // its the alt button
                         {
                             handle_button_press(i);
                         }
-                        else if((i != 4) && (i != 8) && (i != 13)) // load / save / learn
+                        else if((i != BUTTON_NUM_LOAD) && (i != BUTTON_NUM_SAVE) && (i != BUTTON_NUM_LEARN)) // load / save / learn
                         {
                             button_cancelled[i] = 1;
                         }
@@ -144,7 +150,7 @@ static void process_buttons(){
                     {
                         button_cancelled[i] = 0;
                     }
-                    else if(i == 14) // its the alt button
+                    else if(i == BUTTON_NUM_ALT) // its the alt button
                     {
                         continue;
                     }
