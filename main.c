@@ -306,31 +306,31 @@ int main(void)
 
     /* start usb */
     printf("usbh_initialize\r\n");
-    usbh_initialize();
+    // usbh_initialize();
 
     /* dsp init */
     printf("dsp_init\r\n");
-    dsp_init(BUF_SIZE);
+    // dsp_init(BUF_SIZE);
 
     /* gpio init */
     printf("audac_gpio_init\r\n");
-    audac_gpio_init();
+    // audac_gpio_init();
 
     /* adc init */
     // adc_init();
 
     /* audac init */
     printf("audac_init\r\n");
-    audac_init();
+    // audac_init();
 
     /* dma init */
     printf("audac_dma_init\r\n");
-    audac_dma_init();
-    bflb_dma_channel_start(audac_dma_hd);
+    // audac_dma_init();
+    // bflb_dma_channel_start(audac_dma_hd);
 
     /* audac start */
     printf("bflb_audac_feature_control\r\n");
-    bflb_audac_feature_control(audac_hd, AUDAC_CMD_PLAY_START, 0);
+    // bflb_audac_feature_control(audac_hd, AUDAC_CMD_PLAY_START, 0);
 
     /* uart midi */
     printf("uart_receive_init\r\n");
