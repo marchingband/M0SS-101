@@ -138,7 +138,7 @@ static const uint16_t bitpatterns[4] = {0x88, 0x8c, 0xc8, 0xcc};
 uint32_t onezero1 = 0x86218862;
 uint32_t onezero2 = 0x18862188;
 uint32_t onezero3 = 0x62188621;
-uint32_t onezero4 = 0x88621886;
+uint32_t onezero4 = 0x88621800;
 
 void rgb_set_color(struct pixel_t *pixels){
     printf("rgb set color");
