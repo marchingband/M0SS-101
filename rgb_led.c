@@ -125,6 +125,7 @@ void i2s_send(void)
 static const uint16_t bitpatterns[4] = {0x88, 0x8e, 0xe8, 0xee};
 
 void rgb_set_color(struct pixel_t *pixels){
+    printf("rgb set color");
     uint32_t *buf = ping_pong == 0 ? tx_buffer_a : tx_buffer_b;
     // uint16_t *buf = ping_pong == 0 ? tx_buffer_a : tx_buffer_b;
     memset(buf, 0, sizeof tx_buffer_a);
