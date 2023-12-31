@@ -4,7 +4,7 @@
 #define NUM_BUTTONS 27
 
 void buttons_init();
-void poll_buttons();
+void poll_gpio();
 
 uint8_t *get_button_states(void);
 void cancel_button(int num);

@@ -185,7 +185,7 @@ void clear_button_pushes(void)
     memset(button_pushes, 0, sizeof button_pushes); // clear it on every read
 }
 
-void poll_buttons(){
+void poll_gpio(){
     read_buttons();
     process_buttons();
 }
@@ -193,8 +193,7 @@ void poll_buttons(){
 static void button_task(void* arg){
     while(1)
     {
-        poll_buttons();
-        process_buttons();
+        poll_gpio();
         vTaskDelay(10);
     }
 }
