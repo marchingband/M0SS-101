@@ -24,6 +24,7 @@
 #include "gpio.h"
 #include "flash.h"
 #include "mux.h"
+#include "encoder.h"
 
 void dsp_run(int16_t *dest);
 void dsp_init(size_t buf_size);
@@ -290,6 +291,9 @@ int main(void)
 {
     /* board init */
     board_init();
+
+    encoder_init();
+    vTaskStartScheduler();
 
     // mux init
     mux_gpio_init();

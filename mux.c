@@ -70,19 +70,10 @@ void debug_mux(void){
         bool a2 = bflb_gpio_read(mux_gpio, MUX_3_DRAIN);
 
         if(!a0)
-        {
             printf("%d\n", mux_pins[i]);
-            // printf("%d\n", i);
-        }
         if(!a1)
-        {
             printf("%d\n", mux_pins[i + 8]);
-            // printf("%d\n", i + 8);
-        }
         if(!a2)
-        {
             printf("%d\n", mux_pins[i + 16]);
-            // printf("%d\n", i + 16);
-        }
     }
 }
