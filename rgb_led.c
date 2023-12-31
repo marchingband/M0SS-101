@@ -135,27 +135,27 @@ static const uint16_t bitpatterns[4] = {0x88, 0x8c, 0xc8, 0xcc};
 // uint8_t one = 0b110
 // uint8_t two = 0b100
 
-uint32_t onezero1 = 0xE03E0E03;
-uint32_t onezero2 = 0xE0E03E0E;
-uint32_t onezero3 = 0x03E0E03E;
-uint32_t onezero4 = 0x0E03E0E0;
-uint32_t onezero5 = 0x3E0E03E0;
+uint32_t onezero1 = 0xC03E0C03;
+uint32_t onezero2 = 0xE0C03E0C;
+uint32_t onezero3 = 0x03E0C03E;
+uint32_t onezero4 = 0x0C03E0C0;
+uint32_t onezero5 = 0x3E0C03E0;
 
-uint32_t onezero6 =  0xE03E0E03;
-uint32_t onezero7 =  0xE0E03E0E;
-uint32_t onezero8 =  0x03E0E03E;
-uint32_t onezero9 =  0x0E03E0E0;
-uint32_t onezero10 = 0x3E0E03E0;
-uint32_t onezero11 = 0xE03E0E03;
-uint32_t onezero12 = 0xE0E03E0E;
-uint32_t onezero13 = 0x03E0E03E;
-uint32_t onezero14 = 0x0E03E0E0;
-uint32_t onezero15 = 0x3E0E03E0;
-uint32_t onezero16 = 0xE03E0E03;
-uint32_t onezero17 = 0xE0E03E0E;
-uint32_t onezero18 = 0x03E0E03E;
-uint32_t onezero19 = 0x0E03E0E0;
-uint32_t onezero20 = 0x3E0E03E0;
+uint32_t onezero6 =  0xC03E0C03;
+uint32_t onezero7 =  0xE0C03E0C;
+uint32_t onezero8 =  0x03E0C03E;
+uint32_t onezero9 =  0x0C03E0C0;
+uint32_t onezero10 = 0x3E0C03E0;
+uint32_t onezero11 = 0xC03E0C03;
+uint32_t onezero12 = 0xE0C03E0C;
+uint32_t onezero13 = 0x03E0C03E;
+uint32_t onezero14 = 0x0C03E0C0;
+uint32_t onezero15 = 0x3E0C03E0;
+uint32_t onezero16 = 0xC03E0C03;
+uint32_t onezero17 = 0xE0C03E0C;
+uint32_t onezero18 = 0x03E0C03E;
+uint32_t onezero19 = 0x0C03E0C0;
+uint32_t onezero20 = 0x3E0C03E0;
 
 
 
