@@ -11,8 +11,7 @@
 // #define PIXEL_SIZE 12 // each colour takes 4 bytes
 #define PIXEL_SIZE 3 // each colour takes 4 bytes
 // #define PIXEL_SIZE 6 // each colour takes 4 bytes
-// #define NUM_LED 26
-#define NUM_LED 12
+#define NUM_LED 26
 
 struct bflb_device_s *i2s0;
 
@@ -117,7 +116,7 @@ void i2s_send(void)
     // uint16_t *buf = ping_pong == 0 ? tx_buffer_a : tx_buffer_b;
     tx_transfers[0].src_addr = ping_pong == 0 ? (uint32_t)tx_buffer_a : (uint32_t)tx_buffer_b;
     tx_transfers[0].dst_addr = (uint32_t)DMA_ADDR_I2S_TDR;
-    tx_transfers[0].nbytes = sizeof(tx_buffer_a) * sizeof(uint32_t);
+    tx_transfers[0].nbytes = sizeof(tx_buffer_a);
     bflb_dma_channel_lli_reload(dma0_ch1, tx_llipool, 1, tx_transfers, 1);
     bflb_dma_channel_start(dma0_ch1);
     ping_pong = ping_pong == 0 ? 1 : 0;
@@ -435,5 +434,18 @@ void test_rgb_lights(){
     pixel_buf[10] = pixel_on;
     pixel_buf[11] = pixel_on;
     pixel_buf[12] = pixel_on;
+    pixel_buf[13]  = pixel_on;
+    pixel_buf[14]  = pixel_on;
+    pixel_buf[15]  = pixel_on;
+    pixel_buf[16]  = pixel_on;
+    pixel_buf[17]  = pixel_on;
+    pixel_buf[18]  = pixel_on;
+    pixel_buf[19]  = pixel_on;
+    pixel_buf[20]  = pixel_on;
+    pixel_buf[21]  = pixel_on;
+    pixel_buf[22]  = pixel_on;
+    pixel_buf[23] = pixel_on;
+    pixel_buf[24] = pixel_on;
+    pixel_buf[25] = pixel_on;
     rgb_set_color(pixel_buf);
 }
