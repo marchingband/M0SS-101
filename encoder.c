@@ -27,7 +27,7 @@ static void encoder_task(void* arg)
         if (xQueueReceive(event_queue, &event, portMAX_DELAY))
         {
             // on_encoder(event.state.direction == ROTARY_ENCODER_DIRECTION_CLOCKWISE);
-            printf("Event: position %d, direction %s", event.state.position,
+            printf("Event: position %d, direction %s\n", event.state.position,
                      event.state.direction ? (event.state.direction == ROTARY_ENCODER_DIRECTION_CLOCKWISE ? "CW" : "CCW") : "NOT_SET");
         }    
     }
