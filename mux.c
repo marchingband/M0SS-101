@@ -131,7 +131,7 @@ static void process_buttons(){
                             button_cancelled[i] = 1;
                         }
                     }
-                    printf("button %d pushed", i);
+                    printf("button %d pushed\n", i);
                 }
             }
         }
@@ -145,7 +145,7 @@ static void process_buttons(){
                     button_pushes[i] = 0;
                     button_state[i] = 1;
                     button_time[i] = now;
-                    printf("button %d released", i);
+                    printf("button %d released\n", i);
                     if(button_cancelled[i])
                     {
                         button_cancelled[i] = 0;
