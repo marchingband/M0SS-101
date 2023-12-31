@@ -147,6 +147,15 @@ uint32_t onezero9 = 0x88621886;
 uint32_t onezero10 = 0x21886218;
 uint32_t onezero11 = 0x86218862;
 uint32_t onezero12 = 0x18862188;
+uint32_t onezero13 = 0x62188621;
+uint32_t onezero14 = 0x88621886;
+uint32_t onezero15 = 0x21886218;
+uint32_t onezero16 = 0x86218862;
+uint32_t onezero17 = 0x18862188;
+uint32_t onezero18 = 0x62188621;
+uint32_t onezero19 = 0x88621886;
+uint32_t onezero20 = 0x21886218;
+
 
 
 
@@ -167,6 +176,16 @@ void rgb_set_color(struct pixel_t *pixels){
     buf[9] = onezero10;
     buf[10] = onezero11;
     buf[11] = onezero12;
+    buf[12] = onezero13;
+    buf[13] = onezero14;
+    buf[14] = onezero15;
+    buf[15] = onezero16;
+    buf[16] = onezero17;
+    buf[17] = onezero18;
+    buf[18] = onezero19;
+    buf[19] = onezero20;
+
+
 
     // for (int i = 0; i < NUM_LED; i++) {
     //     int loc = i * PIXEL_SIZE;
