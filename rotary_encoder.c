@@ -129,6 +129,8 @@ static const uint8_t _ttable_half[TABLE_ROWS][TABLE_COLS] = {
 #  define F_CCW_FINAL 0x5
 #  define F_CCW_NEXT  0x6
 
+struct bflb_device_s *enc_gpio;
+
 static const uint8_t _ttable_full[TABLE_ROWS][TABLE_COLS] = {
     // 00        01           10           11                  // BA
     {R_START,    F_CW_BEGIN,  F_CCW_BEGIN, R_START},           // R_START
@@ -146,7 +148,8 @@ static uint8_t _process(rotary_encoder_info_t * info)
     if (info != NULL)
     {
         // Get state of input pins.
-        uint8_t pin_state = (gpio_get_level(info->pin_b) << 1) | gpio_get_level(info->pin_a);
+        // uint8_t pin_state = (gpio_get_level(info->pin_b) << 1) | gpio_get_level(info->pin_a);
+        uint8_t pin_state = (bflb_gpio_read(enc_gpio, info->pin_b) << 1) | bflb_gpio_read(enc_gpio, info->pin_a);
 
         // Determine new state from the pins and state table.
 #ifdef ROTARY_ENCODER_DEBUG
@@ -205,8 +208,6 @@ static void _isr_rotenc(void * args)
         }
     }
 }
-
-struct bflb_device_s *enc_gpio;
 
 void rotary_encoder_init(rotary_encoder_info_t * info, int pin_a, int pin_b)
 {
