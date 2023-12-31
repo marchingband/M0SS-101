@@ -169,7 +169,6 @@ static uint8_t _process(rotary_encoder_info_t * info)
 
 static void _isr_rotenc(int irq, void *args)
 {
-    printf("interrupt");
     rotary_encoder_info_t * info = (rotary_encoder_info_t *)args;
 
     if (bflb_gpio_get_intstatus(enc_gpio, info->pin_a)) {
@@ -229,16 +228,6 @@ void rotary_encoder_init(rotary_encoder_info_t * info, int pin_a, int pin_b)
         info->state.position = 0;
         info->state.direction = ROTARY_ENCODER_DIRECTION_NOT_SET;
 
-        // configure GPIOs
-
-        // gpio_config_t io_conf;
-        // io_conf.intr_type = GPIO_INTR_ANYEDGE;
-        // io_conf.pin_bit_mask = ((1ULL << info->pin_a) | (1ULL << info->pin_b) );
-        // io_conf.mode = GPIO_MODE_INPUT;
-        // io_conf.pull_down_en = 0;
-        // io_conf.pull_up_en = 0;
-        // gpio_config(&io_conf);
-
         enc_gpio = bflb_device_get_by_name("gpio");
 
         bflb_gpio_int_init(enc_gpio, info->pin_a, GPIO_INT_TRIG_MODE_SYNC_FALLING_RISING_EDGE);
@@ -250,22 +239,6 @@ void rotary_encoder_init(rotary_encoder_info_t * info, int pin_a, int pin_b)
         bflb_gpio_int_mask(enc_gpio, info->pin_b, false);
         bflb_irq_attach(enc_gpio->irq_num, _isr_rotenc, (void *)info);
         bflb_irq_enable(enc_gpio->irq_num);
-
-
-        // gpio_pad_select_gpio(info->pin_a);
-        // gpio_set_pull_mode(info->pin_a, GPIO_PULLUP_ONLY);
-        // gpio_set_direction(info->pin_a, GPIO_MODE_INPUT);
-        // gpio_set_intr_type(info->pin_a, GPIO_INTR_ANYEDGE);
-
-        // gpio_pad_select_gpio(info->pin_b);
-        // gpio_set_pull_mode(info->pin_b, GPIO_PULLUP_ONLY);
-        // gpio_set_direction(info->pin_b, GPIO_MODE_INPUT);
-        // gpio_set_intr_type(info->pin_b, GPIO_INTR_ANYEDGE);
-
-        // install interrupt handlers
-        // gpio_install_isr_service(0);
-        // gpio_isr_handler_add(info->pin_a, _isr_rotenc, info);
-        // gpio_isr_handler_add(info->pin_b, _isr_rotenc, info);
     }
     else
     {
