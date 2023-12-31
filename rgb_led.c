@@ -141,25 +141,6 @@ uint32_t onezero3 = 0x03E0C03E;
 uint32_t onezero4 = 0x0C03E0C0;
 uint32_t onezero5 = 0x3E0C03E0;
 
-uint32_t onezero6 =  0xC03E0C03;
-uint32_t onezero7 =  0xE0C03E0C;
-uint32_t onezero8 =  0x03E0C03E;
-uint32_t onezero9 =  0x0C03E0C0;
-uint32_t onezero10 = 0x3E0C03E0;
-uint32_t onezero11 = 0xC03E0C03;
-uint32_t onezero12 = 0xE0C03E0C;
-uint32_t onezero13 = 0x03E0C03E;
-uint32_t onezero14 = 0x0C03E0C0;
-uint32_t onezero15 = 0x3E0C03E0;
-uint32_t onezero16 = 0xC03E0C03;
-uint32_t onezero17 = 0xE0C03E0C;
-uint32_t onezero18 = 0x03E0C03E;
-uint32_t onezero19 = 0x0C03E0C0;
-uint32_t onezero20 = 0x3E0C03E0;
-
-
-
-
 void rgb_set_color(struct pixel_t *pixels){
     printf("rgb set color");
     uint32_t *buf = ping_pong == 0 ? tx_buffer_a : tx_buffer_b;
@@ -170,21 +151,41 @@ void rgb_set_color(struct pixel_t *pixels){
     buf[2] = onezero3;
     buf[3] = onezero4;
     buf[4] = onezero5;
-    buf[5] = onezero6;
-    buf[6] = onezero7;
-    buf[7] = onezero8;
-    buf[8] = onezero9;
-    buf[9] = onezero10;
-    buf[10] = onezero11;
-    buf[11] = onezero12;
-    buf[12] = onezero13;
-    buf[13] = onezero14;
-    buf[14] = onezero15;
-    buf[15] = onezero16;
-    buf[16] = onezero17;
-    buf[17] = onezero18;
-    buf[18] = onezero19;
-    buf[19] = onezero20;
+    buf[5] = onezero1;
+    buf[6] = onezero2;
+    buf[7] = onezero3;
+    buf[8] = onezero4;
+    buf[9] = onezero5;
+    buf[10] = onezero1;
+    buf[11] = onezero2;
+    buf[12] = onezero3;
+    buf[13] = onezero4;
+    buf[14] = onezero5;
+    buf[15] = onezero1;
+    buf[16] = onezero2;
+    buf[17] = onezero3;
+    buf[18] = onezero4;
+    buf[19] = onezero5;
+    buf[20] = onezero1;
+    buf[21] = onezero2;
+    buf[22] = onezero3;
+    buf[23] = onezero4;
+    buf[24] = onezero5;
+    buf[25] = onezero1;
+    buf[26] = onezero2;
+    buf[27] = onezero3;
+    buf[28] = onezero4;
+    buf[29] = onezero5;
+    buf[30] = onezero1;
+    buf[31] = onezero2;
+    buf[32] = onezero3;
+    buf[33] = onezero4;
+    buf[34] = onezero5;
+    buf[35] = onezero1;
+    buf[36] = onezero2;
+    buf[37] = onezero3;
+    buf[38] = onezero4;
+    buf[39] = onezero5;
 
 
 
