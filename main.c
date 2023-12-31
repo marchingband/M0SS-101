@@ -115,13 +115,13 @@ int main(void)
     printf("usbh_initialize\r\n");
     usbh_initialize();
 
-    /* dsp init */
-    printf("dsp_init\r\n");
-    dsp_init(BUF_SIZE);
-
     /* setup button scanners */
     printf("gpio_init\r\n");
     buttons_init();
+
+    /* dsp init */
+    printf("dsp_init\r\n");
+    dsp_init(BUF_SIZE);
 
     /* audio dac init */
     printf("audio_dac_init\r\n");
