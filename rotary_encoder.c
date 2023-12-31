@@ -287,7 +287,7 @@ void rotary_encoder_flip_direction(rotary_encoder_info_t * info)
     }
     else
     {
-        prinf("info is NULL");
+        printf("info is NULL");
     }
 }
 
