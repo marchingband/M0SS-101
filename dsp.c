@@ -229,7 +229,7 @@ void dsp_run(int16_t *dest)
         dest[i] = (uint16_t)(raw < -32766 ? -32766 : raw > 32767 ? 32767 : raw);
     }
     consumed = bflb_mtimer_get_time_us() - now;
-    poll_gpio();
+    // poll_gpio();
 
     // loop_cnt++;
     // if(loop_cnt >= 200)
