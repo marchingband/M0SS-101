@@ -292,9 +292,9 @@ int main(void)
     /* board init */
     board_init();
 
-    encoder_init();
-    buttons_init();
-    dsp_init(BUF_SIZE);
+    // encoder_init();
+    // buttons_init();
+    // dsp_init(BUF_SIZE);
     rgb_led_init();
     xTaskCreate(rgb_task, (char *)"rgb_task", 512, NULL, 2, NULL);
 
