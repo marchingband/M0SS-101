@@ -111,36 +111,36 @@ int main(void)
     printf("flash_init\r\n");
     flash_init();
 
-    /* start usb */
-    printf("usbh_initialize\r\n");
-    usbh_initialize();
-
     /* setup button scanners */
     printf("gpio_init\r\n");
     buttons_init();
 
-    /* dsp init */
-    printf("dsp_init\r\n");
-    dsp_init(BUF_SIZE);
+    // /* start usb */
+    // printf("usbh_initialize\r\n");
+    // usbh_initialize();
 
-    /* audio dac init */
-    printf("audio_dac_init\r\n");
-    audio_dac_init();
+    // /* dsp init */
+    // printf("dsp_init\r\n");
+    // dsp_init(BUF_SIZE);
 
-    /* adc init */
-    // adc_init();
+    // /* audio dac init */
+    // printf("audio_dac_init\r\n");
+    // audio_dac_init();
 
-    /* uart midi */
-    printf("uart_receive_init\r\n");
-    uart_receive_init();
+    // /* adc init */
+    // // adc_init();
 
-    /* usb midi host */
-    printf("usb_midi_init\r\n");
-    usb_midi_init();
+    // /* uart midi */
+    // printf("uart_receive_init\r\n");
+    // uart_receive_init();
 
-    /* start the LEDs */
-    printf("rgb_led_init\r\n");
-    rgb_led_init();
+    // /* usb midi host */
+    // printf("usb_midi_init\r\n");
+    // usb_midi_init();
+
+    // /* start the LEDs */
+    // printf("rgb_led_init\r\n");
+    // rgb_led_init();
 
     /* setup encoder */
     printf("encoder_init\r\n");
