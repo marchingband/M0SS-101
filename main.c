@@ -296,13 +296,6 @@ int main(void)
     buttons_init();
     vTaskStartScheduler();
 
-    // mux init
-    mux_gpio_init();
-    while(1){
-        debug_mux();
-        bflb_mtimer_delay_ms(100);
-    }
-
     /* load the config struct or initialize it */
     printf("flash_init\r\n");
     flash_init();
