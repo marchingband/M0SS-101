@@ -67,8 +67,8 @@ lfo2vcf      = hslider("lfo-to-vcf[mod:11]",     0, 0, 1, 0.001) ;   // button 8
 env2volume   = hslider("env-to-vca[mod:15]",    1, 0, 1, 0.001) ;   // button 10   // GPIO 3
 env2cutoff   = hslider("env-to-vcf[mod:18]",    0, 0, 1, 0.001) ;   // button 12   // GPIO 1
 env2pitch    = hslider("env-to-osc[mod:20]",    0, 0, 1, 0.001) ;   // button 13   // GPIO 0
-decay        = hslider("decay[mod:19]",         0, 0, 1, 0.001) ;   // button 13   // GPIO 0
-sustain      = hslider("sustain[mod:21]",       1, 0, 1, 0.001) ;   // button 13   // GPIO 0
+decay        = hslider("decay[mod:19]",         0.001, 0.001, 1, 0.001) ;   // button 13   // GPIO 0
+sustain      = hslider("sustain[mod:21]",       1, 0.001, 1, 0.001) ;   // button 13   // GPIO 0
 
 // alts
 osc_1_pw     = hslider("osc-1-pw[alt:0]",     0.5,   0.1,   0.9,  0.0001) : si.smooth(0.1);      // button 0    // GPIO 30
