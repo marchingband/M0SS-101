@@ -114,7 +114,7 @@ void i2s_send(void)
     // uint16_t *buf = ping_pong == 0 ? tx_buffer_a : tx_buffer_b;
     tx_transfers[0].src_addr = ping_pong == 0 ? (uint32_t)tx_buffer_a : (uint32_t)tx_buffer_b;
     tx_transfers[0].dst_addr = (uint32_t)DMA_ADDR_I2S_TDR;
-    tx_transfers[0].nbytes = sizeof(tx_buffer_a);
+    tx_transfers[0].nbytes = sizeof(tx_buffer_a) * sizeof(uint32_t);
     bflb_dma_channel_lli_reload(dma0_ch1, tx_llipool, 1, tx_transfers, 1);
     bflb_dma_channel_start(dma0_ch1);
     ping_pong = ping_pong == 0 ? 1 : 0;
