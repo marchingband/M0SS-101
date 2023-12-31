@@ -68,8 +68,8 @@ void dma0_ch1_isr(void *arg)
 static struct bflb_i2s_config_s i2s_cfg = {
     // .bclk_freq_hz = 130000 * 16 * 2, /* bclk = Sampling_rate * frame_width * channel_num */
     // .bclk_freq_hz = 8000 * 32, /* bclk = Sampling_rate * frame_width */
-    .bclk_freq_hz = 93750 * 24 * 2, /* bclk = Sampling_rate * frame_width * channel_num */
-    // .bclk_freq_hz = 93750 * 16 * 2, /* bclk = Sampling_rate * frame_width * channel_num */
+    // .bclk_freq_hz = 93750 * 24 * 2, /* bclk = Sampling_rate * frame_width * channel_num */
+    .bclk_freq_hz = 93750 * 16 * 2, /* bclk = Sampling_rate * frame_width * channel_num */
     .role = I2S_ROLE_MASTER,
     .format_mode = I2S_MODE_LEFT_JUSTIFIED,
     // .channel_mode = I2S_CHANNEL_MODE_NUM_1,
@@ -127,7 +127,8 @@ void i2s_send(void)
     ping_pong = ping_pong == 0 ? 1 : 0;
 }
 
-static const uint16_t bitpatterns[4] = {0x88, 0x8e, 0xe8, 0xee};
+static const uint16_t bitpatterns[4] = {0x88, 0x8c, 0xc8, 0xcc};
+// static const uint16_t bitpatterns[4] = {0x88, 0x8e, 0xe8, 0xee};
 
 void rgb_set_color(struct pixel_t *pixels){
     printf("rgb set color");
