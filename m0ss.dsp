@@ -46,7 +46,8 @@ mix       = hslider("mix[midi:4]",       0.5,   0,     1,   0.0001) : si.smooth(
 release       = hslider("release[midi:5]",   0.001, 0.001, 1,  0.0001);
 // release       = hslider("release[midi:5]",   0.001, 0.001, 1,  0.0001) : ba.lin2LogGain : it.remap(0.001, 1.0, 0.001, 20.0);
 resonance     = hslider("resonance[midi:6]", 0.001, 0.001, 1,  0.0001) : it.remap(0.0, 1.0, 0.707, 25.0);
-detune        = hslider("detune[midi:7]",    0,     0,     1, 0.0001) : ba.lin2LogGain: (_ * 1200) : ba.cent2ratio : si.smooth(0.1);
+detune        = hslider("detune[midi:7]",    0,     0,     1, 0.0001);
+// detune        = hslider("detune[midi:7]",    0,     0,     1, 0.0001) : ba.lin2LogGain: (_ * 1200) : ba.cent2ratio : si.smooth(0.1);
 master_volume = hslider("volume[midi:8]",    1,     0,     1,  0.001)  : si.smooth(0.1);
 
 
