@@ -71,11 +71,15 @@ decay        = hslider("decay[mod:19]",         0.001, 0.001, 1, 0.001) ;   // b
 sustain      = hslider("sustain[mod:21]",       1, 0.001, 1, 0.001) ;   // button 13   // GPIO 0
 
 // alts
-osc_1_pw     = hslider("osc-1-pw[alt:0]",     0.5,   0.1,   0.9,  0.0001) : si.smooth(0.1);      // button 0    // GPIO 30
+osc_1_pw     = hslider("osc-1-pw[alt:0]",     0.5,   0.1,   0.9,  0.0001);      // button 0    // GPIO 30
+// osc_1_pw     = hslider("osc-1-pw[alt:0]",     0.5,   0.1,   0.9,  0.0001) : si.smooth(0.1);      // button 0    // GPIO 30
 glide        = hslider("glide[alt:23]",        0.001, 0.001, 0.99, 0.0001);                 // button 1    // GPIO 29
-osc_2_pw     = hslider("osc-2-pw[alt:3]",     0.5,   0.1,   0.9,  0.0001) : si.smooth(0.1);      // button 2    // GPIO 28
-xor_volume   = hslider("xor-vol[alt:4]",      0,     0,     1,    0.0001) : si.smooth(0.1);      // button 3    // GPIO 27
-noise_volume = hslider("noise-vol[alt:5]",    0,     0,     1,    0.0001) : si.smooth(0.1);      // button 5    // GPIO 20
+osc_2_pw     = hslider("osc-2-pw[alt:3]",     0.5,   0.1,   0.9,  0.0001);      // button 2    // GPIO 28
+// osc_2_pw     = hslider("osc-2-pw[alt:3]",     0.5,   0.1,   0.9,  0.0001) : si.smooth(0.1);      // button 2    // GPIO 28
+xor_volume   = hslider("xor-vol[alt:4]",      0,     0,     1,    0.0001);      // button 3    // GPIO 27
+// xor_volume   = hslider("xor-vol[alt:4]",      0,     0,     1,    0.0001) : si.smooth(0.1);      // button 3    // GPIO 27
+noise_volume = hslider("noise-vol[alt:5]",    0,     0,     1,    0.0001);      // button 5    // GPIO 20
+// noise_volume = hslider("noise-vol[alt:5]",    0,     0,     1,    0.0001) : si.smooth(0.1);      // button 5    // GPIO 20
 
 // assignables
 pitch_bend_up   = hslider("pbend_up[asb:0]", 2,  0, 24, 1);
@@ -122,8 +126,8 @@ vcf = _ <: hpf, lpf, bpf : ba.selectn(3, filter_type) ;
 env_trig = gate, lfo_sq : ba.selectn(2, lfo2env);
 // bias = 0.7;
 // asr = en.adsr_bias(attack, 0, 1, release, bias, bias, bias, 1, env_trig);
-env = en.adsre(attack, decay, sustain, release, env_trig) <: attach(vbargraph("env[env:0]", 0 , 1));
-// env = en.asre(attack, 1, release, env_trig) <: attach(vbargraph("env[env:0]", 0 , 1));
+// env = en.adsre(attack, decay, sustain, release, env_trig) <: attach(vbargraph("env[env:0]", 0 , 1));
+env = en.asre(attack, 1, release, env_trig) <: attach(vbargraph("env[env:0]", 0 , 1));
 // ar_trig = env_trig : \(x).(x > x');
 // ar = AR(attack, release, ar_trig);
 // env = asr <: attach(vbargraph("env[env:0]", 0 , 1));
