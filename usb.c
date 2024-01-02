@@ -215,7 +215,8 @@ static void usbh_midi_thread(void *argument)
             }
             else
             {
-                usbh_bulk_urb_fill(&cdc_bulkin_urb, midi_class->bulkin, midi_buffer, 64, 0, usbh_cdc_acm_callback, midi_class);
+                usbh_bulk_urb_fill(&cdc_bulkin_urb, midi_class->bulkin, midi_buffer, 64, 3000, usbh_cdc_acm_callback, midi_class);
+                // usbh_bulk_urb_fill(&cdc_bulkin_urb, midi_class->bulkin, midi_buffer, 64, 0, usbh_cdc_acm_callback, midi_class);
                 ret = usbh_submit_urb(&cdc_bulkin_urb);
                 if ((ret < 0) && (ret != -16))
                 {
