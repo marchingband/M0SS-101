@@ -36,15 +36,15 @@ pitch_bend = hslider("pitch-bend[pitch-bend:0]", 8192, 0, 16383, 1); // 14bit
 // TODO use [scale:log]
 
 // CC 1-4 
-attack    = hslider("attack[midi:1]",    0.001, 0.001, 1,   0.0001);
-// attack    = hslider("attack[midi:1]",    0.001, 0.001, 1,   0.0001) : log3 : it.remap(0.001, 1.0, 0.001, 20.0);
+// attack    = hslider("attack[midi:1]",    0.001, 0.001, 1,   0.0001);
+attack    = hslider("attack[midi:1]",    0.001, 0.001, 1,   0.0001) : log3 : it.remap(0.001, 1.0, 0.001, 20.0);
 cutoff    = hslider("cutoff[midi:2]",    0.5,   0,     1,   0.0001) : ba.lin2LogGain : si.smooth(ba.tau2pole(0.05)) : (_ * lfo_to_cuttoff) : (_ * env_to_cutoff) : clamp(0, 1);
 lfo_freq  = hslider("lfo-freq[midi:3]",  0.3,   0.0,   1.0, 0.0001) : ba.lin2LogGain : it.remap(0.0, 1.0, 0.01, 20.0);
 mix       = hslider("mix[midi:4]",       0.5,   0,     1,   0.0001) : si.smooth(0.1);
 
 // CC 5-8
-release       = hslider("release[midi:5]",   0.001, 0.001, 1,  0.0001);
-// release       = hslider("release[midi:5]",   0.001, 0.001, 1,  0.0001) : ba.lin2LogGain : it.remap(0.001, 1.0, 0.001, 20.0);
+// release       = hslider("release[midi:5]",   0.001, 0.001, 1,  0.0001);
+release       = hslider("release[midi:5]",   0.001, 0.001, 1,  0.0001) : ba.lin2LogGain : it.remap(0.001, 1.0, 0.001, 20.0);
 resonance     = hslider("resonance[midi:6]", 0.001, 0.001, 1,  0.0001) : it.remap(0.0, 1.0, 0.707, 25.0);
 detune        = hslider("detune[midi:7]",    0,     0,     1, 0.0001) : ba.lin2LogGain: (_ * 1200) : ba.cent2ratio : si.smooth(0.1);
 master_volume = hslider("volume[midi:8]",    1,     0,     1,  0.001)  : si.smooth(0.1);
@@ -122,7 +122,7 @@ vcf = _ <: hpf, lpf, bpf : ba.selectn(3, filter_type) ;
 env_trig = gate, lfo_sq : ba.selectn(2, lfo2env);
 // bias = 0.7;
 // asr = en.adsr_bias(attack, 0, 1, release, bias, bias, bias, 1, env_trig);
-env = en.adsr(attack, decay, sustain, release, env_trig) <: attach(vbargraph("env[env:0]", 0 , 1));
+env = en.adsre(attack, decay, sustain, release, env_trig) <: attach(vbargraph("env[env:0]", 0 , 1));
 // env = en.asre(attack, 1, release, env_trig) <: attach(vbargraph("env[env:0]", 0 , 1));
 // ar_trig = env_trig : \(x).(x > x');
 // ar = AR(attack, release, ar_trig);
