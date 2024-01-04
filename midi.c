@@ -96,7 +96,7 @@ void extract(const char *name, float *p, float init, float min, float max, float
             float per = steps / 127.0;
             cc->mul = per;
             strcpy(cc->name, name);
-            return;
+            // return;
         }
     }
 
@@ -112,7 +112,7 @@ void extract(const char *name, float *p, float init, float min, float max, float
             float per = steps / 127.0;
             mod->mul = per;
             strcpy(mod->name, name);
-            return;
+            // return;
         }
     }
 
@@ -128,7 +128,7 @@ void extract(const char *name, float *p, float init, float min, float max, float
             float per = steps / 127.0;
             alt->mul = per;
             strcpy(alt->name, name);
-            return;
+            // return;
         }
     }
 
@@ -140,7 +140,7 @@ void extract(const char *name, float *p, float init, float min, float max, float
             sel->max = max;
             sel->init = init;
             strcpy(sel->name, name);
-            return;
+            // return;
         }
     }
 
