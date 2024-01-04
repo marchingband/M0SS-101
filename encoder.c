@@ -9,6 +9,8 @@
 #include "stdbool.h"
 
 #include "rotary_encoder.h"
+#include "gpio.h"
+#include "midi.h"
 
 #define ROT_ENC_A_GPIO 16
 #define ROT_ENC_B_GPIO 17
@@ -22,8 +24,60 @@ QueueHandle_t event_queue;
 int encoder_state = 0;
 
 static void on_encoder(bool up){
-    encoder_state = up ? encoder_state + 1 : encoder_state - 1;
-    printf("encoder -> %d\n", encoder_state);
+    // encoder_state = up ? encoder_state + 1 : encoder_state - 1;
+    // printf("encoder -> %d\n", encoder_state);
+
+    uint8_t *button_states = get_button_states();
+    for(int i=0; i<NUM_BUTTONS; i++)
+    {
+        if(button_states[i] == 0) // button is pressed means 0
+        {
+            if(alt_held())
+            {
+                struct Alt *alts = get_alts();
+                struct Alt alt = Alts[i];
+                if(alt.p == 0)
+                {
+                    printf("got unknown Alt %d\n", i);
+                }
+                else
+                {
+                    float cur = *alt.p;
+                    float step = alt.step * alt.mul;
+                    float next = up ? cur + step : cur - step;
+                    float clamped = next > alt.max ? alt.max : next < alt.min ? alt.min : next;
+                    *alt.p = clamped;
+
+                    // float steps = alt.mul * (float)cc_val;
+                    // int whole_steps = round(steps);
+                    // float val = (alt.step * whole_steps) + alt.min;
+                    // *alt.p = val;
+                }
+            }
+            else
+            {
+                struct Mod *mods = get_mods();
+                struct Mod mod = Mods[i];
+                if(mod.p == 0)
+                {
+                    printf("got unknown Mod %d\n", i);
+                }
+                else
+                {
+                    float cur = *mod.p;
+                    float step = mod.step * mod.mul;
+                    float next = up ? cur + step : cur - step;
+                    float clamped = next > mod.max ? mod.max : next < mod.min ? mod.min : next;
+                    *mod.p = clamped;
+
+                    // float steps = mod.mul * (float)cc_val;
+                    // int whole_steps = round(steps);
+                    // float val = (mod.step * whole_steps) + mod.min;
+                    // *mod.p = val;
+                }
+            }
+        }
+    }
 }
 
 static void encoder_task(void* arg)
