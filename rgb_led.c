@@ -26,8 +26,8 @@ void rgb_task(void *pvParameters)
         if(!rgb_rendering)
         {
             // rgb_rendering = true;
-            render_lights();
-            // test_rgb_lights();
+            // render_lights();
+            test_rgb_lights();
         }
         vTaskDelay(10);
         // vTaskDelay(1000);
@@ -264,60 +264,15 @@ const struct pixel_t light_blue = {
     .green = 1,
     .blue = 1
 };
-const struct pixel_t p3 = {
-    .red = 1,
-    .green = 0,
-    .blue = 1
-};
-const struct pixel_t p4 = {
-    .red = 1,
-    .green = 1,
-    .blue = 1
-};
 const struct pixel_t light_pink = {
     .red = 2,
     .green = 1,
-    .blue = 1
-};
-const struct pixel_t p6 = {
-    .red = 2,
-    .green = 0,
-    .blue = 1
-};
-const struct pixel_t p7 = {
-    .red = 2,
-    .green = 1,
-    .blue = 0
-};
-const struct pixel_t p8 = {
-    .red = 1,
-    .green = 2,
     .blue = 1
 };
 const struct pixel_t light_green = {
     .red = 1,
     .green = 2,
     .blue = 0
-};
-const struct pixel_t p10 = {
-    .red = 0,
-    .green = 2,
-    .blue = 1
-};
-const struct pixel_t p11 = {
-    .red = 1,
-    .green = 1,
-    .blue = 2
-};
-const struct pixel_t p12 = {
-    .red = 1,
-    .green = 0,
-    .blue = 2
-};
-const struct pixel_t p13 = {
-    .red = 0,
-    .green = 1,
-    .blue = 2
 };
 
 const uint8_t number_select_lights[NUM_PRESETS] = { 0, 2, 5, 7, 18, 10, 20, 21, 19, 13, 23, 16, 24, 25 };
@@ -470,8 +425,12 @@ void render_lights(void)
 }
 
 void test_rgb_lights(){
-    pixel_buf[0]  = pixel_on;
-    pixel_buf[1]  = pixel_on;
-    pixel_buf[2]  = pixel_on;
+    for(int i=0; i<NUM_LED; i++)
+    {
+        pixel_buf[i] = pixel_on;
+    }
+    // pixel_buf[0]  = pixel_on;
+    // pixel_buf[1]  = pixel_on;
+    // pixel_buf[2]  = pixel_on;
     rgb_set_color(pixel_buf);
 }
