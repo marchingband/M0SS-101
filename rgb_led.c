@@ -335,9 +335,9 @@ int get_ui_mode(void)
 
 struct pixel_t pixel_def(float val){
     struct pixel_t pixel = {
-        .red = (uint8_t)(2.0 * val),
-        .green = (uint8_t)(4.0 * val),
-        .blue = (uint8_t)(1.0 * val)
+        .red = (uint8_t)(20.0 * val),
+        .green = (uint8_t)(40.0 * val),
+        .blue = (uint8_t)(10.0 * val)
     };
     return pixel;
 }
