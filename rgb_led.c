@@ -29,8 +29,8 @@ void rgb_task(void *pvParameters)
             // render_lights();
             test_rgb_lights();
         }
-        vTaskDelay(10);
-        // vTaskDelay(1000);
+        // vTaskDelay(10);
+        vTaskDelay(1000);
     }
     vTaskDelete(NULL);
 }
