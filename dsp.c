@@ -231,12 +231,12 @@ void dsp_run(int16_t *dest)
     consumed = bflb_mtimer_get_time_us() - now;
     poll_gpio();
 
-    loop_cnt++;
-    if(loop_cnt >= 20)
-    {
-        render_lights();
-        loop_cnt = 0;
-    }
+    // loop_cnt++;
+    // if(loop_cnt >= 20)
+    // {
+    //     render_lights();
+    //     loop_cnt = 0;
+    // }
 }
 
 void play(uint8_t note)
