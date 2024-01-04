@@ -155,50 +155,50 @@ void *declare(UIGlue *uiInterface, float *p, const char* key, const char* val){
         struct CC *cc = &CCs[num];
         cc->p = p;
     }
-    else if(strcmp("mod", key) == 0) // its a cc
+    if(strcmp("mod", key) == 0) // its a cc
     {
         long num = strtol(val, NULL, 10);
 
         struct Mod *mod = &Mods[num];
         mod->p = p;
     }
-    else if(strcmp("alt", key) == 0) // its a cc
+    if(strcmp("alt", key) == 0) // its a cc
     {
         long num = strtol(val, NULL, 10);
 
         struct Alt *alt = &Alts[num];
         alt->p = p;
     }
-    else if(strcmp("sel", key) == 0) // its a selection toggle
+    if(strcmp("sel", key) == 0) // its a selection toggle
     {
         long num = strtol(val, NULL, 10);
 
         struct Sel *sel = &Sels[num];
         sel->p = p;
     }
-    else if(strcmp("pitch", key) == 0) // its the pitch
+    if(strcmp("pitch", key) == 0) // its the pitch
     {
         printf("got pitch pointer\n");
         Signals.pitch = p;
     }
-    else if(strcmp("gate", key) == 0) // its the gate
+    if(strcmp("gate", key) == 0) // its the gate
     {
         printf("got gate pointer\n");
         Signals.gate = p;
         *Signals.gate = 0;
         // *gate = 1;
     }
-    else if(strcmp("pitch-bend", key) == 0) // its the pitch bend
+    if(strcmp("pitch-bend", key) == 0) // its the pitch bend
     {
         printf("got pitch bend pointer\n");
         Signals.pitch_bend = p;
     }
-    else if(strcmp("lfo", key) == 0) // its the lfo
+    if(strcmp("lfo", key) == 0) // its the lfo
     {
         printf("got lfo pointer\n");
         Signals.lfo = p;
     }
-    else if(strcmp("env", key) == 0) // its the lfo
+    if(strcmp("env", key) == 0) // its the env
     {
         printf("got env pointer\n");
         Signals.env = p;
