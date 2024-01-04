@@ -34,7 +34,7 @@ static void on_encoder(bool up){
         {
             if(alt_held())
             {
-                struct Alt *alts = get_alts();
+                struct Alt *Alts = get_alts();
                 struct Alt alt = Alts[i];
                 if(alt.p == 0)
                 {
@@ -56,7 +56,7 @@ static void on_encoder(bool up){
             }
             else
             {
-                struct Mod *mods = get_mods();
+                struct Mod *Mods = get_mods();
                 struct Mod mod = Mods[i];
                 if(mod.p == 0)
                 {
