@@ -27,12 +27,12 @@ void rgb_task(void *pvParameters)
         if(!rgb_rendering)
         {
             // rgb_rendering = true;
-            // render_lights();
-            test_rgb_lights();
+            render_lights();
+            // test_rgb_lights();
             // rgb_set_color(NULL);
         }
-        // vTaskDelay(10);
-        vTaskDelay(1000);
+        vTaskDelay(10);
+        // vTaskDelay(1000);
     }
     vTaskDelete(NULL);
 }
