@@ -12,7 +12,8 @@
 #define PIXEL_SIZE 3 // each colour takes 4 bytes
 // #define PIXEL_SIZE 6 // each colour takes 4 bytes
 // #define NUM_LED 3
-#define NUM_LED 26
+// #define NUM_LED 26 // Original
+#define NUM_LED 37
 
 struct bflb_device_s *i2s0;
 
