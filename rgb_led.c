@@ -18,7 +18,7 @@ struct bflb_device_s *i2s0;
 
 bool rgb_rendering = false;
 
-struct pixel_t pixel_buf[NUM_LED];
+struct pixel_t pixel_buf[NUM_LED] = {0};
 
 void rgb_task(void *pvParameters)
 {
@@ -333,6 +333,15 @@ int get_ui_mode(void)
     return ui_mode;
 }
 
+struct pixel_t pixel_def(float val){
+    struct pixel_t pixel = {
+        .red = (uint8_t)(3.0 * val),
+        .green = (uint8_t)(10.0 * val),
+        .blue = (uint8_t)(5.0 * val)
+    };
+
+}
+
 void render_lights(void)
 {
     int current_slot = get_current_slot();
@@ -350,11 +359,13 @@ void render_lights(void)
             pixel_buf[3] = *(sels[1].p)   == 1 ? pixel_on : pixel_off;  // o1oct-1
             pixel_buf[4] = *(sels[1].p)   == 2 ? pixel_on : pixel_off;  // o1oct-2
 
-            pixel_buf[7] = ((*(sels[2].p) == 0) || (*(sels[2].p) == 2)) ? pixel_on : pixel_off;  // o2sqr
-            pixel_buf[8] = ((*(sels[2].p) == 1) || (*(sels[2].p) == 2)) ? pixel_on : pixel_off;  // o2saw
-            pixel_buf[9] = *(sels[3].p)   == 0 ? pixel_on : pixel_off;  // o2oct0
-            pixel_buf[6] = *(sels[3].p)   == 1 ? pixel_on : pixel_off;  // o2oct-1
-            pixel_buf[5] = *(sels[3].p)   == 2 ? pixel_on : pixel_off;  // o2oct-2
+            pixel_buf[7] = *(sels[3].p)   == 0 ? pixel_on : pixel_off;  // o2oct0
+            pixel_buf[8] = *(sels[3].p)   == 1 ? pixel_on : pixel_off;  // o2oct-1
+            pixel_buf[9] = *(sels[3].p)   == 2 ? pixel_on : pixel_off;  // o2oct-2
+
+            pixel_buf[6] = ((*(sels[2].p) == 0) || (*(sels[2].p) == 2)) ? pixel_on : pixel_off;  // o2sqr
+            pixel_buf[5] = ((*(sels[2].p) == 1) || (*(sels[2].p) == 2)) ? pixel_on : pixel_off;  // o2saw
+
 
             pixel_buf[10] = *(sels[7].p)  == 0 ? pixel_on : pixel_off; // lfotri
             pixel_buf[11] = *(sels[7].p)  == 1 ? pixel_on : pixel_off; // lfosqr
@@ -458,28 +469,5 @@ void test_rgb_lights(){
     pixel_buf[0]  = pixel_on;
     pixel_buf[1]  = pixel_on;
     pixel_buf[2]  = pixel_on;
-    // pixel_buf[3]  = pixel_on;
-    // pixel_buf[4]  = pixel_on;
-    // pixel_buf[5]  = pixel_on;
-    // pixel_buf[6]  = pixel_on;
-    // pixel_buf[7]  = pixel_on;
-    // pixel_buf[8]  = pixel_on;
-    // pixel_buf[9]  = pixel_on;
-    // pixel_buf[10] = pixel_on;
-    // pixel_buf[11] = pixel_on;
-    // pixel_buf[12] = pixel_on;
-    // pixel_buf[13]  = pixel_on;
-    // pixel_buf[14]  = pixel_on;
-    // pixel_buf[15]  = pixel_on;
-    // pixel_buf[16]  = pixel_on;
-    // pixel_buf[17]  = pixel_on;
-    // pixel_buf[18]  = pixel_on;
-    // pixel_buf[19]  = pixel_on;
-    // pixel_buf[20]  = pixel_on;
-    // pixel_buf[21]  = pixel_on;
-    // pixel_buf[22]  = pixel_on;
-    // pixel_buf[23] = pixel_on;
-    // pixel_buf[24] = pixel_on;
-    // pixel_buf[25] = pixel_on;
     rgb_set_color(pixel_buf);
 }
