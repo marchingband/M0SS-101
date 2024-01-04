@@ -67,8 +67,8 @@ void dma0_ch1_isr(void *arg)
 static struct bflb_i2s_config_s i2s_cfg = {
     // .bclk_freq_hz = 130000 * 16 * 2, /* bclk = Sampling_rate * frame_width * channel_num */
     // .bclk_freq_hz = 8000 * 32, /* bclk = Sampling_rate * frame_width */
-    // .bclk_freq_hz = 93750 * 32 * 2, /* bclk = Sampling_rate * frame_width * channel_num */
-    .bclk_freq_hz = 93750 * 16 * 2, // bclk = Sampling_rate * frame_width * channel_num original
+    .bclk_freq_hz = 93750 * 32 * 2, /* bclk = Sampling_rate * frame_width * channel_num */
+    // .bclk_freq_hz = 93750 * 16 * 2, // bclk = Sampling_rate * frame_width * channel_num original
     .role = I2S_ROLE_MASTER,
     .format_mode = I2S_MODE_LEFT_JUSTIFIED,
     // .channel_mode = I2S_CHANNEL_MODE_NUM_1,
@@ -143,75 +143,75 @@ void rgb_set_color(struct pixel_t *pixels){
     uint32_t *buf = ping_pong == 0 ? tx_buffer_a : tx_buffer_b;
     // uint16_t *buf = ping_pong == 0 ? tx_buffer_a : tx_buffer_b;
     memset(buf, 0, sizeof tx_buffer_a);
-    // buf[0] = onezero1;
-    // buf[1] = onezero2;
-    // buf[2] = onezero3;
-    // buf[3] = onezero4;
-    // buf[4] = onezero5;
-    // buf[5] = onezero1;
-    // buf[6] = onezero2;
-    // buf[7] = onezero3;
-    // buf[8] = onezero4;
-    // buf[9] = onezero5;
-    // buf[10] = onezero1;
-    // buf[11] = onezero2;
-    // buf[12] = onezero3;
-    // buf[13] = onezero4;
-    // buf[14] = onezero5;
-    // buf[15] = onezero1;
-    // buf[16] = onezero2;
-    // buf[17] = onezero3;
-    // buf[18] = onezero4;
-    // buf[19] = onezero5;
-    // buf[20] = onezero1;
-    // buf[21] = onezero2;
-    // buf[22] = onezero3;
-    // buf[23] = onezero4;
-    // buf[24] = onezero5;
-    // buf[25] = onezero1;
-    // buf[26] = onezero2;
-    // buf[27] = onezero3;
-    // buf[28] = onezero4;
-    // buf[29] = onezero5;
-    // buf[30] = onezero1;
-    // buf[31] = onezero2;
-    // buf[32] = onezero3;
-    // buf[33] = onezero4;
-    // buf[34] = onezero5;
-    // buf[35] = onezero1;
-    // buf[36] = onezero2;
-    // buf[37] = onezero3;
-    // buf[38] = onezero4;
-    // buf[39] = onezero5;
+    buf[0] = onezero1;
+    buf[1] = onezero2;
+    buf[2] = onezero3;
+    buf[3] = onezero4;
+    buf[4] = onezero5;
+    buf[5] = onezero1;
+    buf[6] = onezero2;
+    buf[7] = onezero3;
+    buf[8] = onezero4;
+    buf[9] = onezero5;
+    buf[10] = onezero1;
+    buf[11] = onezero2;
+    buf[12] = onezero3;
+    buf[13] = onezero4;
+    buf[14] = onezero5;
+    buf[15] = onezero1;
+    buf[16] = onezero2;
+    buf[17] = onezero3;
+    buf[18] = onezero4;
+    buf[19] = onezero5;
+    buf[20] = onezero1;
+    buf[21] = onezero2;
+    buf[22] = onezero3;
+    buf[23] = onezero4;
+    buf[24] = onezero5;
+    buf[25] = onezero1;
+    buf[26] = onezero2;
+    buf[27] = onezero3;
+    buf[28] = onezero4;
+    buf[29] = onezero5;
+    buf[30] = onezero1;
+    buf[31] = onezero2;
+    buf[32] = onezero3;
+    buf[33] = onezero4;
+    buf[34] = onezero5;
+    buf[35] = onezero1;
+    buf[36] = onezero2;
+    buf[37] = onezero3;
+    buf[38] = onezero4;
+    buf[39] = onezero5;
 
 
 
-    for (int i = 0; i < NUM_LED; i++) {
-        int loc = i * PIXEL_SIZE;
+    // for (int i = 0; i < NUM_LED; i++) {
+    //     int loc = i * PIXEL_SIZE;
 
-        buf[loc]     = (bitpatterns[pixels[i].green >> 6 & 0x03]  << 24) | 
-                        (bitpatterns[pixels[i].green >> 4 & 0x03] << 16) | 
-                        (bitpatterns[pixels[i].green >> 2 & 0x03] << 8)  | 
-                         bitpatterns[pixels[i].green & 0x03];
+    //     buf[loc]     = (bitpatterns[pixels[i].green >> 6 & 0x03]  << 24) | 
+    //                     (bitpatterns[pixels[i].green >> 4 & 0x03] << 16) | 
+    //                     (bitpatterns[pixels[i].green >> 2 & 0x03] << 8)  | 
+    //                      bitpatterns[pixels[i].green & 0x03];
 
-        buf[loc + 1] = (bitpatterns[pixels[i].red >> 6 & 0x03]    << 24) | 
-                        (bitpatterns[pixels[i].red >> 4 & 0x03]   << 16) |
-                        (bitpatterns[pixels[i].red   >> 2 & 0x03] << 8)  | 
-                         bitpatterns[pixels[i].red & 0x03];
+    //     buf[loc + 1] = (bitpatterns[pixels[i].red >> 6 & 0x03]    << 24) | 
+    //                     (bitpatterns[pixels[i].red >> 4 & 0x03]   << 16) |
+    //                     (bitpatterns[pixels[i].red   >> 2 & 0x03] << 8)  | 
+    //                      bitpatterns[pixels[i].red & 0x03];
                          
-        buf[loc + 2] = (bitpatterns[pixels[i].blue >> 6 & 0x03]   << 24) | 
-                        (bitpatterns[pixels[i].blue >> 4 & 0x03]  << 16) |
-                        (bitpatterns[pixels[i].blue  >> 2 & 0x03] << 8)  |
-                         bitpatterns[pixels[i].blue & 0x03];
-        // buf[loc]     = (bitpatterns[pixels[i].green >> 6 & 0x03] << 8) | bitpatterns[pixels[i].green >> 4 & 0x03];
-        // buf[loc + 1] = (bitpatterns[pixels[i].green >> 2 & 0x03] << 8) | bitpatterns[pixels[i].green & 0x03];
+    //     buf[loc + 2] = (bitpatterns[pixels[i].blue >> 6 & 0x03]   << 24) | 
+    //                     (bitpatterns[pixels[i].blue >> 4 & 0x03]  << 16) |
+    //                     (bitpatterns[pixels[i].blue  >> 2 & 0x03] << 8)  |
+    //                      bitpatterns[pixels[i].blue & 0x03];
+    //     // buf[loc]     = (bitpatterns[pixels[i].green >> 6 & 0x03] << 8) | bitpatterns[pixels[i].green >> 4 & 0x03];
+    //     // buf[loc + 1] = (bitpatterns[pixels[i].green >> 2 & 0x03] << 8) | bitpatterns[pixels[i].green & 0x03];
 
-        // buf[loc + 2] = (bitpatterns[pixels[i].red   >> 6 & 0x03] << 8) | bitpatterns[pixels[i].red >> 4 & 0x03];
-        // buf[loc + 3] = (bitpatterns[pixels[i].red   >> 2 & 0x03] << 8) | bitpatterns[pixels[i].red & 0x03];
+    //     // buf[loc + 2] = (bitpatterns[pixels[i].red   >> 6 & 0x03] << 8) | bitpatterns[pixels[i].red >> 4 & 0x03];
+    //     // buf[loc + 3] = (bitpatterns[pixels[i].red   >> 2 & 0x03] << 8) | bitpatterns[pixels[i].red & 0x03];
 
-        // buf[loc + 4] = (bitpatterns[pixels[i].blue  >> 6 & 0x03] << 8) | bitpatterns[pixels[i].blue >> 4 & 0x03];
-        // buf[loc + 5] = (bitpatterns[pixels[i].blue  >> 2 & 0x03] << 8) | bitpatterns[pixels[i].blue & 0x03];
-    }
+    //     // buf[loc + 4] = (bitpatterns[pixels[i].blue  >> 6 & 0x03] << 8) | bitpatterns[pixels[i].blue >> 4 & 0x03];
+    //     // buf[loc + 5] = (bitpatterns[pixels[i].blue  >> 2 & 0x03] << 8) | bitpatterns[pixels[i].blue & 0x03];
+    // }
     i2s_send();
 }
 
