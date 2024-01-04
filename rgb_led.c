@@ -25,7 +25,7 @@ void rgb_task(void *pvParameters)
     while (1) {
         if(!rgb_rendering)
         {
-            rgb_rendering = true;
+            // rgb_rendering = true;
             render_lights();
             // test_rgb_lights();
         }
