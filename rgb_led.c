@@ -23,10 +23,8 @@ struct pixel_t pixel_buf[NUM_LED];
 void rgb_task(void *pvParameters)
 {
     while (1) {
-        printf("ttt");
         if(!rgb_rendering)
         {
-            printf("sss");
             rgb_rendering = true;
             render_lights();
             // test_rgb_lights();
@@ -345,19 +343,6 @@ void render_lights(void)
 
     switch(ui_mode){
         case UI_MODE_PLAY:
-            // pixel_buf[0] = p1;
-            // pixel_buf[1] = p2;
-            // pixel_buf[2] = p3;
-            // pixel_buf[3] = p4;
-            // pixel_buf[4] = p5;
-            // pixel_buf[5] = p6;
-            // pixel_buf[6] = p7;
-            // pixel_buf[7] = p8;
-            // pixel_buf[8] = p9;
-            // pixel_buf[9] = p10;
-            // pixel_buf[10] =p11;
-            // pixel_buf[11] =p12;
-            // pixel_buf[12] =p13;
             pixel_buf[0] = ((*(sels[0].p) == 0) || (*(sels[0].p) == 2)) ? pixel_on : pixel_off; // o1sqr
             pixel_buf[1] = ((*(sels[0].p) == 1) || (*(sels[0].p) == 2)) ? pixel_on : pixel_off;  // o1saw
             pixel_buf[2] = *(sels[1].p)   == 0 ? pixel_on : pixel_off;  // o1oct0
@@ -370,27 +355,27 @@ void render_lights(void)
             pixel_buf[8] = *(sels[3].p)   == 1 ? pixel_on : pixel_off;  // o2oct-1
             pixel_buf[9] = *(sels[3].p)   == 2 ? pixel_on : pixel_off;  // o2oct-2
 
-            pixel_buf[10] = *(sels[5].p)  == 0 ? pixel_on : pixel_off; // lfotri
-            pixel_buf[11] = *(sels[5].p)  == 1 ? pixel_on : pixel_off; // lfosqr
-            pixel_buf[12] = *(sels[5].p)  == 2 ? pixel_on : pixel_off; // lfornd
+            pixel_buf[10] = *(sels[7].p)  == 0 ? pixel_on : pixel_off; // lfotri
+            pixel_buf[11] = *(sels[7].p)  == 1 ? pixel_on : pixel_off; // lfosqr
+            pixel_buf[12] = *(sels[7].p)  == 2 ? pixel_on : pixel_off; // lfornd
 
-            pixel_buf[13] = *(sels[9].p)  == 0 ? pixel_on : pixel_off; // vcfhp
-            pixel_buf[14] = *(sels[9].p)  == 1 ? pixel_on : pixel_off; // vcflp
-            pixel_buf[15] = *(sels[9].p)  == 2 ? pixel_on : pixel_off; // vcfbp
+            pixel_buf[13] = *(sels[13].p)  == 0 ? pixel_on : pixel_off; // vcfhp
+            pixel_buf[14] = *(sels[13].p)  == 1 ? pixel_on : pixel_off; // vcflp
+            pixel_buf[15] = *(sels[13].p)  == 2 ? pixel_on : pixel_off; // vcfbp
 
-            pixel_buf[16] = *(sels[11].p) == 0 ? pixel_on : pixel_off; // envasr
-            pixel_buf[17] = *(sels[11].p) == 1 ? pixel_on : pixel_off; // envar
+            // pixel_buf[16] = *(sels[11].p) == 0 ? pixel_on : pixel_off; // envasr
+            // pixel_buf[17] = *(sels[11].p) == 1 ? pixel_on : pixel_off; // envar
 
-            pixel_buf[18] = ( (*(sigs->lfo)  < 0.5) || (*mods[4].p == 0) ) ? pixel_off : light_green; // lfo.osc
-            pixel_buf[20] = ( (*(sigs->lfo)  < 0.5) || (*mods[6].p == 0) ) ? pixel_off : light_green; // lfo.vca
-            pixel_buf[19] = ( (*(sigs->lfo)  < 0.5) || (*mods[8].p == 0) ) ? pixel_off : light_green; // lfo.vcf
-            pixel_buf[21] = ( (*(sigs->lfo)  < 0.5) || (*sels[7].p == 0) ) ? pixel_off : light_green; // lfo.env
+            pixel_buf[18] = ( (*(sigs->lfo)  < 0.5) || (*mods[10].p == 0) ) ? pixel_off : light_green; // lfo.osc
+            pixel_buf[20] = ( (*(sigs->lfo)  < 0.5) || (*mods[8].p == 0) ) ? pixel_off : light_green; // lfo.vca
+            pixel_buf[19] = ( (*(sigs->lfo)  < 0.5) || (*mods[11].p == 0) ) ? pixel_off : light_green; // lfo.vcf
+            pixel_buf[21] = ( (*(sigs->lfo)  < 0.5) || (*sels[9].p == 0) ) ? pixel_off : light_green; // lfo.env
 
             pixel_buf[22] = pixel_off; // vca
 
-            pixel_buf[23] = ( (*(sigs->env)  < 0.5) || (*mods[10].p == 0) ) ? pixel_off : light_pink; // env.vcf
-            pixel_buf[24] = ( (*(sigs->env)  < 0.5) || (*mods[12].p == 0) ) ? pixel_off : light_pink; // env.vca
-            pixel_buf[25] = ( (*(sigs->env)  < 0.5) || (*mods[13].p == 0) ) ? pixel_off : light_pink; // env.osc
+            pixel_buf[23] = ( (*(sigs->env)  < 0.5) || (*mods[18].p == 0) ) ? pixel_off : light_pink; // env.vcf
+            pixel_buf[24] = ( (*(sigs->env)  < 0.5) || (*mods[15].p == 0) ) ? pixel_off : light_pink; // env.vca
+            pixel_buf[25] = ( (*(sigs->env)  < 0.5) || (*mods[20].p == 0) ) ? pixel_off : light_pink; // env.osc
 
             break;
         case UI_MODE_SAVE:
