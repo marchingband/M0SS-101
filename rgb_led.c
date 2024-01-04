@@ -335,11 +335,11 @@ int get_ui_mode(void)
 
 struct pixel_t pixel_def(float val){
     struct pixel_t pixel = {
-        .red = (uint8_t)(3.0 * val),
-        .green = (uint8_t)(10.0 * val),
-        .blue = (uint8_t)(5.0 * val)
+        .red = (uint8_t)(2.0 * val),
+        .green = (uint8_t)(4.0 * val),
+        .blue = (uint8_t)(1.0 * val)
     };
-
+    return pixel;
 }
 
 void render_lights(void)
@@ -359,12 +359,12 @@ void render_lights(void)
             pixel_buf[3] = *(sels[1].p)   == 1 ? pixel_on : pixel_off;  // o1oct-1
             pixel_buf[4] = *(sels[1].p)   == 2 ? pixel_on : pixel_off;  // o1oct-2
 
-            pixel_buf[7] = *(sels[3].p)   == 0 ? pixel_on : pixel_off;  // o2oct0
-            pixel_buf[8] = *(sels[3].p)   == 1 ? pixel_on : pixel_off;  // o2oct-1
-            pixel_buf[9] = *(sels[3].p)   == 2 ? pixel_on : pixel_off;  // o2oct-2
+            pixel_buf[7] = *(sels[2].p)   == 0 ? pixel_on : pixel_off;  // o2oct0
+            pixel_buf[8] = *(sels[2].p)   == 1 ? pixel_on : pixel_off;  // o2oct-1
+            pixel_buf[9] = *(sels[2].p)   == 2 ? pixel_on : pixel_off;  // o2oct-2
 
-            pixel_buf[6] = ((*(sels[2].p) == 0) || (*(sels[2].p) == 2)) ? pixel_on : pixel_off;  // o2sqr
-            pixel_buf[5] = ((*(sels[2].p) == 1) || (*(sels[2].p) == 2)) ? pixel_on : pixel_off;  // o2saw
+            pixel_buf[6] = ((*(sels[3].p) == 0) || (*(sels[2].p) == 2)) ? pixel_on : pixel_off;  // o2sqr
+            pixel_buf[5] = ((*(sels[3].p) == 1) || (*(sels[2].p) == 2)) ? pixel_on : pixel_off;  // o2saw
 
 
             pixel_buf[10] = *(sels[7].p)  == 0 ? pixel_on : pixel_off; // lfotri
@@ -378,10 +378,14 @@ void render_lights(void)
             // pixel_buf[16] = *(sels[11].p) == 0 ? pixel_on : pixel_off; // envasr
             // pixel_buf[17] = *(sels[11].p) == 1 ? pixel_on : pixel_off; // envar
 
-            pixel_buf[15] = ( (*(sigs->lfo)  < 0.5) || (*mods[10].p == 0) ) ? pixel_off : light_green; // lfo.osc
-            pixel_buf[13] = ( (*(sigs->lfo)  < 0.5) || (*mods[8].p == 0) ) ? pixel_off : light_green; // lfo.vca
-            pixel_buf[16] = ( (*(sigs->lfo)  < 0.5) || (*mods[11].p == 0) ) ? pixel_off : light_green; // lfo.vcf
-            pixel_buf[14] = ( (*(sigs->lfo)  < 0.5) || (*sels[9].p == 0) ) ? pixel_off : light_green; // lfo.env
+            pixel_buf[15] = pixel_def((*sigs->lfo) * (*mods[10].p)); // lfo.osc
+            pixel_buf[13] = pixel_def((*sigs->lfo) * (*mods[8].p)); // lfo.vca
+            pixel_buf[16] = pixel_def((*sigs->lfo) * (*mods[11].p)); // lfo.vcf
+            pixel_buf[14] = pixel_def((*sigs->lfo) * (*sels[9].p)); // lfo.env
+            // pixel_buf[15] = ( (*(sigs->lfo)  < 0.5) || (*mods[10].p == 0) ) ? pixel_off : light_green; // lfo.osc
+            // pixel_buf[13] = ( (*(sigs->lfo)  < 0.5) || (*mods[8].p == 0) ) ? pixel_off : light_green; // lfo.vca
+            // pixel_buf[16] = ( (*(sigs->lfo)  < 0.5) || (*mods[11].p == 0) ) ? pixel_off : light_green; // lfo.vcf
+            // pixel_buf[14] = ( (*(sigs->lfo)  < 0.5) || (*sels[9].p == 0) ) ? pixel_off : light_green; // lfo.env
 
             pixel_buf[22] = pixel_off; // vca
 
