@@ -150,6 +150,7 @@ void extract(const char *name, float *p, float init, float min, float max, float
 void *declare(UIGlue *uiInterface, float *p, const char* key, const char* val){
     if(strcmp("midi", key) == 0) // its a cc
     {
+        printf("got midi %s:%s", key, val);
         long num = strtol(val, NULL, 10);
 
         struct CC *cc = &CCs[num];
@@ -157,6 +158,7 @@ void *declare(UIGlue *uiInterface, float *p, const char* key, const char* val){
     }
     if(strcmp("mod", key) == 0) // its a cc
     {
+        printf("got mod %s:%s", key, val);
         long num = strtol(val, NULL, 10);
 
         struct Mod *mod = &Mods[num];
