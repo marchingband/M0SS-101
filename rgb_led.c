@@ -237,9 +237,9 @@ const struct pixel_t pixel_blue = {
 };
 
 const struct pixel_t pixel_on = {
-    .red = 10,
-    .green = 0,
-    .blue = 0
+    .red = 4,
+    .green = 3,
+    .blue = 1
     // .red = 5,
     // .green = 30,
     // .blue = 0
@@ -335,9 +335,9 @@ int get_ui_mode(void)
 
 struct pixel_t pixel_def(float val){
     struct pixel_t pixel = {
-        .red = (uint8_t)(20.0 * val),
-        .green = (uint8_t)(40.0 * val),
-        .blue = (uint8_t)(10.0 * val)
+        .red = (uint8_t)(100.0 * val),
+        .green = (uint8_t)(200.0 * val),
+        .blue = (uint8_t)(50.0 * val)
     };
     return pixel;
 }
