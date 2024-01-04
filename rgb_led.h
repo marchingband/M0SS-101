@@ -19,5 +19,6 @@ void rgb_task(void *pvParameters);
 void set_ui_mode(int mode);
 int get_ui_mode(void);
 void test_rgb_lights(void);
+void rgb_set_color(struct pixel_t *pixels);
 
 #endif
