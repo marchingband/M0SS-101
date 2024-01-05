@@ -25,15 +25,15 @@ QueueHandle_t event_queue;
 
 uint64_t last_click = 0;
 
-// slow 207002
-// med  88869
-// fast 21001
+#define CLICK_SLOW 100000
+#define CLICK_MED  60000
+#define CLICK_FAST 15000
 
 static void on_encoder(bool up){
     uint64_t now = bflb_mtimer_get_time_us();
     uint64_t passed = now - last_click;
     last_click = now;
-    int click_multiplier = passed > 200000 ? 1 : passed > 88000 ? 5 : 10;
+    int click_multiplier = passed > 100000 ? 1 : passed > 50000 ? 4 : 10;
     // printf("%llu\n", passed);
     printf("%d\n", click_multiplier);
     uint8_t *button_states = get_button_states();
