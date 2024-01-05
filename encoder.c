@@ -33,7 +33,7 @@ static void on_encoder(bool up){
     uint64_t now = bflb_mtimer_get_time_us();
     uint64_t passed = now - last_click;
     last_click = now;
-    int click_multiplier = passed > 200000 ? 1 : passed > 88000 ? 25 : 50;
+    int click_multiplier = passed > 200000 ? 1 : passed > 88000 ? 5 : 10;
     // printf("%llu\n", passed);
     printf("%d\n", click_multiplier);
     uint8_t *button_states = get_button_states();
@@ -70,7 +70,7 @@ static void on_encoder(bool up){
                 else
                 {
                     float cur = *mod.p;
-                    float step = mod.step * mod.mul;
+                    float step = mod.step * mod.mul * click_multiplier;
                     float next = up ? cur + step : cur - step;
                     float clamped = next > mod.max ? mod.max : next < mod.min ? mod.min : next;
                     *mod.p = clamped;
