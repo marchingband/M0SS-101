@@ -103,7 +103,8 @@ lfo_to_cuttoff = (lfo - 0.5) * lfo2vcf * 1200 : ba.cent2ratio;
 lfo_to_volume  = (lfo * lfo2vca) + 1;
 
 // osc 1
-osc1_pw = osc_1_pw * (lfo2pwm * lfo) * env2pwm;
+osc1_pw = osc_1_pw * (1 - (lfo2pwm * lfo)) * (1 - env2pwm); // mod pulse wav duty
+
 osc1_volume = mix;
 osc1_freq   = pitch, pitch / 2, pitch / 4 : ba.selectn(3, osc1_octave);
 osc1_square = os.pulsetrain(osc1_freq, osc1_pw);
