@@ -298,12 +298,27 @@ struct pixel_t pixel_def(float val){
     return pixel;
 }
 
-float led_display = 0.0;
+float led_display[10] = {0};
 
 void set_led_display(float val, float min, float max){
     val -= min;
     max -= min;
-    led_display = val / max * 10;
+    float out = val / max * 10;
+    for(int i=0; i<11; i++)
+    {
+        if(out > (i + 1))
+        {
+            led_display[i] = 1;
+        }
+        else if(out < i)
+        {
+            led_display[i] = 0;
+        }
+        else
+        {
+            led_display[i] = out - i; // just the fractional part
+        }
+    }
 }
 
 void render_lights(void){
@@ -357,17 +372,17 @@ void render_lights(void){
             pixel_buf[19] = ( (*(sigs->env)  < 0.5) || (*mods[15].p == 0) ) ? pixel_off : light_pink; // env.vca
             pixel_buf[21] = ( (*(sigs->env)  < 0.5) || (*mods[20].p == 0) ) ? pixel_off : light_pink; // env.osc
 
-            pixel_buf[26] = pixel_on;
-            pixel_buf[27] = led_display > 0 ? pixel_on : pixel_off;
-            pixel_buf[28] = led_display > 1 ? pixel_on : pixel_off;
-            pixel_buf[29] = led_display > 2 ? pixel_on : pixel_off;
-            pixel_buf[30] = led_display > 3 ? pixel_on : pixel_off;
-            pixel_buf[31] = led_display > 4 ? pixel_on : pixel_off;
-            pixel_buf[32] = led_display > 5 ? pixel_on : pixel_off;
-            pixel_buf[33] = led_display > 6 ? pixel_on : pixel_off;
-            pixel_buf[34] = led_display > 7 ? pixel_on : pixel_off;
-            pixel_buf[35] = led_display > 8 ? pixel_on : pixel_off;
-            pixel_buf[36] = led_display > 9 ? pixel_on : pixel_off;
+            pixel_buf[36] = pixel_on;
+            pixel_buf[35] = led_display[0] == 1 ? pixel_on : led_display[0] == 0 ? pixel_off : pixel_def(led_display[0]);
+            pixel_buf[34] = led_display[1] == 1 ? pixel_on : led_display[1] == 0 ? pixel_off : pixel_def(led_display[1]); 
+            pixel_buf[33] = led_display[2] == 1 ? pixel_on : led_display[2] == 0 ? pixel_off : pixel_def(led_display[2]); 
+            pixel_buf[32] = led_display[3] == 1 ? pixel_on : led_display[3] == 0 ? pixel_off : pixel_def(led_display[3]); 
+            pixel_buf[31] = led_display[4] == 1 ? pixel_on : led_display[4] == 0 ? pixel_off : pixel_def(led_display[4]); 
+            pixel_buf[30] = led_display[5] == 1 ? pixel_on : led_display[5] == 0 ? pixel_off : pixel_def(led_display[5]); 
+            pixel_buf[29] = led_display[6] == 1 ? pixel_on : led_display[6] == 0 ? pixel_off : pixel_def(led_display[6]); 
+            pixel_buf[28] = led_display[7] == 1 ? pixel_on : led_display[7] == 0 ? pixel_off : pixel_def(led_display[7]); 
+            pixel_buf[27] = led_display[8] == 1 ? pixel_on : led_display[8] == 0 ? pixel_off : pixel_def(led_display[8]); 
+            pixel_buf[26] = led_display[9] == 1 ? pixel_on : led_display[9] == 0 ? pixel_off : pixel_def(led_display[9]); 
 
             break;
         case UI_MODE_SAVE:
