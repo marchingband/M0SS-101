@@ -105,10 +105,10 @@ lfo_to_volume  = (lfo * lfo2vca) + 1;
 // osc 1
 osc1_volume = mix;
 osc1_freq   = pitch, pitch / 2, pitch / 4 : ba.selectn(3, osc1_octave);
-// osc1_square = os.pulsetrain(osc1_freq, osc_1_pw * lfo2pwm * env2pwm);
-osc1_square = os.pulsetrain(osc1_freq, osc_1_pw);
-// osc1_saw    = os.sawNp(2, osc1_freq, osc_1_pw * lfo2pwm * env2pwm);
-osc1_saw    = os.sawNp(2, osc1_freq, 0);
+osc1_square = os.pulsetrain(osc1_freq, osc_1_pw * lfo2pwm * env2pwm);
+// osc1_square = os.pulsetrain(osc1_freq, osc_1_pw);
+osc1_saw    = os.sawNp(2, osc1_freq, osc_1_pw * lfo2pwm * env2pwm);
+// osc1_saw    = os.sawNp(2, osc1_freq, 0);
 osc1        = osc1_square, osc1_saw, (osc1_square, osc1_saw :> _)  : ba.selectn(3, osc1_wavform) : (_ * osc1_volume);
 
 // osc 2
