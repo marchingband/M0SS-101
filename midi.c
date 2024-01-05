@@ -257,19 +257,25 @@ void handle_button_press(int num)
     }
     else if(ui_mode == UI_MODE_LOAD)
     {
-        int label = button_label(num) - 1;
-        if(label < NUM_PRESETS)
+        int label = button_label(num);
+        if(label)
         {
-            load(label);
+            if(label < NUM_PRESETS)
+            {
+                load(label - 1);
+            }
         }
         set_ui_mode(UI_MODE_PLAY);
     }
     else if(ui_mode == UI_MODE_SAVE)
     {
-        int label = button_label(num) - 1;
-        if(label < NUM_PRESETS)
+        int label = button_label(num);
+        if(label)
         {
-            save(label);
+            if(label < NUM_PRESETS)
+            {
+                save(label - 1);
+            }
         }
         set_ui_mode(UI_MODE_PLAY);
     }
