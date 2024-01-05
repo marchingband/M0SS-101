@@ -357,7 +357,7 @@ void render_lights(void){
             // pixel_buf[16] = *(sels[11].p) == 0 ? pixel_on : pixel_off; // envasr
             // pixel_buf[17] = *(sels[11].p) == 1 ? pixel_on : pixel_off; // envar
 
-            // pixel_buf[17] = pixel_def((*sigs->lfo) * (*sels[6].p));     // lfo.pwm
+            pixel_buf[17] = pixel_def((*sigs->lfo) * (*mods[6].p));     // lfo.pwm
             pixel_buf[15] = pixel_def((*sigs->lfo) * (*mods[10].p));    // lfo.osc
             pixel_buf[16] = pixel_def((*sigs->lfo) * (*mods[11].p));    // lfo.vcf
             pixel_buf[13] = pixel_def((*sigs->lfo) * (*mods[8].p));     // lfo.vca
@@ -366,7 +366,7 @@ void render_lights(void){
             pixel_buf[20] = pixel_def((*(sigs->env)) * (*mods[18].p)); // env.vcf
             pixel_buf[19] = pixel_def((*(sigs->env)) * (*mods[15].p)); // env.vca
             pixel_buf[21] = pixel_def((*(sigs->env)) * (*mods[20].p)); // env.osc
-            // pixel_buf[22] = pixel_def((*(sigs->env)) * (*mods[24].p)); // env.pwm
+            pixel_buf[22] = pixel_def((*(sigs->env)) * (*mods[24].p)); // env.pwm
 
             // pixel_buf[22] = pixel_off; // vca
             pixel_buf[18] = pixel_def((*(sigs->env)) * (*mods[23].p)); // vca
