@@ -141,7 +141,7 @@ uint32_t onezero4 = 0x0C03E0C0;
 uint32_t onezero5 = 0x3E0C03E0;
 
 void rgb_set_color(struct pixel_t *pixels){
-    printf("rgb set color");
+    // printf("rgb set color");
     uint32_t *buf = ping_pong == 0 ? tx_buffer_a : tx_buffer_b;
     // uint16_t *buf = ping_pong == 0 ? tx_buffer_a : tx_buffer_b;
     memset(buf, 0, sizeof tx_buffer_a);
