@@ -220,7 +220,7 @@ static void usbh_midi_thread(void *argument)
                 ret = usbh_submit_urb(&cdc_bulkin_urb);
                 if ((ret < 0) && (ret != -16))
                 {
-                    USB_LOG_RAW("bulk in error,ret:%d\r\n", ret);
+                    // USB_LOG_RAW("bulk in error,ret:%d\r\n", ret);
                 }
             }
             usb_osal_msleep(10);

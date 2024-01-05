@@ -28,7 +28,7 @@ uint64_t last_click = 0;
 static void on_encoder(bool up){
     uint64_t now = bflb_mtimer_get_time_us();
     uint64_t passed = now - last_click;
-    printf("%llu", passed);
+    printf("%llu\n", passed);
     uint8_t *button_states = get_button_states();
     for(int i=0; i<NUM_BUTTONS; i++)
     {
