@@ -366,7 +366,7 @@ void render_lights(void){
             // pixel_buf[16] = ( (*(sigs->lfo)  < 0.5) || (*mods[11].p == 0) ) ? pixel_off : light_green; // lfo.vcf
             // pixel_buf[14] = ( (*(sigs->lfo)  < 0.5) || (*sels[9].p == 0) ) ? pixel_off : light_green; // lfo.env
 
-            pixel_buf[22] = pixel_def(*(sigs->env)); // vca
+            pixel_buf[18] = pixel_def((*(sigs->env)) * (*mods[23].p)); // vca
             // pixel_buf[22] = pixel_off; // vca
 
             pixel_buf[20] = pixel_def((*(sigs->env)) * (*mods[18].p)); // env.vcf
