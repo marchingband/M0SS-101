@@ -357,26 +357,19 @@ void render_lights(void){
             // pixel_buf[16] = *(sels[11].p) == 0 ? pixel_on : pixel_off; // envasr
             // pixel_buf[17] = *(sels[11].p) == 1 ? pixel_on : pixel_off; // envar
 
-            pixel_buf[17] = pixel_def((*sigs->lfo) * (*sels[6].p));     // lfo.pwm
+            // pixel_buf[17] = pixel_def((*sigs->lfo) * (*sels[6].p));     // lfo.pwm
             pixel_buf[15] = pixel_def((*sigs->lfo) * (*mods[10].p));    // lfo.osc
             pixel_buf[16] = pixel_def((*sigs->lfo) * (*mods[11].p));    // lfo.vcf
             pixel_buf[13] = pixel_def((*sigs->lfo) * (*mods[8].p));     // lfo.vca
-            pixel_buf[14] = pixel_def((*sigs->lfo) * (*sels[9].p));     // lfo.env
-            // pixel_buf[15] = ( (*(sigs->lfo)  < 0.5) || (*mods[10].p == 0) ) ? pixel_off : light_green; // lfo.osc
-            // pixel_buf[13] = ( (*(sigs->lfo)  < 0.5) || (*mods[8].p == 0) ) ? pixel_off : light_green; // lfo.vca
-            // pixel_buf[16] = ( (*(sigs->lfo)  < 0.5) || (*mods[11].p == 0) ) ? pixel_off : light_green; // lfo.vcf
-            // pixel_buf[14] = ( (*(sigs->lfo)  < 0.5) || (*sels[9].p == 0) ) ? pixel_off : light_green; // lfo.env
 
-            pixel_buf[18] = pixel_def((*(sigs->env)) * (*mods[23].p)); // vca
-            // pixel_buf[22] = pixel_off; // vca
 
             pixel_buf[20] = pixel_def((*(sigs->env)) * (*mods[18].p)); // env.vcf
             pixel_buf[19] = pixel_def((*(sigs->env)) * (*mods[15].p)); // env.vca
             pixel_buf[21] = pixel_def((*(sigs->env)) * (*mods[20].p)); // env.osc
-            pixel_buf[22] = pixel_def((*(sigs->env)) * (*mods[24].p)); // env.pwm
-            // pixel_buf[20] = ( (*(sigs->env)  < 0.5) || (*mods[18].p == 0) ) ? pixel_off : light_pink; // env.vcf
-            // pixel_buf[19] = ( (*(sigs->env)  < 0.5) || (*mods[15].p == 0) ) ? pixel_off : light_pink; // env.vca
-            // pixel_buf[21] = ( (*(sigs->env)  < 0.5) || (*mods[20].p == 0) ) ? pixel_off : light_pink; // env.osc
+            // pixel_buf[22] = pixel_def((*(sigs->env)) * (*mods[24].p)); // env.pwm
+
+            // pixel_buf[22] = pixel_off; // vca
+            pixel_buf[18] = pixel_def((*(sigs->env)) * (*mods[23].p)); // vca
 
             pixel_buf[36] = pixel_on;
             pixel_buf[35] = led_display[0] == 1 ? pixel_on : led_display[0] == 0 ? pixel_off : pixel_def(led_display[0]);
