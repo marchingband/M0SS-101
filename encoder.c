@@ -25,13 +25,17 @@ QueueHandle_t event_queue;
 
 uint64_t last_click = 0;
 
-// slow 7584278
+// slow 207002
+// med  88869
+// fast 21001
 
 static void on_encoder(bool up){
     uint64_t now = bflb_mtimer_get_time_us();
     uint64_t passed = now - last_click;
     last_click = now;
-    printf("%llu\n", passed);
+    int click_multiplier = passed > 200000 ? 1 : passed > 88000 ? 5 : 10;
+    // printf("%llu\n", passed);
+    printf("%d\n", click_multiplier);
     uint8_t *button_states = get_button_states();
     for(int i=0; i<NUM_BUTTONS; i++)
     {
@@ -48,7 +52,7 @@ static void on_encoder(bool up){
                 else
                 {
                     float cur = *alt.p;
-                    float step = alt.step * alt.mul;
+                    float step = alt.step * alt.mul * click_multiplier;
                     float next = up ? cur + step : cur - step;
                     float clamped = next > alt.max ? alt.max : next < alt.min ? alt.min : next;
                     *alt.p = clamped;
