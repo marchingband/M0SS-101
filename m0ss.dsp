@@ -64,9 +64,12 @@ filter_type  = hslider("hp-lp-bp[sel:13]",      1, 0, 2, 1);
 lfo2pitch    = hslider("lfo-to-osc[mod:10]",    0, 0, 1, 0.001) ;
 lfo2vca      = hslider("lfo-to-vca[mod:8]",     0, 0, 1, 0.001) ;
 lfo2vcf      = hslider("lfo-to-vcf[mod:11]",    0, 0, 1, 0.001) ;
+lfo2pwm      = hslider("lfo-to-pwm[mod:6]",     0, 0, 1, 0.001) ;
+
 env2volume   = hslider("env-to-vca[mod:15]",    1, 0, 1, 0.001) ;
 env2cutoff   = hslider("env-to-vcf[mod:18]",    0, 0, 1, 0.001) ;
 env2pitch    = hslider("env-to-osc[mod:20]",    0, 0, 1, 0.001) ;
+env2pwm      = hslider("env-to-pwm[mod:24]",    0, 0, 1, 0.001) ;
 
 decay        = hslider("decay[mod:19]",         0.001, 0.001, 1, 0.001) ;
 sustain      = hslider("sustain[mod:21]",       1,     0.001, 1, 0.001) ;
@@ -92,7 +95,7 @@ xor_out = xor_raw * xor_volume;
 
 // lfo
 lfo_tri = os.lf_triangle(lfo_freq);
-lfo_sq = os.lf_squarewavepos (lfo_freq);
+lfo_sq = os.lf_squarewavepos(lfo_freq);
 lfo_sh = noise : ba.latch(lfo_sq);
 lfo = lfo_tri, lfo_sq, lfo_sh : ba.selectn(3, lfo_wavform) <: attach(vbargraph("lfo[lfo:0]", 0 , 1));
 lfo_to_pitch   = (lfo - 0.5) * lfo2pitch * 1200 : ba.cent2ratio;
@@ -102,8 +105,10 @@ lfo_to_volume  = (lfo * lfo2vca) + 1;
 // osc 1
 osc1_volume = mix;
 osc1_freq   = pitch, pitch / 2, pitch / 4 : ba.selectn(3, osc1_octave);
-osc1_square = os.pulsetrain(osc1_freq, osc_1_pw);
-osc1_saw    = os.sawNp(2, osc1_freq, 0);
+osc1_square = os.pulsetrain(osc1_freq, osc_1_pw * lfo2pwm * env2pwm);
+// osc1_square = os.pulsetrain(osc1_freq, osc_1_pw);
+osc1_saw    = os.sawNp(2, osc1_freq, osc_1_pw * lfo2pwm * env2pwm);
+// osc1_saw    = os.sawNp(2, osc1_freq, 0);
 osc1        = osc1_square, osc1_saw, (osc1_square, osc1_saw :> _)  : ba.selectn(3, osc1_wavform) : (_ * osc1_volume);
 
 // osc 2
