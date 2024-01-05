@@ -291,8 +291,8 @@ int get_ui_mode(void)
 
 struct pixel_t pixel_def(float val){
     struct pixel_t pixel = {
-        .red = (uint8_t)(100.0 * val),
-        .green = (uint8_t)(200.0 * val),
+        .red = (uint8_t)(10.0 * val),
+        .green = (uint8_t)(150.0 * val),
         .blue = (uint8_t)(50.0 * val)
     };
     return pixel;
@@ -368,9 +368,12 @@ void render_lights(void){
 
             pixel_buf[22] = pixel_off; // vca
 
-            pixel_buf[20] = ( (*(sigs->env)  < 0.5) || (*mods[18].p == 0) ) ? pixel_off : light_pink; // env.vcf
-            pixel_buf[19] = ( (*(sigs->env)  < 0.5) || (*mods[15].p == 0) ) ? pixel_off : light_pink; // env.vca
-            pixel_buf[21] = ( (*(sigs->env)  < 0.5) || (*mods[20].p == 0) ) ? pixel_off : light_pink; // env.osc
+            pixel_buf[20] = pixel_def((*(sigs->env)) * (*mods[18].p)); // env.vcf
+            pixel_buf[19] = pixel_def((*(sigs->env)) * (*mods[15].p)); // env.vca
+            pixel_buf[21] = pixel_def((*(sigs->env)) * (*mods[20].p)); // env.osc
+            // pixel_buf[20] = ( (*(sigs->env)  < 0.5) || (*mods[18].p == 0) ) ? pixel_off : light_pink; // env.vcf
+            // pixel_buf[19] = ( (*(sigs->env)  < 0.5) || (*mods[15].p == 0) ) ? pixel_off : light_pink; // env.vca
+            // pixel_buf[21] = ( (*(sigs->env)  < 0.5) || (*mods[20].p == 0) ) ? pixel_off : light_pink; // env.osc
 
             pixel_buf[36] = pixel_on;
             pixel_buf[35] = led_display[0] == 1 ? pixel_on : led_display[0] == 0 ? pixel_off : pixel_def(led_display[0]);
