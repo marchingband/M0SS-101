@@ -1,7 +1,7 @@
 #ifndef FLASH_H
 #define FLASH_H
 
-#define NUM_PRESETS 14
+#define NUM_PRESETS 13
 #define NUM_CC_MAP 128
 
 struct Config {

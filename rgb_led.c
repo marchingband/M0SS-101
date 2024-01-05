@@ -276,7 +276,7 @@ const struct pixel_t light_green = {
     .blue = 0
 };
 
-const uint8_t number_select_lights[NUM_PRESETS] = { 0, 2, 5, 7, 18, 10, 20, 21, 19, 13, 23, 16, 24, 25 };
+const uint8_t number_select_lights[NUM_PRESETS] = { 0, 2, 7, 6, 17, 10, 13, 14, 15, 16, 12, 23, 18 };
 int ui_mode = UI_MODE_PLAY;
 
 void set_ui_mode(int mode)
