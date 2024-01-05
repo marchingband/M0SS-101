@@ -355,6 +355,7 @@ void handle_midi(uint8_t *msg, uint8_t len)
                             int whole_steps = round(steps);
                             float val = (alt.step * whole_steps) + alt.min;
                             *alt.p = val;
+                            set_led_display(val, alt.min, alt.max);
                         }
                     }
                     else
@@ -371,6 +372,7 @@ void handle_midi(uint8_t *msg, uint8_t len)
                             int whole_steps = round(steps);
                             float val = (mod.step * whole_steps) + mod.min;
                             *mod.p = val;
+                            set_led_display(val, mod.min, mod.max);
                             // cancel_button(i);
                         }
                     }

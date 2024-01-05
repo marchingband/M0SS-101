@@ -11,6 +11,7 @@
 #include "rotary_encoder.h"
 #include "gpio.h"
 #include "midi.h"
+#include "rgb_led.h"
 
 #define ROT_ENC_A_GPIO 16
 #define ROT_ENC_B_GPIO 17
@@ -42,6 +43,7 @@ static void on_encoder(bool up){
                     float next = up ? cur + step : cur - step;
                     float clamped = next > alt.max ? alt.max : next < alt.min ? alt.min : next;
                     *alt.p = clamped;
+                    set_led_display(clamped, alt.min, alt.max);
                 }
             }
             else
@@ -59,6 +61,7 @@ static void on_encoder(bool up){
                     float next = up ? cur + step : cur - step;
                     float clamped = next > mod.max ? mod.max : next < mod.min ? mod.min : next;
                     *mod.p = clamped;
+                    set_led_display(clamped, mod.min, mod.max);
                 }
             }
         }

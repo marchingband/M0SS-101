@@ -298,8 +298,16 @@ struct pixel_t pixel_def(float val){
     return pixel;
 }
 
-void render_lights(void)
-{
+float led_display = 0.0;
+
+void set_led_display(float val, float min, float max){
+    val -= min;
+    max -= min;
+    led_display = val / max * 10;
+}
+
+void render_lights(void){
+
     int current_slot = get_current_slot();
     struct Sel *sels = get_sels();
     struct Mod *mods = get_mods();
@@ -348,6 +356,18 @@ void render_lights(void)
             pixel_buf[20] = ( (*(sigs->env)  < 0.5) || (*mods[18].p == 0) ) ? pixel_off : light_pink; // env.vcf
             pixel_buf[19] = ( (*(sigs->env)  < 0.5) || (*mods[15].p == 0) ) ? pixel_off : light_pink; // env.vca
             pixel_buf[21] = ( (*(sigs->env)  < 0.5) || (*mods[20].p == 0) ) ? pixel_off : light_pink; // env.osc
+
+            pixel_buf[26] = pixel_on;
+            pixel_buf[27] = led_display > 0 ? pixel_on : pixel_off;
+            pixel_buf[28] = led_display > 1 ? pixel_on : pixel_off;
+            pixel_buf[29] = led_display > 2 ? pixel_on : pixel_off;
+            pixel_buf[30] = led_display > 3 ? pixel_on : pixel_off;
+            pixel_buf[31] = led_display > 4 ? pixel_on : pixel_off;
+            pixel_buf[32] = led_display > 5 ? pixel_on : pixel_off;
+            pixel_buf[33] = led_display > 6 ? pixel_on : pixel_off;
+            pixel_buf[34] = led_display > 7 ? pixel_on : pixel_off;
+            pixel_buf[35] = led_display > 8 ? pixel_on : pixel_off;
+            pixel_buf[36] = led_display > 9 ? pixel_on : pixel_off;
 
             break;
         case UI_MODE_SAVE:
