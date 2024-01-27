@@ -92,7 +92,7 @@
 #include <FreeRTOS.h>
 #include "queue.h"
 
-// #define ROTARY_ENCODER_DEBUG
+#define ROTARY_ENCODER_DEBUG
 
 // Use a single-item queue so that the last value can be easily overwritten by the interrupt handler
 #define EVENT_QUEUE_LENGTH 1
