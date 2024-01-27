@@ -71,7 +71,7 @@ int button_label(int num){
         case 11: return 10;
         case 12: return 11;
         case 13: return 12;
-        case 22: return 13;
+        case 23: return 13;
         default: return 0;
     }
     return 0;
