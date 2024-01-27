@@ -230,14 +230,17 @@ void rotary_encoder_init(rotary_encoder_info_t * info, int pin_a, int pin_b)
 
         enc_gpio = bflb_device_get_by_name("gpio");
 
+        bflb_irq_disable(enc_gpio->irq_num);
+
         bflb_gpio_int_init(enc_gpio, info->pin_a, GPIO_INT_TRIG_MODE_SYNC_FALLING_RISING_EDGE);
         bflb_gpio_int_mask(enc_gpio, info->pin_a, false);
         bflb_irq_attach(enc_gpio->irq_num, _isr_rotenc, (void *)info);
-        bflb_irq_enable(enc_gpio->irq_num);
+        // bflb_irq_enable(enc_gpio->irq_num);
 
         bflb_gpio_int_init(enc_gpio, info->pin_b, GPIO_INT_TRIG_MODE_SYNC_FALLING_RISING_EDGE);
         bflb_gpio_int_mask(enc_gpio, info->pin_b, false);
         bflb_irq_attach(enc_gpio->irq_num, _isr_rotenc, (void *)info);
+        
         bflb_irq_enable(enc_gpio->irq_num);
     }
     else
