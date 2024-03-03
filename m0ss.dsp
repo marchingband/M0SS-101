@@ -25,6 +25,42 @@ AR(att, rel, trigger) = loop ~ si.bus(2) : ! , _
             };
     };
 
+adsrfq(att, dec, sus, rel, fin, k, gate) = envelope 
+    with {
+        ugate = gate>0;
+        ratio = pow(k, 5) / 100000;
+        calc_coef(rate, target) = exp((-1 * log((1.0 + target) / target)) / rate);
+
+        att_rate = ma.SR * att;
+        att_coef = calc_coef(att_rate, ratio);
+        att_base = (1.0 + ratio) * (1.0 - att_coef);
+
+        dec_rate = ma.SR * dec;
+        dec_coef = calc_coef(dec_rate, ratio);
+        dec_base = (sus - ratio) * (1.0 - dec_coef);
+
+        rel_rate = ma.SR * rel;
+        rel_coef = calc_coef(rel_rate, ratio);
+        rel_base = (fin - ratio) * (1.0 - rel_coef);
+
+        fb(state, y) = nextState, nextY 
+            with {
+                base = select3(state, rel_base, att_base, dec_base);
+                coef = select3(state, rel_coef, att_coef, dec_coef);
+                minimum = select3(state, fin, fin, sus);
+                nextY = max(minimum, min(1, base + y * coef));
+                nextState = select2(ugate,
+                    0,
+                    select3(state,
+                        1,
+                        select2(y < 1.0, 2, 1),
+                        2
+                    )
+                );
+            };
+        envelope = fb ~ (_,_) : !, _;
+    };
+
 clamp(low, high, x) = min(max( low, x), high);
 log3(n) = n * n * n;
 
@@ -128,10 +164,12 @@ vcf = _ <: hpf, lpf, bpf : ba.selectn(3, filter_type) ;
 
 // env
 env_trig = gate, lfo_sq : ba.selectn(2, lfo2env);
+env = adsrfq(attack, decay, sustain, 0.0, release, 5.0, env_trig);
+// env = en.adsr(attack, decay, sustain, release, env_trig) <: attach(vbargraph("env[env:0]", 0 , 1));
+
 // bias = 0.7;
 // asr = en.adsr_bias(attack, 0, 1, release, bias, bias, bias, 1, env_trig);
 // env = en.adsr_bias(attack, decay, sustain, release, bias, bias, bias, 1, env_trig);
-env = en.adsr(attack, decay, sustain, release, env_trig) <: attach(vbargraph("env[env:0]", 0 , 1));
 // env = en.asre(attack, 1, release, env_trig) <: attach(vbargraph("env[env:0]", 0 , 1));
 // ar_trig = env_trig : \(x).(x > x');
 // ar = AR(attack, release, ar_trig);
