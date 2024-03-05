@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <FreeRTOS.h>
 #include "bflb_gpio.h"
+#include "rgb_led.h"
 
 #include "midi.h"
 #include "gpio.h"
@@ -51,11 +52,49 @@ const uint8_t mux_pins[24] = {
 #define BUTTON_NUM_LOAD 17
 #define BUTTON_NUM_ALT 22
 #define BUTTON_NUM_LEARN 24
+#define BUTTON_NUM_ENCODER 26
 
-uint8_t button_pushes[NUM_BUTTONS]    = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-uint8_t button_cancelled[NUM_BUTTONS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-uint8_t button_state[NUM_BUTTONS]     = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-uint64_t button_time[NUM_BUTTONS]     = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+uint8_t button_pushes[NUM_BUTTONS]    = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+uint8_t button_cancelled[NUM_BUTTONS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+uint8_t button_state[NUM_BUTTONS]     = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+uint64_t button_time[NUM_BUTTONS]     = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+struct Param param_selected = {
+    .button = -1,
+    .alt = false
+};
+
+struct Param get_param_selected(void){
+    return param_selected;
+}
+
+void set_param_selected(int num, bool alt)
+{
+    if(alt)
+    {
+        struct Alt *Alts = get_alts();
+        struct Alt alt = Alts[num];
+        if(alt.p == 0)
+        {
+            return;
+        }
+        // printf("set led %f %f %f\n\r", val, alt.min, alt.max);
+        set_led_display(*alt.p, alt.min, alt.max);
+    }
+    else
+    {
+        struct Mod *Mods = get_mods();
+        struct Mod mod = Mods[num];
+        if(mod.p == 0){
+            return;
+        }
+        // printf("set led %f %f %f\n\r", val, mod.min, mod.max);
+        set_led_display(*mod.p, mod.min, mod.max);
+    }
+    // if we get here it is a valid Alt or Mod
+    param_selected.button = num;
+    param_selected.alt = alt;
+}
 
 int button_label(int num){
     switch(num){
@@ -93,7 +132,7 @@ static void mux_gpio_init(void){
 static void connected_buttons_init(){
     bflb_gpio_init(b_gpio, BUTTON_25_PIN, GPIO_INPUT | GPIO_PULLUP | GPIO_SMT_EN | GPIO_DRV_0);
     bflb_gpio_init(b_gpio, BUTTON_26_PIN, GPIO_INPUT | GPIO_PULLUP | GPIO_SMT_EN | GPIO_DRV_0);
-    // bflb_gpio_init(b_gpio, ENCODER_BUTTON_PIN, GPIO_INPUT | GPIO_FLOAT | GPIO_SMT_EN | GPIO_DRV_0);
+    bflb_gpio_init(b_gpio, ENCODER_BUTTON_PIN, GPIO_INPUT | GPIO_FLOAT | GPIO_SMT_EN | GPIO_DRV_0);
 }
 
 const uint8_t mux_drain_pins[] = { MUX_0_DRAIN_PIN, MUX_1_DRAIN_PIN, MUX_2_DRAIN_PIN };
@@ -120,7 +159,7 @@ static void read_buttons(){
     }
     button_state[24] = bflb_gpio_read(b_gpio, BUTTON_25_PIN);
     button_state[25] = bflb_gpio_read(b_gpio, BUTTON_26_PIN);
-    // button_state[26] = bflb_gpio_read(b_gpio, ENCODER_BUTTON_PIN);
+    button_state[26] = bflb_gpio_read(b_gpio, ENCODER_BUTTON_PIN);
 }
 
 bool alt_held(void)
@@ -132,16 +171,21 @@ static void process_buttons(){
     for (int i =0; i< NUM_BUTTONS; i++)
     {
         bool state = button_state[i];
+
+        // check for presses
         if(button_pushes[i] == 0) // not pushed
         {
-            if(state == 0) // maybe pushed
+            if(state == 0) // maybe pushed ( 0 is low so maybe pressed )
             {
                 uint64_t now = bflb_mtimer_get_time_us();
-                if( (now - button_time[i]) > DEBOUNCE_TIME ) // released
+                if( (now - button_time[i]) > DEBOUNCE_TIME ) // pressed
                 {
                     button_pushes[i] = 1;
                     button_state[i] = 0;
                     button_time[i] = now;
+                    if(i == BUTTON_NUM_ENCODER){
+                        handle_encoder_press(true);
+                    }
                     if(alt_held())
                     {
                         if(i == BUTTON_NUM_ALT) // its the alt button
@@ -153,13 +197,16 @@ static void process_buttons(){
                             button_cancelled[i] = 1;
                         }
                     }
-                    printf("button %d pushed\n", i);
+                    set_param_selected(i, alt_held());
+                    printf("button %d pushed\n\r", i);
                 }
             }
         }
+
+        // check for releases
         else if(button_pushes[i] == 1) // is pushed
         {
-            if(state == 1) // maybe released
+            if(state == 1) // maybe released ( 1 is high so released)
             {
                 uint64_t now = bflb_mtimer_get_time_us();
                 if( (now - button_time[i]) > DEBOUNCE_TIME ) // released
@@ -167,10 +214,14 @@ static void process_buttons(){
                     button_pushes[i] = 0;
                     button_state[i] = 1;
                     button_time[i] = now;
-                    printf("button %d released\n", i);
+                    // printf("button %d released\n\r", i);
                     if(button_cancelled[i])
                     {
                         button_cancelled[i] = 0;
+                    }
+                    else if(i == BUTTON_NUM_ENCODER)
+                    {
+                        handle_encoder_press(false);
                     }
                     else if(i == BUTTON_NUM_ALT) // its the alt button
                     {

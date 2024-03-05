@@ -34,53 +34,108 @@ static void on_encoder(bool up){
     uint64_t now = bflb_mtimer_get_time_us();
     uint64_t passed = now - last_click;
     last_click = now;
-    int click_multiplier = passed > 100000 ? 1 : passed > 50000 ? 4 : 10;
-    // printf("%llu\n", passed);
-    printf("%d\n", click_multiplier);
-    uint8_t *button_states = get_button_states();
-    for(int i=0; i<NUM_BUTTONS; i++)
+    int click_multiplier = passed > 100000 ? 1 : passed > 50000 ? 4 : passed > 10000 ? 10 : 30;
+    // printf("time %llu\n\r", passed);
+    // printf("mul %d\n\r", click_multiplier);
+    // uint8_t *button_states = get_button_states();
+    struct Param param = get_param_selected();
+    if(param.button == -1)
     {
-        if(button_states[i] == 0) // button is pressed means 0
+        // printf("nothing selected\n\r");
+        return;
+    }
+
+    if(param.alt)
+    {
+        struct Alt *Alts = get_alts();
+        struct Alt alt = Alts[param.button];
+        if(alt.p == 0)
         {
-            if(alt_held())
-            {
-                struct Alt *Alts = get_alts();
-                struct Alt alt = Alts[i];
-                if(alt.p == 0)
-                {
-                    printf("got unknown Alt %d\n", i);
-                }
-                else
-                {
-                    float cur = *alt.p;
-                    float step = alt.step * alt.mul * click_multiplier;
-                    float next = up ? cur + step : cur - step;
-                    float clamped = next > alt.max ? alt.max : next < alt.min ? alt.min : next;
-                    *alt.p = clamped;
-                    set_led_display(clamped, alt.min, alt.max);
-                }
-            }
-            else
-            {
-                struct Mod *Mods = get_mods();
-                struct Mod mod = Mods[i];
-                if(mod.p == 0)
-                {
-                    printf("got unknown Mod %d\n", i);
-                }
-                else
-                {
-                    float cur = *mod.p;
-                    float step = mod.step * mod.mul * click_multiplier;
-                    float next = up ? cur + step : cur - step;
-                    float clamped = next > mod.max ? mod.max : next < mod.min ? mod.min : next;
-                    *mod.p = clamped;
-                    set_led_display(clamped, mod.min, mod.max);
-                }
-            }
+            // printf("got unknown Alt %d\n\r", param.button);
+        }
+        else
+        {
+            float cur = *alt.p;
+            float step = alt.step * alt.mul * click_multiplier;
+            float next = up ? cur + step : cur - step;
+            float clamped = next > alt.max ? alt.max : next < alt.min ? alt.min : next;
+            *alt.p = clamped;
+            // printf("set led %f %f %f\n\r", clamped, alt.min, alt.max);
+            set_led_display(clamped, alt.min, alt.max);
+        }
+
+    }
+    else
+    {
+        struct Mod *Mods = get_mods();
+        struct Mod mod = Mods[param.button];
+        if(mod.p == 0)
+        {
+            // printf("got unknown Mod %d\n\r", param.button);
+        }
+        else
+        {
+            float cur = *mod.p;
+            float step = mod.step * mod.mul * click_multiplier;
+            float next = up ? cur + step : cur - step;
+            float clamped = next > mod.max ? mod.max : next < mod.min ? mod.min : next;
+            *mod.p = clamped;
+            // printf("set led %f %f %f\n\r", clamped, mod.min, mod.max);
+            set_led_display(clamped, mod.min, mod.max);
         }
     }
 }
+// static void on_encoder(bool up){
+//     uint64_t now = bflb_mtimer_get_time_us();
+//     uint64_t passed = now - last_click;
+//     last_click = now;
+//     int click_multiplier = passed > 100000 ? 1 : passed > 50000 ? 4 : 10;
+//     // printf("%llu\n\r", passed);
+//     printf("%d\n\r", click_multiplier);
+//     uint8_t *button_states = get_button_states();
+//     for(int i=0; i<NUM_BUTTONS; i++)
+//     {
+//         if(button_states[i] == 0) // button is pressed means 0
+//         {
+//             if(alt_held())
+//             {
+//                 struct Alt *Alts = get_alts();
+//                 struct Alt alt = Alts[i];
+//                 if(alt.p == 0)
+//                 {
+//                     printf("got unknown Alt %d\n\r", i);
+//                 }
+//                 else
+//                 {
+//                     float cur = *alt.p;
+//                     float step = alt.step * alt.mul * click_multiplier;
+//                     float next = up ? cur + step : cur - step;
+//                     float clamped = next > alt.max ? alt.max : next < alt.min ? alt.min : next;
+//                     *alt.p = clamped;
+//                     set_led_display(clamped, alt.min, alt.max);
+//                 }
+//             }
+//             else
+//             {
+//                 struct Mod *Mods = get_mods();
+//                 struct Mod mod = Mods[i];
+//                 if(mod.p == 0)
+//                 {
+//                     printf("got unknown Mod %d\n\r", i);
+//                 }
+//                 else
+//                 {
+//                     float cur = *mod.p;
+//                     float step = mod.step * mod.mul * click_multiplier;
+//                     float next = up ? cur + step : cur - step;
+//                     float clamped = next > mod.max ? mod.max : next < mod.min ? mod.min : next;
+//                     *mod.p = clamped;
+//                     set_led_display(clamped, mod.min, mod.max);
+//                 }
+//             }
+//         }
+//     }
+// }
 
 static void encoder_task(void* arg)
 {
@@ -90,7 +145,7 @@ static void encoder_task(void* arg)
         if (xQueueReceive(event_queue, &event, portMAX_DELAY))
         {
             on_encoder(event.state.direction == ROTARY_ENCODER_DIRECTION_CLOCKWISE);
-            // printf("Event: position %d, direction %s\n", event.state.position,
+            // printf("Event: position %d, direction %s\n\r", event.state.position,
             //          event.state.direction ? (event.state.direction == ROTARY_ENCODER_DIRECTION_CLOCKWISE ? "CW" : "CCW") : "NOT_SET");
         }    
     }

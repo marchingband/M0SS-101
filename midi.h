@@ -2,7 +2,7 @@
 #define MIDI_H
 
 #define NUM_SEL 27
-#define NUM_CC 27
+#define NUM_CC 31
 
 struct CC {
     float *p;
@@ -48,6 +48,7 @@ struct Sigs {
     float *lfo;
     float *env;
     float *pitch_bend;
+    float *vca;
 };
 
 struct Sel *get_sels(void);

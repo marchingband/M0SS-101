@@ -349,6 +349,7 @@ void render_lights(void){
             pixel_buf[10] = *(sels[7].p)  == 0 ? pixel_on : pixel_off; // lfotri
             pixel_buf[11] = *(sels[7].p)  == 1 ? pixel_on : pixel_off; // lfosqr
             pixel_buf[12] = *(sels[7].p)  == 2 ? pixel_on : pixel_off; // lfornd
+            pixel_buf[14] = *(sels[9].p)  == 1 ? pixel_on : pixel_off; // lfornd
 
             pixel_buf[23] = *(sels[13].p)  == 0 ? pixel_on : pixel_off; // vcfhp
             pixel_buf[24] = *(sels[13].p)  == 1 ? pixel_on : pixel_off; // vcflp
@@ -369,7 +370,8 @@ void render_lights(void){
             pixel_buf[22] = pixel_def((*(sigs->env)) * (*mods[24].p)); // env.pwm
 
             // pixel_buf[22] = pixel_off; // vca
-            pixel_buf[18] = pixel_def((*(sigs->env)) * (*mods[23].p)); // vca
+            pixel_buf[18] = pixel_def(*(sigs->vca)); // vca
+            // pixel_buf[18] = pixel_def((*(sigs->env)) * (*mods[15].p)); // vca
 
             pixel_buf[36] = pixel_on;
             pixel_buf[35] = led_display[0] == 1 ? pixel_on : led_display[0] == 0 ? pixel_off : pixel_def(led_display[0]);

@@ -49,6 +49,7 @@ static struct Sigs Signals = {
     .lfo = 0,
     .env = 0,
     .pitch_bend = 0,
+    .vca = 0,
 };
 
 struct Sel *get_sels(void)
@@ -144,13 +145,13 @@ void extract(const char *name, float *p, float init, float min, float max, float
         }
     }
 
-    printf("failed to find cc for %s\n", name);
+    printf("failed to find cc for %s\n\r\r", name);
 }
 
 void *declare(UIGlue *uiInterface, float *p, const char* key, const char* val){
     if(strcmp("midi", key) == 0) // its a cc
     {
-        printf("got midi %s:%s\n", key, val);
+        printf("got midi %s:%s\n\r\r", key, val);
         long num = strtol(val, NULL, 10);
 
         struct CC *cc = &CCs[num];
@@ -158,7 +159,7 @@ void *declare(UIGlue *uiInterface, float *p, const char* key, const char* val){
     }
     if(strcmp("mod", key) == 0) // its a cc
     {
-        printf("got mod %s:%s\n", key, val);
+        printf("got mod %s:%s\n\r\r", key, val);
         long num = strtol(val, NULL, 10);
 
         struct Mod *mod = &Mods[num];
@@ -180,34 +181,44 @@ void *declare(UIGlue *uiInterface, float *p, const char* key, const char* val){
     }
     if(strcmp("pitch", key) == 0) // its the pitch
     {
-        printf("got pitch pointer\n");
+        printf("got pitch pointer\n\r\r");
         Signals.pitch = p;
     }
     if(strcmp("gate", key) == 0) // its the gate
     {
-        printf("got gate pointer\n");
+        printf("got gate pointer\n\r\r");
         Signals.gate = p;
         *Signals.gate = 0;
-        // *gate = 1;
+    }
+    if(strcmp("vca", key) == 0) // its the gate
+    {
+        printf("got vca pointer\n\r\r");
+        Signals.vca = p;
     }
     if(strcmp("pitch-bend", key) == 0) // its the pitch bend
     {
-        printf("got pitch bend pointer\n");
+        printf("got pitch bend pointer\n\r\r");
         Signals.pitch_bend = p;
     }
     if(strcmp("lfo", key) == 0) // its the lfo
     {
-        printf("got lfo pointer\n");
+        printf("got lfo pointer\n\r\r");
         Signals.lfo = p;
     }
     if(strcmp("env", key) == 0) // its the env
     {
-        printf("got env pointer\n");
+        printf("got env pointer\n\r\r");
         Signals.env = p;
     }
 };
 
+void handle_encoder_press(bool down)
+{
+    *Signals.gate = down ? 1 : 0;
+}
+
 void handle_button_press(int num)
+// handles load, save, learn and cancelling the mode by pressing alt again
 {
     int ui_mode = get_ui_mode();
     if(num == BUTTON_NUM_ALT) // alt button
@@ -283,7 +294,7 @@ void handle_button_press(int num)
 
 void handle_midi(uint8_t *msg, uint8_t len)
 {
-    // printf("msg len %d -> %d %d %d\n", len, msg[0], msg[1], msg[2]);
+    // printf("msg len %d -> %d %d %d\n\r\r", len, msg[0], msg[1], msg[2]);
     uint8_t channel = msg[0] & 0b00001111;
     uint8_t code = (msg[0] >> 4) & 0b00001111;
     switch (code)
@@ -329,7 +340,7 @@ void handle_midi(uint8_t *msg, uint8_t len)
             {
                 cc_map[cc_num_in - 1] = mode_learn_current_cc; // -1 because ccs are indexed at 1
             }
-            printf("no cc_learn selected\n");
+            printf("no cc_learn selected\n\r\r");
             break;
         }
         
@@ -352,7 +363,7 @@ void handle_midi(uint8_t *msg, uint8_t len)
                         struct Alt alt = Alts[i];
                         if(alt.p == 0)
                         {
-                            printf("got unknown Alt %d\n", i);
+                            printf("got unknown Alt %d\n\r\r", i);
                         }
                         else
                         {
@@ -361,6 +372,7 @@ void handle_midi(uint8_t *msg, uint8_t len)
                             int whole_steps = round(steps);
                             float val = (alt.step * whole_steps) + alt.min;
                             *alt.p = val;
+                            printf("set led %f %f %f\n\r", val, alt.min, alt.max);
                             set_led_display(val, alt.min, alt.max);
                         }
                     }
@@ -369,7 +381,7 @@ void handle_midi(uint8_t *msg, uint8_t len)
                         struct Mod mod = Mods[i];
                         if(mod.p == 0)
                         {
-                            printf("got unknown Mod %d\n", i);
+                            printf("got unknown Mod %d\n\r\r", i);
                         }
                         else
                         {
@@ -378,6 +390,7 @@ void handle_midi(uint8_t *msg, uint8_t len)
                             int whole_steps = round(steps);
                             float val = (mod.step * whole_steps) + mod.min;
                             *mod.p = val;
+                            printf("set led %f %f %f\n\r", val, mod.min, mod.max);
                             set_led_display(val, mod.min, mod.max);
                             // cancel_button(i);
                         }
@@ -392,14 +405,14 @@ void handle_midi(uint8_t *msg, uint8_t len)
         struct CC cc = CCs[cc_num];
         if(cc.p == 0)
         {
-            printf("got unknown CC %d\n", cc_num);
+            printf("got unknown CC %d\n\r\r", cc_num);
             break;
         }
         float steps = cc.mul * (float)cc_val;
         int whole_steps = round(steps);
         float val = (cc.step * whole_steps) + cc.min;
         *cc.p = val;
-        // printf("cc%-2d::%12f -> %s\n", cc_num, val, cc.name );
+        // printf("cc%-2d::%12f -> %s\n\r\r", cc_num, val, cc.name );
         break;
     }
     case MIDI_PITCH_BEND:
@@ -429,7 +442,7 @@ static void uart_receive_isr(int irq, void *arg)
             {
                 handle_midi(getMidiMsg(), getMidiMsgLen());
             }
-            // printf("0x%02x\r\n", ch);
+            // printf("0x%02x\r\n\r", ch);
         }
     }
 
