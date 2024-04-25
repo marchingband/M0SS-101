@@ -135,15 +135,18 @@ void usbh_cdc_acm_callback(void *arg, int nbytes)
         {
             for (int i=0; i< nbytes; i+=4)
             {
-                if(midi_buffer[i] == 0x00)
-                {
-                    // USB_LOG_RAW("x");
-                    break;
+                switch(midi_buffer[i]){
+                    case 0x8: // note off
+                    case 0x9: // note on
+                    case 0xB: // cc
+                    case 0xE: // pitch bend
+                        usb_midi_in(midi_buffer[i + 1]);
+                        usb_midi_in(midi_buffer[i + 2]);
+                        usb_midi_in(midi_buffer[i + 3]);
+                        break;
+                    default:
+                        break;
                 }
-                usb_midi_in(midi_buffer[i + 1]);
-                usb_midi_in(midi_buffer[i + 2]);
-                usb_midi_in(midi_buffer[i + 3]);
-                // USB_LOG_RAW(".");
             }
         }
     }

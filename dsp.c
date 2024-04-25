@@ -25,6 +25,9 @@ void *declare(UIGlue *uiInterface, float *p, const char* key, const char* val);
 // from the dsp .h file
 void buildUserInterfacemydsp(mydsp* dsp, UIGlue* ui_interface);
 
+// from midi.c
+void poll_uart(void);
+
 struct voice_s
 {
     bool on;
@@ -213,6 +216,7 @@ void dsp_run(int16_t *dest)
     int now = bflb_mtimer_get_time_us();
     period = now - last_start;
     last_start = now;
+    // poll_uart();
     computemydsp(&dsp, buf_len, NULL, buf);
     for (int i = 0; i < buf_len; i++)
     {

@@ -1,3 +1,5 @@
+#include <FreeRTOS.h>
+#include "queue.h"
 #include "bflb_mtimer.h"
 #include "bflb_uart.h"
 #include "bflb_gpio.h"
@@ -36,8 +38,10 @@ void set_note(uint8_t note);
 void set_filter(uint8_t val);
 
 static struct bflb_device_s *uart0;
+QueueHandle_t uart_queue;
 int ch;
 int mode_learn_current_cc = 0;
+bool encoder_pressed = false;
 
 static struct CC CCs[NUM_CC] = {0};
 static struct Mod Mods[NUM_BUTTONS] = {0};
@@ -94,7 +98,7 @@ void extract(const char *name, float *p, float init, float min, float max, float
             cc->init = init;
             cc->step = step;
             float steps = (max - min) / step;
-            float per = steps / 127.0;
+            float per = steps / 128.0;
             cc->mul = per;
             strcpy(cc->name, name);
             // return;
@@ -110,7 +114,7 @@ void extract(const char *name, float *p, float init, float min, float max, float
             mod->init = init;
             mod->step = step;
             float steps = (max - min) / step;
-            float per = steps / 127.0;
+            float per = steps / 128.0;
             mod->mul = per;
             strcpy(mod->name, name);
             // return;
@@ -126,7 +130,7 @@ void extract(const char *name, float *p, float init, float min, float max, float
             alt->init = init;
             alt->step = step;
             float steps = (max - min) / step;
-            float per = steps / 127.0;
+            float per = steps / 128 .0;
             alt->mul = per;
             strcpy(alt->name, name);
             // return;
@@ -148,7 +152,7 @@ void extract(const char *name, float *p, float init, float min, float max, float
     printf("failed to find cc for %s\n\r\r", name);
 }
 
-void *declare(UIGlue *uiInterface, float *p, const char* key, const char* val){
+void declare(UIGlue *uiInterface, float *p, const char* key, const char* val){
     if(strcmp("midi", key) == 0) // its a cc
     {
         printf("got midi %s:%s\n\r\r", key, val);
@@ -215,6 +219,7 @@ void *declare(UIGlue *uiInterface, float *p, const char* key, const char* val){
 void handle_encoder_press(bool down)
 {
     *Signals.gate = down ? 1 : 0;
+    encoder_pressed = down;
 }
 
 void handle_button_press(int num)
@@ -295,8 +300,14 @@ void handle_button_press(int num)
 void handle_midi(uint8_t *msg, uint8_t len)
 {
     // printf("msg len %d -> %d %d %d\n\r\r", len, msg[0], msg[1], msg[2]);
+    
     uint8_t channel = msg[0] & 0b00001111;
+    if(channel != 0){
+        return;
+    }
+
     uint8_t code = (msg[0] >> 4) & 0b00001111;
+    
     switch (code)
     {
     case MIDI_NOTE_ON:
@@ -346,7 +357,7 @@ void handle_midi(uint8_t *msg, uint8_t len)
         
         if(cc_num >= NUM_CC)
         {
-            printf("CC %s is too high", cc_num);
+            // printf("CC %d is too high", cc_num);
             break;
         }
         
@@ -436,13 +447,14 @@ static void uart_receive_isr(int irq, void *arg)
         while (bflb_uart_rxavailable(uart0))
         {
             uint8_t ch = bflb_uart_getchar(uart0);
-            int ret = parse(ch);
-            // printf("got %d, ret is %d", ch, ret);
-            if (ret)
-            {
-                handle_midi(getMidiMsg(), getMidiMsgLen());
-            }
-            // printf("0x%02x\r\n\r", ch);
+            // int ret = parse(ch);
+            // // printf("got %d, ret is %d", ch, ret);
+            // if (ret)
+            // {
+            //     handle_midi(getMidiMsg(), getMidiMsgLen());
+            // }
+            // // printf("0x%02x\r\n\r", ch);
+            xQueueSendToBackFromISR(uart_queue, &ch, NULL);
         }
     }
 
@@ -468,21 +480,36 @@ void poll_uart(void)
 void usb_midi_in(char ch)
 {
     int ret = parse(ch);
-    if (ret)
+    if (ret == 1)
     {
         handle_midi(getMidiMsg(), getMidiMsgLen());
     }
 }
 
+void uart_task(void *args){
+    uint8_t ch;
+    while(1){
+        if(xQueueReceive(uart_queue, &ch, portMAX_DELAY)){
+            int ret = parse(ch);
+            if (ret)
+            {
+                handle_midi(getMidiMsg(), getMidiMsgLen());
+            }
+        }
+    }
+}
+
 void uart_receive_init(void)
 {
+    uart_queue = xQueueCreate(4096, sizeof(uint8_t));
+    xTaskCreate(uart_task, "uart_task", 2048, NULL, 2, NULL);
 
     init_midi_parser();
 
     uart0 = bflb_device_get_by_name("uart0");
-    // bflb_uart_feature_control(uart0, UART_CMD_SET_RX_FIFO_THREHOLD, 0);
+    bflb_uart_feature_control(uart0, UART_CMD_SET_RX_FIFO_THREHOLD, 0);
 
-    // bflb_irq_attach(uart0->irq_num, uart_receive_isr, uart0);
-    // bflb_irq_enable(uart0->irq_num);
-    // bflb_uart_rxint_mask(uart0, false);
+    bflb_irq_attach(uart0->irq_num, uart_receive_isr, uart0);
+    bflb_irq_enable(uart0->irq_num);
+    bflb_uart_rxint_mask(uart0, false);
 }

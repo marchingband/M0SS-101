@@ -215,13 +215,13 @@ static void process_buttons(){
                     button_state[i] = 1;
                     button_time[i] = now;
                     // printf("button %d released\n\r", i);
-                    if(button_cancelled[i])
-                    {
-                        button_cancelled[i] = 0;
-                    }
-                    else if(i == BUTTON_NUM_ENCODER)
+                    if(i == BUTTON_NUM_ENCODER)
                     {
                         handle_encoder_press(false);
+                    }
+                    else if(button_cancelled[i])
+                    {
+                        button_cancelled[i] = 0;
                     }
                     else if(i == BUTTON_NUM_ALT) // its the alt button
                     {

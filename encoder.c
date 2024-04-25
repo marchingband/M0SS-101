@@ -30,6 +30,8 @@ uint64_t last_click = 0;
 #define CLICK_MED  60000
 #define CLICK_FAST 15000
 
+extern bool encoder_pressed;
+
 static void on_encoder(bool up){
     uint64_t now = bflb_mtimer_get_time_us();
     uint64_t passed = now - last_click;
@@ -39,6 +41,18 @@ static void on_encoder(bool up){
     // printf("mul %d\n\r", click_multiplier);
     // uint8_t *button_states = get_button_states();
     struct Param param = get_param_selected();
+    if(alt_held()){
+        struct Sigs *sigs = get_signals();
+        if(encoder_pressed){
+            // 0 to 16,383
+            float modifier = up ? click_multiplier * 10 : click_multiplier * -10;
+            float next = *sigs->pitch_bend + modifier ;
+            *sigs->pitch_bend = next > 16383 ? 16383 : next < 0 ? 0 : next;
+        } else {
+            *sigs->pitch = up ? *sigs->pitch + 1 : *sigs->pitch - 1;
+        }
+        return;
+    }
     if(param.button == -1)
     {
         // printf("nothing selected\n\r");

@@ -210,10 +210,10 @@ static void _isr_rotenc(int irq, void *args)
         };
         BaseType_t task_woken = pdFALSE;
         xQueueOverwriteFromISR(info->queue, &queue_event, &task_woken);
-        if (task_woken)
-        {
-            portYIELD_FROM_ISR(false); // false?
-        }
+        // if (task_woken)
+        // {
+        //     portYIELD_FROM_ISR(false); // false?
+        // }
     }
 }
 
