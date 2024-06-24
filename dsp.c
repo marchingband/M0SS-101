@@ -53,7 +53,7 @@ int get_next_voice(uint8_t note)
     {
         if ((voices[i].on == false) && (*voices[i].gain == 0.0f)) // completely open
         {
-            printf("next voice is %d\n", i);
+            // printf("next voice is %d\n", i);
             return i;
         }
     }
@@ -62,7 +62,7 @@ int get_next_voice(uint8_t note)
     {
         if (*voices[i].gain == 0.0f) // has fully decayed
         {
-            printf("next voice is %d\n", i);
+            // printf("next voice is %d\n", i);
             return i;
         }
     }
@@ -71,12 +71,12 @@ int get_next_voice(uint8_t note)
     {
         if (voices[i].on == false) // open but not yet done
         {
-            printf("next voice is %d\n", i);
+            // printf("next voice is %d\n", i);
             return i;
         }
     }
 
-    printf("no freee voices\n");
+    // printf("no freee voices\n");
     return -1;
 }
 
@@ -86,11 +86,11 @@ int get_voice_by_note(uint8_t note)
     {
         if (voices[i].note == note)
         {
-            printf("%d, found voice is %d\n", note, i);
+            // printf("%d, found voice is %d\n", note, i);
             return i;
         }
     }
-    printf("no voices for that note\n");
+    // printf("no voices for that note\n");
     return -1;
 }
 
@@ -206,7 +206,7 @@ int period = 0;
 
 void print_bench(void)
 {
-    printf("%d of %d [us]\n", consumed, period);
+    // printf("%d of %d [us]\n", consumed, period);
 }
 
 int loop_cnt = 0;
@@ -223,14 +223,14 @@ void dsp_run(int16_t *dest)
         float val = buf[0][i];
         // if(val > 1.0 || val < -1.0)
         // {
-        //     printf("clip :%f", val);
+            // printf("clip :%f", val);
         // }
         // printf("%f\n", val);
         // dest[i] = (uint16_t)((val + 1) * 32767);
         // the AUDAC expects int16_t but the buffer is typed uint16_t so do this awkward thing.
         // dest[i] = (uint16_t)(int16_t)(val * 32767);
         int32_t raw = (int32_t)(val * 32767);
-        dest[i] = (uint16_t)(raw < -32766 ? -32766 : raw > 32767 ? 32767 : raw);
+        dest[i] = (uint16_t)(raw < -32768 ? -32768 : raw > 32767 ? 32767 : raw);
     }
     consumed = bflb_mtimer_get_time_us() - now;
     poll_gpio();

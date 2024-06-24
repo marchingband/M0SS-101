@@ -66,7 +66,7 @@ void poll_gpio(void)
                             button_cancelled[i] = 1;
                         }
                     }
-                    printf("button %d pushed", i);
+                    // printf("button %d pushed", i);
                 }
             }
         }
@@ -80,7 +80,7 @@ void poll_gpio(void)
                     button_pushes[i] = 0;
                     button_state[i] = 1;
                     button_time[i] = now;
-                    printf("button %d released", i);
+                    // printf("button %d released", i);
                     if(button_cancelled[i])
                     {
                         button_cancelled[i] = 0;

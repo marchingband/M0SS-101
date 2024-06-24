@@ -8,7 +8,8 @@
 
 /* ================ USB common Configuration ================ */
 
-#define CONFIG_USB_PRINTF(...) printf(__VA_ARGS__)
+#define CONFIG_USB_PRINTF(...)
+// #define CONFIG_USB_PRINTF(...) printf(__VA_ARGS__)
 
 #define usb_malloc(size) malloc(size)
 #define usb_free(ptr)    free(ptr)

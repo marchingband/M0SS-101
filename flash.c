@@ -47,12 +47,12 @@ struct Config *get_config(void)
 
 void flash_init(void)
 {
-    printf("initializing flash\n");
+    // printf("initializing flash\n");
     struct Config conf;
     bflb_flash_read(CONFIG_BASE, &conf, sizeof(struct Config));
     if(conf.magic == default_config.magic)
     {
-        printf("the magic number in flash was correct\n");
+        // printf("the magic number in flash was correct\n");
         current_config = conf;
         // for(int i=0; i< 127; i++)
         // {
@@ -61,8 +61,8 @@ void flash_init(void)
     }
     else
     {
-        printf("the magic number in flash was NOT correct\n");
-        printf("initializing flash storage!\n");
+        // printf("the magic number in flash was NOT correct\n");
+        // printf("initializing flash storage!\n");
         bflb_flash_erase(CONFIG_BASE, sizeof(struct Config));
         bflb_flash_erase(PRESET_BASE, TOTAL_BYTES);
         bflb_flash_write(CONFIG_BASE, &default_config, sizeof(struct Config));
@@ -72,7 +72,7 @@ void flash_init(void)
 
 void save(int slot)
 {
-    printf("saving slot %d\n", slot);
+    // printf("saving slot %d\n", slot);
     current_slot = slot;
     int ret;
     uint32_t base = PRESET_BASE + (SECTOR_SIZE * slot);
@@ -89,59 +89,59 @@ void save(int slot)
     for(int i=0; i< NUM_CC; i++)
     {
         float val = ccs[i].p ? *ccs[i].p : 0.0;
-        printf("writing %f to cc %d\n", val, i);
+        // printf("writing %f to cc %d\n", val, i);
         floats_buf[idx++] = val;
     }
 
     for(int i=0; i< NUM_BUTTONS; i++)
     {
         float val = mods[i].p ? *mods[i].p : 0.0;
-        printf("writing %f to mods %d\n", val, i);
+        // printf("writing %f to mods %d\n", val, i);
         floats_buf[idx++] = val;
     }
 
     for(int i=0; i< NUM_BUTTONS; i++)
     {
         float val = alts[i].p ? *alts[i].p : 0.0;
-        printf("writing %f to alts %d\n", val, i);
+        // printf("writing %f to alts %d\n", val, i);
         floats_buf[idx++] = val;
     }
 
     for(int i=0; i< NUM_SEL; i++)
     {
         float val = sels[i].p ? *sels[i].p : 0.0;
-        printf("writing %f to sels %d\n", val, i);
+        // printf("writing %f to sels %d\n", val, i);
         floats_buf[idx++] = val;
     }
 
-    printf("erase slot\n");
+    // printf("erase slot\n");
     ret = bflb_flash_erase(base, sizeof(buf));
     if(ret < 0)
     {
-        printf("bflb_flash_erase returned %d\n", ret);
+        // printf("bflb_flash_erase returned %d\n", ret);
         return;
     }
-    printf("write buf\n");
+    // printf("write buf\n");
     ret = bflb_flash_write(base, buf, sizeof(buf));
     if(ret < 0)
     {
-        printf("bflb_flash_write returned %d\n", ret);
+        // printf("bflb_flash_write returned %d\n", ret);
         return;
     }
 
-    printf("erase config\n");
+    // printf("erase config\n");
     ret = bflb_flash_erase(CONFIG_BASE, sizeof(struct Config));
     if(ret < 0)
     {
-        printf("bflb_flash_erase returned %d\n", ret);
+        // printf("bflb_flash_erase returned %d\n", ret);
         return;
     }
-    printf("write config\n");
+    // printf("write config\n");
     current_config.empty[slot] = false;
     ret = bflb_flash_write(CONFIG_BASE, &current_config, sizeof(struct Config));
     if(ret < 0)
     {
-        printf("bflb_flash_write returned %d\n", ret);
+        // printf("bflb_flash_write returned %d\n", ret);
         return;
     }
 }
@@ -150,13 +150,13 @@ void load(int slot)
 {
     if(current_config.empty[slot] == true)
     {
-        printf("memory slot %d is empty\n", slot);
+        // printf("memory slot %d is empty\n", slot);
         return;
     }
 
     current_slot = slot;
 
-    printf("loading slot %d\n", slot);
+    // printf("loading slot %d\n", slot);
     int ret;
     uint32_t base = PRESET_BASE + (SECTOR_SIZE * slot);
 
@@ -169,7 +169,7 @@ void load(int slot)
 
     if(ret < 0)
     {
-        printf("bflb_flash_read returned %d\n", ret);
+        // printf("bflb_flash_read returned %d\n", ret);
         return;
     }
 
@@ -181,12 +181,12 @@ void load(int slot)
     {
         if(ccs[i].p == NULL)
         {
-            printf("cc %d is null\n", i);
+            // printf("cc %d is null\n", i);
             idx++;
             continue;
         }
         float val = floats_buf[idx++];
-        printf("reading %f to cc %d\n", val, i);
+        // printf("reading %f to cc %d\n", val, i);
         *ccs[i].p = val;
     }
 
@@ -194,12 +194,12 @@ void load(int slot)
     {
         if(mods[i].p == 0)
         {
-            printf("mod %d is null\n", i);
+            // printf("mod %d is null\n", i);
             idx++;
             continue;
         }
         float val = floats_buf[idx++];
-        printf("reading %f to mod %d\n", val, i);
+        // printf("reading %f to mod %d\n", val, i);
         *mods[i].p = val;
     }
 
@@ -207,12 +207,12 @@ void load(int slot)
     {
         if(alts[i].p == 0)
         {
-            printf("alt %d is null\n", i);
+            // printf("alt %d is null\n", i);
             idx++;
             continue;
         }
         float val = floats_buf[idx++];
-        printf("reading %f to alts %d\n", val, i);
+        // printf("reading %f to alts %d\n", val, i);
         *alts[i].p = val;
     }
 
@@ -220,12 +220,12 @@ void load(int slot)
     {
         if(sels[i].p == 0)
         {
-            printf("sel %d is null\n", i);
+            // printf("sel %d is null\n", i);
             idx++;
             continue;
         }
         float val = floats_buf[idx++];
-        printf("reading %f to sels %d\n", val, i);
+        // printf("reading %f to sels %d\n", val, i);
         *sels[i].p = val;
     }
 }

@@ -128,7 +128,7 @@ void usbh_cdc_acm_callback(void *arg, int nbytes)
     {
         // for (size_t i = 0; i < nbytes; i++)
         // {
-        //     USB_LOG_RAW("0x%02x ", midi_buffer[i]);
+            // USB_LOG_RAW("0x%02x ", midi_buffer[i]);
         // }
         // USB_LOG_RAW("nbytes:%d\r\n", nbytes);
         if(midi_run == 1)
@@ -140,6 +140,7 @@ void usbh_cdc_acm_callback(void *arg, int nbytes)
                     case 0x9: // note on
                     case 0xB: // cc
                     case 0xE: // pitch bend
+                        // all these are 3 bytes
                         usb_midi_in(midi_buffer[i + 1]);
                         usb_midi_in(midi_buffer[i + 2]);
                         usb_midi_in(midi_buffer[i + 3]);

@@ -1,66 +1,5 @@
 import("stdfaust.lib");
 
-// genfsqrt(maximum, x) = sqrt(maximum) * sqrt(x);
-// genfinvsqrt(maximum, x) = pow((x / sqrt(maximum)), 2);
-
-// fsqrt = genfsqrt(1);
-// finvsqrt = genfinvsqrt(1);
-
-// T = ma.T;
-// SR = ma.SR;
-// AR(att, rel, trigger) = loop ~ si.bus(2) : ! , _
-//     with {
-//         loop(clockState, yState) = clock , y
-//             with {
-//                 clock = ba.if(trigger != 0, 1, clockState + 1);
-//                 timeout = clock >= (att * SR);
-//                 T60const = 1.0 / log(1000.0);
-//                 attT60 = att * T60const;
-//                 relT60 = rel * T60const;
-//                 attCoeff = exp(-T / attT60);
-//                 relCoeff = exp(-T / relT60);
-//                 attCurve = attCoeff * yState + (1.0 - attCoeff);
-//                 relCurve = relCoeff * yState;
-//                 y = ba.if(timeout, relCurve, attCurve);
-//             };
-//     };
-
-// adsrfq(att, dec, sus, rel, fin, k, gate) = envelope 
-//     with {
-//         ugate = gate>0;
-//         ratio = pow(k, 5) / 100000;
-//         calc_coef(rate, target) = exp((-1 * log((1.0 + target) / target)) / rate);
-
-//         att_rate = ma.SR * att;
-//         att_coef = calc_coef(att_rate, ratio);
-//         att_base = (1.0 + ratio) * (1.0 - att_coef);
-
-//         dec_rate = ma.SR * dec;
-//         dec_coef = calc_coef(dec_rate, ratio);
-//         dec_base = (sus - ratio) * (1.0 - dec_coef);
-
-//         rel_rate = ma.SR * rel;
-//         rel_coef = calc_coef(rel_rate, ratio);
-//         rel_base = (fin - ratio) * (1.0 - rel_coef);
-
-//         fb(state, y) = nextState, nextY 
-//             with {
-//                 base = select3(state, rel_base, att_base, dec_base);
-//                 coef = select3(state, rel_coef, att_coef, dec_coef);
-//                 minimum = select3(state, fin, fin, sus);
-//                 nextY = max(minimum, min(1, base + y * coef));
-//                 nextState = select2(ugate,
-//                     0,
-//                     select3(state,
-//                         1,
-//                         select2(y < 1.0, 2, 1),
-//                         2
-//                     )
-//                 );
-//             };
-//         envelope = fb ~ (_,_) : !, _;
-//     };
-
 clamp(low, high, x) = min(max( low, x), high);
 log3(n) = n * n * n;
 
@@ -69,22 +8,17 @@ pitch_ratio_440 = pitch / 440.0;
 gate  = button("gate[gate]");
 pitch_bend = hslider("pitch-bend[pitch-bend:0]", 8192, 0, 16383, 1); // 14bit
 
-// TODO use [scale:log]
-
 // CC 1-4 
-// attack    = hslider("attack[midi:1]",    0.001, 0.001, 1,   0.0001);
-attack    = hslider("attack[mod:16][midi:1]",    0.001, 0.001, 1,   0.0001) : log3 : it.remap(0.001, 1.0, 0.0, 20.0);
+attack    = hslider("attack[mod:16][midi:1]",    0.001, 0.001, 1,   0.0001) : log3 : it.remap(0.0, 1.0, 0.001, 20.0);
 cutoff    = hslider("cutoff[mod:14][midi:2]",    0.5,   0,     1,   0.0001) : ba.lin2LogGain : si.smooth(ba.tau2pole(0.05)) : (_ * lfo_to_cuttoff) : (_ * env_to_cutoff) : clamp(0, 1);
 lfo_freq  = hslider("lfo-freq[mod:12][midi:3]",  0.3,   0.0,   1.0, 0.0001) : ba.lin2LogGain : it.remap(0.0, 1.0, 0.01, 20.0);
 mix       = hslider("mix[mod:4][midi:4]",        0.5,   0,     1,   0.0001) : si.smooth(0.1);
 
 // CC 5-8
-// release       = hslider("release[midi:5]",   0.001, 0.001, 1,  0.0001);
-release       = hslider("release[mod:25][midi:5]",   0.001, 0.001, 1,  0.0001) : ba.lin2LogGain : it.remap(0.001, 1.0, 0.0, 20.0);
+release       = hslider("release[mod:25][midi:5]",   0.001, 0.001, 1,  0.0001) : ba.lin2LogGain : it.remap(0.0, 1.0, 0.001, 20.0);
 resonance     = hslider("resonance[mod:17][midi:6]", 0.001, 0.0,   1,  0.0001) : it.remap(0.0, 1.0, 0.707, 25.0);
 detune        = hslider("detune[mod:5][midi:7]",     0,     0,     1, 0.0001) : ba.lin2LogGain: (_ * 1200) : ba.cent2ratio : si.smooth(0.1);
 master_volume = hslider("volume[mod:23][midi:8]",    1,     0,     1,  0.001)  : si.smooth(0.1);
-
 
 // selections
 osc1_wavform = hslider("osc1-wavform[sel:0][midi:9]",   0, 0, 2, 1);
@@ -94,7 +28,6 @@ osc2_wavform = hslider("osc2-wavform[sel:3][midi:12]",   0, 0, 2, 1);
 lfo_wavform  = hslider("lfo-wavform[sel:7][midi:13]",    0, 0, 2, 1);
 lfo2env      = hslider("lfo-to-env[sel:9][midi:14]",     0, 0, 1, 1);
 filter_type  = hslider("hp-lp-bp[sel:13][midi:15]",      1, 0, 2, 1);
-// asr_ar       = hslider("env-type[sel:1]",      0, 0, 1, 1);
 
 // modifiers
 lfo2pitch    = hslider("lfo-to-osc[mod:10][midi:16]",    0, 0, 1, 0.001) ;
@@ -107,7 +40,7 @@ env2cutoff   = hslider("env-to-vcf[mod:18][midi:21]",    0, 0, 1, 0.001) ;
 env2pitch    = hslider("env-to-osc[mod:20][midi:22]",    0, 0, 1, 0.001) ;
 env2pwm      = hslider("env-to-pwm[mod:24][midi:23]",    0, 0, 1, 0.001) ;
 
-decay        = hslider("decay[mod:19][midi:24]",         0.001, 0.001, 1, 0.001) ;
+decay        = hslider("decay[mod:19][midi:24]",         0.01, 0.01, 1, 0.001) ;
 sustain      = hslider("sustain[mod:21][midi:25]",       1,     0.001, 1, 0.001) ;
 
 // alts
@@ -144,9 +77,7 @@ osc1_pw = osc_1_pw * (1 - (lfo2pwm * lfo)) * (1 - env2pwm); // mod pulse wav dut
 osc1_volume = mix;
 osc1_freq   = pitch, pitch / 2, pitch / 4 : ba.selectn(3, osc1_octave);
 osc1_square = os.pulsetrain(osc1_freq, osc1_pw);
-// osc1_square = os.pulsetrain(osc1_freq, osc_1_pw);
 osc1_saw    = os.sawNp(2, osc1_freq, osc1_pw);
-// osc1_saw    = os.sawNp(2, osc1_freq, 0);
 osc1        = osc1_square, osc1_saw, (osc1_square, osc1_saw :> _)  : ba.selectn(3, osc1_wavform) : (_ * osc1_volume);
 
 // osc 2
@@ -161,24 +92,11 @@ lpf = ve.moogLadder(cutoff : (_ * pitch_ratio_440) : clamp(0, 1) , resonance);
 hpf = ve.korg35HPF(cutoff, resonance / 3);
 bpf = ve.oberheimBPF(cutoff, resonance);
 vcf = _ <: hpf, lpf, bpf : ba.selectn(3, filter_type) ;
-// vcf = lpf ;
 
 // env
 env_trig = gate, lfo_sq : ba.selectn(2, lfo2env);
-// env = adsrfq(attack, decay, sustain, 0.0, release, 5.0, env_trig);
-// env = en.adsr(attack, decay, sustain, release, env_trig) <: attach(vbargraph("env[env:0]", 0 , 1));
 env = en.adsr_bias(attack, decay, sustain, release, 0.5, 0.5, 0.5, 1, env_trig) <: attach(vbargraph("env[env:0]", 0 , 1));
 vca = env_to_volume * lfo_to_volume <: attach(vbargraph("vca[vca:0]", 0 , 1));
-
-
-// bias = 0.7;
-// asr = en.adsr_bias(attack, 0, 1, release, bias, bias, bias, 1, env_trig);
-// env = en.adsr_bias(attack, decay, sustain, release, bias, bias, bias, 1, env_trig);
-// env = en.asre(attack, 1, release, env_trig) <: attach(vbargraph("env[env:0]", 0 , 1));
-// ar_trig = env_trig : \(x).(x > x');
-// ar = AR(attack, release, ar_trig);
-// env = asr <: attach(vbargraph("env[env:0]", 0 , 1));
-// env = asr, ar : ba.selectn(2, asr_ar) <: attach(vbargraph("env[env:0]", 0 , 1));
 
 env_to_pitch  = env * env2pitch * 100 : ba.cent2ratio;
 env_to_volume = (env * env2volume) ;

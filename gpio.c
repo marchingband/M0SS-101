@@ -198,7 +198,7 @@ static void process_buttons(){
                         }
                     }
                     set_param_selected(i, alt_held());
-                    printf("button %d pushed\n\r", i);
+                    // printf("button %d pushed\n\r", i);
                 }
             }
         }

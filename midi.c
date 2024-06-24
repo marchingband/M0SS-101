@@ -130,7 +130,7 @@ void extract(const char *name, float *p, float init, float min, float max, float
             alt->init = init;
             alt->step = step;
             float steps = (max - min) / step;
-            float per = steps / 128 .0;
+            float per = steps / 128.0;
             alt->mul = per;
             strcpy(alt->name, name);
             // return;
@@ -149,13 +149,13 @@ void extract(const char *name, float *p, float init, float min, float max, float
         }
     }
 
-    printf("failed to find cc for %s\n\r\r", name);
+    // printf("failed to find cc for %s\n\r\r", name);
 }
 
 void declare(UIGlue *uiInterface, float *p, const char* key, const char* val){
     if(strcmp("midi", key) == 0) // its a cc
     {
-        printf("got midi %s:%s\n\r\r", key, val);
+        // printf("got midi %s:%s\n\r\r", key, val);
         long num = strtol(val, NULL, 10);
 
         struct CC *cc = &CCs[num];
@@ -163,7 +163,7 @@ void declare(UIGlue *uiInterface, float *p, const char* key, const char* val){
     }
     if(strcmp("mod", key) == 0) // its a cc
     {
-        printf("got mod %s:%s\n\r\r", key, val);
+        // printf("got mod %s:%s\n\r\r", key, val);
         long num = strtol(val, NULL, 10);
 
         struct Mod *mod = &Mods[num];
@@ -185,33 +185,33 @@ void declare(UIGlue *uiInterface, float *p, const char* key, const char* val){
     }
     if(strcmp("pitch", key) == 0) // its the pitch
     {
-        printf("got pitch pointer\n\r\r");
+        // printf("got pitch pointer\n\r\r");
         Signals.pitch = p;
     }
     if(strcmp("gate", key) == 0) // its the gate
     {
-        printf("got gate pointer\n\r\r");
+        // printf("got gate pointer\n\r\r");
         Signals.gate = p;
         *Signals.gate = 0;
     }
     if(strcmp("vca", key) == 0) // its the gate
     {
-        printf("got vca pointer\n\r\r");
+        // printf("got vca pointer\n\r\r");
         Signals.vca = p;
     }
     if(strcmp("pitch-bend", key) == 0) // its the pitch bend
     {
-        printf("got pitch bend pointer\n\r\r");
+        // printf("got pitch bend pointer\n\r\r");
         Signals.pitch_bend = p;
     }
     if(strcmp("lfo", key) == 0) // its the lfo
     {
-        printf("got lfo pointer\n\r\r");
+        // printf("got lfo pointer\n\r\r");
         Signals.lfo = p;
     }
     if(strcmp("env", key) == 0) // its the env
     {
-        printf("got env pointer\n\r\r");
+        // printf("got env pointer\n\r\r");
         Signals.env = p;
     }
 };
@@ -339,6 +339,10 @@ void handle_midi(uint8_t *msg, uint8_t len)
     case MIDI_CC:
     {
         uint8_t cc_num_in = msg[1] & 0b01111111;
+        if((cc_num_in - 1) >= NUM_CC_MAP){
+            // printf("CC %d is too high", cc_num_in);
+            break;
+        }
         uint8_t cc_val = msg[2] & 0b01111111;
         uint8_t *cc_map = &get_config()->cc_map[0];
         uint8_t cc_num = cc_map[cc_num_in - 1]; // -1 because ccs are indexed at 1
@@ -351,7 +355,7 @@ void handle_midi(uint8_t *msg, uint8_t len)
             {
                 cc_map[cc_num_in - 1] = mode_learn_current_cc; // -1 because ccs are indexed at 1
             }
-            printf("no cc_learn selected\n\r\r");
+            // printf("no cc_learn selected\n\r\r");
             break;
         }
         
@@ -374,7 +378,7 @@ void handle_midi(uint8_t *msg, uint8_t len)
                         struct Alt alt = Alts[i];
                         if(alt.p == 0)
                         {
-                            printf("got unknown Alt %d\n\r\r", i);
+                            // printf("got unknown Alt %d\n\r\r", i);
                         }
                         else
                         {
@@ -383,7 +387,7 @@ void handle_midi(uint8_t *msg, uint8_t len)
                             int whole_steps = round(steps);
                             float val = (alt.step * whole_steps) + alt.min;
                             *alt.p = val;
-                            printf("set led %f %f %f\n\r", val, alt.min, alt.max);
+                            // printf("set led %f %f %f\n\r", val, alt.min, alt.max);
                             set_led_display(val, alt.min, alt.max);
                         }
                     }
@@ -392,7 +396,7 @@ void handle_midi(uint8_t *msg, uint8_t len)
                         struct Mod mod = Mods[i];
                         if(mod.p == 0)
                         {
-                            printf("got unknown Mod %d\n\r\r", i);
+                            // printf("got unknown Mod %d\n\r\r", i);
                         }
                         else
                         {
@@ -401,7 +405,7 @@ void handle_midi(uint8_t *msg, uint8_t len)
                             int whole_steps = round(steps);
                             float val = (mod.step * whole_steps) + mod.min;
                             *mod.p = val;
-                            printf("set led %f %f %f\n\r", val, mod.min, mod.max);
+                            // printf("set led %f %f %f\n\r", val, mod.min, mod.max);
                             set_led_display(val, mod.min, mod.max);
                             // cancel_button(i);
                         }
@@ -416,7 +420,7 @@ void handle_midi(uint8_t *msg, uint8_t len)
         struct CC cc = CCs[cc_num];
         if(cc.p == 0)
         {
-            printf("got unknown CC %d\n\r\r", cc_num);
+            // printf("got unknown CC %d\n\r\r", cc_num);
             break;
         }
         float steps = cc.mul * (float)cc_val;

@@ -245,7 +245,7 @@ void rotary_encoder_init(rotary_encoder_info_t * info, int pin_a, int pin_b)
     }
     else
     {
-        printf("info is NULL");
+        // printf("info is NULL");
     }
 }
 
@@ -258,7 +258,7 @@ void rotary_encoder_enable_half_steps(rotary_encoder_info_t * info, bool enable)
     }
     else
     {
-        printf("info is NULL");
+        // printf("info is NULL");
     }
 }
 
@@ -272,7 +272,7 @@ void rotary_encoder_flip_direction(rotary_encoder_info_t * info)
     }
     else
     {
-        printf("info is NULL");
+        // printf("info is NULL");
     }
 }
 
@@ -285,7 +285,7 @@ void rotary_encoder_uninit(rotary_encoder_info_t * info)
     }
     else
     {
-        printf("info is NULL");
+        // printf("info is NULL");
     }
 }
 
@@ -302,7 +302,7 @@ void rotary_encoder_set_queue(rotary_encoder_info_t * info, QueueHandle_t queue)
     }
     else
     {
-        printf("info is NULL");
+        // printf("info is NULL");
     }
 }
 
@@ -316,7 +316,7 @@ void rotary_encoder_get_state(const rotary_encoder_info_t * info, rotary_encoder
     }
     else
     {
-        printf("info and/or state is NULL");
+        // printf("info and/or state is NULL");
     }
 }
 
@@ -329,6 +329,6 @@ void rotary_encoder_reset(rotary_encoder_info_t * info)
     }
     else
     {
-        printf("info is NULL");
+        // printf("info is NULL");
     }
 }

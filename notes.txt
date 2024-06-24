@@ -1,0 +1,5 @@
+BUILD + FLASH
+make CHIP=bl616 BOARD=bl616dk ; make flash CHIP=bl616 COMX=COM4
+
+BUILD FAUST FILE
+faust -lang c -o m0s.h m0ss.dsp
