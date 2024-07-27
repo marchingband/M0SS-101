@@ -45,7 +45,7 @@ static void compute(int tictoc)
     dsp_run(dest);
 }
 
-void refresh_dma(int tictoc)
+static void refresh_dma(int tictoc)
 {
     if (tictoc)
     {
@@ -67,12 +67,28 @@ void refresh_dma(int tictoc)
     }
 }
 
+static uint64_t times[100] = {0};
+static size_t time_p = 0;
+
 void audio_dma_callback(void *arg)
 {
+
+    // times[time_p++] = bflb_mtimer_get_time_us();
+
     static int tictoc = 1;
     refresh_dma(tictoc);
     compute(tictoc == 0 ? 1 : 0);
     tictoc = tictoc == 0 ? 1 : 0;
+
+    // times[time_p++] = bflb_mtimer_get_time_us();
+
+    // if(time_p >= 100){
+    //     time_p = 0;
+    //     for(int i=0; i<100; i+=2){
+    //         uint64_t time = times[i+1] - times[i];
+    //         printf("%20llu -> %20llu = %20llu\n", times[i], times[i+1], time);
+    //     }
+    // }
 }
 
 /* audio gpio init*/

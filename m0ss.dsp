@@ -1,5 +1,7 @@
 import("stdfaust.lib");
 
+sm = ba.tau2pole(0.1);
+
 clamp(low, high, x) = min(max( low, x), high);
 log3(n) = n * n * n;
 
@@ -41,14 +43,14 @@ env2pitch    = hslider("env-to-osc[mod:20][midi:22]",    0, 0, 1, 0.001) ;
 env2pwm      = hslider("env-to-pwm[mod:24][midi:23]",    0, 0, 1, 0.001) ;
 
 decay        = hslider("decay[mod:19][midi:24]",         0.01, 0.01, 1, 0.001) ;
-sustain      = hslider("sustain[mod:21][midi:25]",       1,     0.001, 1, 0.001) ;
+sustain      = hslider("sustain[mod:21][midi:25]",       1,    0.001, 1, 0.001) ;
 
 // alts
-osc_1_pw     = hslider("osc-1-pw[alt:0][midi:26]",      0.5,   0.1,   0.9,  0.0001) : si.smooth(0.1);
-osc_2_pw     = hslider("osc-2-pw[alt:3][midi:27]",      0.5,   0.1,   0.9,  0.0001) : si.smooth(0.1);
-xor_volume   = hslider("xor-vol[alt:4][midi:28]",       0,     0,     1,    0.0001) : si.smooth(0.1);
-noise_volume = hslider("noise-vol[alt:5][midi:29]",     0,     0,     1,    0.0001) : si.smooth(0.1);
-glide        = hslider("glide[alt:23][midi:30]",        0.001, 0.001, 0.99, 0.0001);
+osc_1_pw     = hslider("osc-1-pw[alt:0][midi:26]",      0.5,   0.1,   0.9,  0.001) : si.smooth(sm);
+osc_2_pw     = hslider("osc-2-pw[alt:3][midi:27]",      0.5,   0.1,   0.9,  0.001) : si.smooth(sm);
+xor_volume   = hslider("xor-vol[alt:4][midi:28]",       0,     0,     1,    0.001) : si.smooth(0.1);
+noise_volume = hslider("noise-vol[alt:5][midi:29]",     0,     0,     1,    0.001) : si.smooth(0.1);
+glide        = hslider("glide[alt:23][midi:30]",        0.001, 0.001, 0.99, 0.001);
 
 // assignables
 pitch_bend_up   = hslider("pbend_up[asb:0]", 2,  0, 24, 1);

@@ -140,7 +140,8 @@ int main(void)
 
     /* start rgb task */
     // printf("start rgb_task\r\n");
-    xTaskCreate(rgb_task, (char *)"rgb_task", 512, NULL, 2, NULL);
+    // xTaskCreate(rgb_task, (char *)"rgb_task", 1024 * 2, NULL, 2, NULL);
+    // xTaskCreate(rgb_task, (char *)"rgb_task", 512, NULL, 2, NULL);
 
 
 
