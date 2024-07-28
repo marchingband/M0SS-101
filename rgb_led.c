@@ -14,18 +14,12 @@
 #define PIXEL_SIZE 3 // each colour takes 4 bytes
 #define NUM_LED 37
 
-// static ATTR_NOCACHE_NOINIT_RAM_SECTION uint32_t tx_buffer_a[128] __ALIGNED(4);
-// static ATTR_NOCACHE_NOINIT_RAM_SECTION uint32_t tx_buffer_b[128] __ALIGNED(4);
 static ATTR_NOCACHE_NOINIT_RAM_SECTION uint32_t ping[128] __ALIGNED(4);
 static ATTR_NOCACHE_NOINIT_RAM_SECTION uint32_t pong[128] __ALIGNED(4);
-// static uint8_t ping_pong = 0;
 static volatile uint8_t dma_tc_flag0 = 0;
 static struct bflb_device_s *dma0_ch1;
 
 static const uint16_t bitpatterns[4] = {0x88, 0x8e, 0xe8, 0xee}; // original
-
-// static struct bflb_dma_channel_lli_pool_s tx_llipool[1];
-// static struct bflb_dma_channel_lli_transfer_s tx_transfers[1];
 
 static struct bflb_dma_channel_lli_pool_s tx_llipool_ping[1];
 static struct bflb_dma_channel_lli_transfer_s tx_transfers_ping[1];
@@ -81,24 +75,13 @@ void encode_rgb(uint32_t *buf){
 static uint64_t times[100] = {0};
 static size_t time_p = 0;
 
-void dma0_ch1_isr(void *arg)
+void update_leds(void)
 {
-    // times[time_p++] = bflb_mtimer_get_time_us();
-
     static int ping_pong = 1;
     refresh_dma(ping_pong);
     render_lights();
     encode_rgb(ping_pong == 0 ? pong : ping);
     ping_pong = ping_pong == 0 ? 1 : 0;
-
-    // times[time_p++] = bflb_mtimer_get_time_us();
-    // if(time_p >= 100){
-    //     time_p = 0;
-    //     for(int i=0; i<100; i+=2){
-    //         uint64_t time = times[i+1] - times[i];
-    //         printf("%20llu -> %20llu = %20llu\n", times[i], times[i+1], time);
-    //     }
-    // }
 }
 
 static void i2s_gpio_init()
@@ -143,7 +126,7 @@ void rgb_led_init(){
     bflb_i2s_init(i2s0, &i2s_cfg);
     bflb_i2s_link_txdma(i2s0, true);
     bflb_dma_channel_init(dma0_ch1, &tx_config);
-    bflb_dma_channel_irq_attach(dma0_ch1, dma0_ch1_isr, NULL);
+    // bflb_dma_channel_irq_attach(dma0_ch1, dma0_ch1_isr, NULL);
     bflb_i2s_feature_control(i2s0, I2S_CMD_DATA_ENABLE, I2S_CMD_DATA_ENABLE_TX);
 
     memset(ping, 0, sizeof ping);

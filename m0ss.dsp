@@ -14,6 +14,7 @@ pitch_bend = hslider("pitch-bend[pitch-bend:0]", 8192, 0, 16383, 1); // 14bit
 attack    = hslider("attack[mod:16][midi:1]",    0.001, 0.001, 1,   0.0001) : log3 : it.remap(0.0, 1.0, 0.001, 20.0);
 cutoff    = hslider("cutoff[mod:14][midi:2]",    0.5,   0,     1,   0.0001) : ba.lin2LogGain : si.smooth(ba.tau2pole(0.05)) : (_ * lfo_to_cuttoff) : (_ * env_to_cutoff) : clamp(0, 1);
 lfo_freq  = hslider("lfo-freq[mod:12][midi:3]",  0.3,   0.0,   1.0, 0.0001) : ba.lin2LogGain : it.remap(0.0, 1.0, 0.01, 20.0);
+// lfo_freq  = hslider("lfo-freq[mod:12][midi:3]",  0.3,   0.0,   1.0, 0.0001) : ba.lin2LogGain : it.remap(0.0, 1.0, 20.0, 20000.0);
 mix       = hslider("mix[mod:4][midi:4]",        0.5,   0,     1,   0.0001) : si.smooth(0.1);
 
 // CC 5-8

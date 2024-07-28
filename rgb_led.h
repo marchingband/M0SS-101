@@ -21,5 +21,6 @@ int get_ui_mode(void);
 void test_rgb_lights(void);
 void rgb_set_color(struct pixel_t *pixels);
 void set_led_display(float val, float min, float max);
+void update_leds(void);
 
 #endif

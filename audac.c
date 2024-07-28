@@ -13,6 +13,7 @@
 
 #include "audac.h"
 #include "dsp.h"
+#include "rgb_led.h"
 
 int min(int a, int b)
 {
@@ -65,6 +66,7 @@ static void refresh_dma(int tictoc)
         dma_lli_cnt_tic = bflb_dma_channel_lli_reload(audac_dma_hd, lli_pool_tic, 10, transfers_tic, 1);
         bflb_dma_channel_start(audac_dma_hd);
     }
+    update_leds();
 }
 
 static uint64_t times[100] = {0};
