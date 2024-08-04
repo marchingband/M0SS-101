@@ -47,6 +47,7 @@ static struct CC CCs[NUM_CC] = {0};
 static struct Mod Mods[NUM_BUTTONS] = {0};
 static struct Alt Alts[NUM_BUTTONS] = {0};
 static struct Sel Sels[NUM_SEL] = {0};
+static struct AltSel AltSels[NUM_ALT_SEL] = {0};
 static struct Sigs Signals = {
     .pitch = 0,
     .gate = 0,
@@ -59,6 +60,11 @@ static struct Sigs Signals = {
 struct Sel *get_sels(void)
 {
     return &Sels[0];
+}
+
+struct AltSel *get_alt_sels(void)
+{
+    return &AltSels[0];
 }
 
 struct Mod *get_mods(void)
@@ -149,6 +155,18 @@ void extract(const char *name, float *p, float init, float min, float max, float
         }
     }
 
+    for(int i=0; i<NUM_ALT_SEL; i++)
+    {
+        struct AltSel *alt_sel = &AltSels[i];
+        if(alt_sel->p == p){
+            alt_sel->min = min;
+            alt_sel->max = max;
+            alt_sel->init = init;
+            strcpy(alt_sel->name, name);
+            // return;
+        }
+    }
+
     // printf("failed to find cc for %s\n\r\r", name);
 }
 
@@ -182,6 +200,14 @@ void declare(UIGlue *uiInterface, float *p, const char* key, const char* val){
 
         struct Sel *sel = &Sels[num];
         sel->p = p;
+    }
+    if(strcmp("alt-sel", key) == 0) // its a selection toggle with alt held
+    {
+        long num = strtol(val, NULL, 10);
+
+        struct AltSel *alt_sel = &AltSels[num];
+        alt_sel->p = p;
+        printf("got alt_sel\n\r\r");
     }
     if(strcmp("pitch", key) == 0) // its the pitch
     {
@@ -225,6 +251,7 @@ void handle_encoder_press(bool down)
 void handle_button_press(int num)
 // handles load, save, learn and cancelling the mode by pressing alt again
 {
+    printf("press %d", num);
     int ui_mode = get_ui_mode();
     if(num == BUTTON_NUM_ALT) // alt button
     {
@@ -232,6 +259,7 @@ void handle_button_press(int num)
     }
     else if(alt_held())
     {
+        printf("alt held");
         if(num == BUTTON_NUM_LOAD)
         {
             set_ui_mode(UI_MODE_LOAD);
@@ -245,6 +273,25 @@ void handle_button_press(int num)
             set_ui_mode(UI_MODE_LEARN);
             mode_learn_current_cc = 0;
         }
+        else
+        {
+            struct AltSel *alt_sel = &AltSels[num];
+            if(alt_sel->p == 0) // no alt-sel to do for that button press
+            {
+                printf("nothing\n");
+                return;
+            }
+            printf("toggling\n");
+            float cur = *alt_sel->p;
+            if(cur < alt_sel->max)
+            {
+                *alt_sel->p += 1;
+            }
+            else
+            {
+                *alt_sel->p = alt_sel->min;
+            }
+        }
     } 
     else if(ui_mode == UI_MODE_LEARN)
     {
@@ -257,7 +304,7 @@ void handle_button_press(int num)
     else if(ui_mode == UI_MODE_PLAY)
     {
         struct Sel *sel = &Sels[num];
-        if(sel->p == 0) // nothing to do for that button press
+        if(sel->p == 0) // no sel for that button press
         {
             return;
         }
@@ -297,6 +344,36 @@ void handle_button_press(int num)
     }
 }
 
+uint8_t note_lifo[128] = {0};
+size_t note_lifo_p = 0;
+
+void push_note(uint8_t note){
+    note_lifo[note_lifo_p++] = note;
+}
+
+void pop_note(void){
+    note_lifo_p--;
+}
+
+uint8_t peek_note(void){
+    return note_lifo[note_lifo_p - 1];
+}
+
+void remove_note(uint8_t note){
+    int idx = -1;
+    for(int i=0; i< note_lifo_p; i++){
+        if(note_lifo[i] == note){
+            idx = i;
+            break;
+        }
+    }
+    if(idx == -1) return;
+    for(int i=idx; i< note_lifo_p; i++){
+        note_lifo[i] = note_lifo [i + 1];
+    }
+    note_lifo_p --;
+}
+
 void handle_midi(uint8_t *msg, uint8_t len)
 {
     // printf("msg len %d -> %d %d %d\n\r\r", len, msg[0], msg[1], msg[2]);
@@ -318,6 +395,7 @@ void handle_midi(uint8_t *msg, uint8_t len)
         // play(note);
         *Signals.gate = 1;
         *Signals.pitch = note; // the dsp converts to hz
+        push_note(note);
         // printf("noteon %d", note);
         break;
     }
@@ -327,7 +405,16 @@ void handle_midi(uint8_t *msg, uint8_t len)
         // stop(note);
         if(*Signals.pitch == note)
         {
-            *Signals.gate = 0;
+            // the last note played has been stopped
+            pop_note(); // remove the last note.
+            if(note_lifo_p > 0){ // we have decremented note_lifo_p, if it is still positive, there are more notes.
+                uint8_t next_note = peek_note();
+                *Signals.pitch = next_note;
+            } else {
+                *Signals.gate = 0;
+            }
+        } else {
+            remove_note(note);
         }
         break;
     }

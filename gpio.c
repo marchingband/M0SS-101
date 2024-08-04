@@ -192,10 +192,10 @@ static void process_buttons(){
                         {
                             handle_button_press(i);
                         }
-                        else if((i != BUTTON_NUM_LOAD) && (i != BUTTON_NUM_SAVE) && (i != BUTTON_NUM_LEARN)) // load / save / learn
-                        {
-                            button_cancelled[i] = 1;
-                        }
+                        // else if((i != BUTTON_NUM_LOAD) && (i != BUTTON_NUM_SAVE) && (i != BUTTON_NUM_LEARN)) // load / save / learn
+                        // {
+                        //     button_cancelled[i] = 1;
+                        // }
                     }
                     set_param_selected(i, alt_held());
                     // printf("button %d pushed\n\r", i);

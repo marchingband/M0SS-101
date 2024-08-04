@@ -2,7 +2,8 @@
 #define MIDI_H
 
 #define NUM_SEL 27
-#define NUM_CC 31
+#define NUM_ALT_SEL 27
+#define NUM_CC 36
 
 struct CC {
     float *p;
@@ -42,6 +43,14 @@ struct Sel {
     char name[20];
 };
 
+struct AltSel {
+    float *p;
+    float min;
+    float max;
+    float init;
+    char name[20];
+};
+
 struct Sigs {
     float *pitch;
     float *gate;
@@ -52,6 +61,7 @@ struct Sigs {
 };
 
 struct Sel *get_sels(void);
+struct AltSel *get_alt_sels(void);
 struct Mod *get_mods(void);
 struct Alt *get_alts(void);
 struct CC *get_ccs(void);

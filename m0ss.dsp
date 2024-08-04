@@ -13,8 +13,7 @@ pitch_bend = hslider("pitch-bend[pitch-bend:0]", 8192, 0, 16383, 1); // 14bit
 // CC 1-4 
 attack    = hslider("attack[mod:16][midi:1]",    0.001, 0.001, 1,   0.0001) : log3 : it.remap(0.0, 1.0, 0.001, 20.0);
 cutoff    = hslider("cutoff[mod:14][midi:2]",    0.5,   0,     1,   0.0001) : ba.lin2LogGain : si.smooth(ba.tau2pole(0.05)) : (_ * lfo_to_cuttoff) : (_ * env_to_cutoff) : clamp(0, 1);
-lfo_freq  = hslider("lfo-freq[mod:12][midi:3]",  0.3,   0.0,   1.0, 0.0001) : ba.lin2LogGain : it.remap(0.0, 1.0, 0.01, 20.0);
-// lfo_freq  = hslider("lfo-freq[mod:12][midi:3]",  0.3,   0.0,   1.0, 0.0001) : ba.lin2LogGain : it.remap(0.0, 1.0, 20.0, 20000.0);
+lfo_freq  = hslider("lfo-freq[mod:12][midi:3]",  0.3,   0.0,   1.0, 0.0001) : ba.lin2LogGain;
 mix       = hslider("mix[mod:4][midi:4]",        0.5,   0,     1,   0.0001) : si.smooth(0.1);
 
 // CC 5-8
@@ -24,34 +23,35 @@ detune        = hslider("detune[mod:5][midi:7]",     0,     0,     1, 0.0001) : 
 master_volume = hslider("volume[mod:23][midi:8]",    1,     0,     1,  0.001)  : si.smooth(0.1);
 
 // selections
-osc1_wavform = hslider("osc1-wavform[sel:0][midi:9]",   0, 0, 2, 1);
+osc1_wavform = hslider("osc1-wavform[sel:0][midi:9]",    0, 0, 2, 1);
 osc1_octave  = hslider("osc1-oct[sel:1][midi:10]",       0, 0, 2, 1);
 osc2_octave  = hslider("osc2-oct[sel:2][midi:11]",       0, 0, 2, 1);
 osc2_wavform = hslider("osc2-wavform[sel:3][midi:12]",   0, 0, 2, 1);
 lfo_wavform  = hslider("lfo-wavform[sel:7][midi:13]",    0, 0, 2, 1);
-lfo2env      = hslider("lfo-to-env[sel:9][midi:14]",     0, 0, 1, 1);
-filter_type  = hslider("hp-lp-bp[sel:13][midi:15]",      1, 0, 2, 1);
+lfo_range    = hslider("lfo-range[alt-sel:12][midi:14]",  0, 0, 1, 1);
+lfo2env      = hslider("lfo-to-env[sel:9][midi:15]",     0, 0, 1, 1);
+filter_type  = hslider("hp-lp-bp[sel:13][midi:16]",      1, 0, 2, 1);
 
 // modifiers
-lfo2pitch    = hslider("lfo-to-osc[mod:10][midi:16]",    0, 0, 1, 0.001) ;
-lfo2vca      = hslider("lfo-to-vca[mod:8][midi:17]",     0, 0, 1, 0.001) ;
-lfo2vcf      = hslider("lfo-to-vcf[mod:11][midi:18]",    0, 0, 1, 0.001) ;
-lfo2pwm      = hslider("lfo-to-pwm[mod:6][midi:19]",     0, 0, 1, 0.001) ;
+lfo2pitch    = hslider("lfo-to-osc[mod:10][midi:17]",    0, 0, 1, 0.001) ;
+lfo2vca      = hslider("lfo-to-vca[mod:8][midi:18]",     0, 0, 1, 0.001) ;
+lfo2vcf      = hslider("lfo-to-vcf[mod:11][midi:19]",    0, 0, 1, 0.001) ;
+lfo2pwm      = hslider("lfo-to-pwm[mod:6][midi:20]",     0, 0, 1, 0.001) ;
 
-env2volume   = hslider("env-to-vca[mod:15][midi:20]",    1, 0, 1, 0.001) ;
-env2cutoff   = hslider("env-to-vcf[mod:18][midi:21]",    0, 0, 1, 0.001) ;
-env2pitch    = hslider("env-to-osc[mod:20][midi:22]",    0, 0, 1, 0.001) ;
-env2pwm      = hslider("env-to-pwm[mod:24][midi:23]",    0, 0, 1, 0.001) ;
+env2volume   = hslider("env-to-vca[mod:15][midi:21]",    1, 0, 1, 0.001) ;
+env2cutoff   = hslider("env-to-vcf[mod:18][midi:22]",    0, 0, 1, 0.001) ;
+env2pitch    = hslider("env-to-osc[mod:20][midi:23]",    0, 0, 1, 0.001) ;
+env2pwm      = hslider("env-to-pwm[mod:24][midi:24]",    0, 0, 1, 0.001) ;
 
-decay        = hslider("decay[mod:19][midi:24]",         0.01, 0.01, 1, 0.001) ;
-sustain      = hslider("sustain[mod:21][midi:25]",       1,    0.001, 1, 0.001) ;
+decay        = hslider("decay[mod:19][midi:25]",         0.01, 0.01, 1, 0.001) ;
+sustain      = hslider("sustain[mod:21][midi:26]",       1,    0.001, 1, 0.001) ;
 
 // alts
-osc_1_pw     = hslider("osc-1-pw[alt:0][midi:26]",      0.5,   0.1,   0.9,  0.001) : si.smooth(sm);
-osc_2_pw     = hslider("osc-2-pw[alt:3][midi:27]",      0.5,   0.1,   0.9,  0.001) : si.smooth(sm);
-xor_volume   = hslider("xor-vol[alt:4][midi:28]",       0,     0,     1,    0.001) : si.smooth(0.1);
-noise_volume = hslider("noise-vol[alt:5][midi:29]",     0,     0,     1,    0.001) : si.smooth(0.1);
-glide        = hslider("glide[alt:23][midi:30]",        0.001, 0.001, 0.99, 0.001);
+osc_1_pw     = hslider("osc-1-pw[alt:0][midi:27]",      0.5,   0.1,   0.9,  0.001) : si.smooth(sm);
+osc_2_pw     = hslider("osc-2-pw[alt:3][midi:28]",      0.5,   0.1,   0.9,  0.001) : si.smooth(sm);
+xor_volume   = hslider("xor-vol[alt:4][midi:29]",       0,     0,     1,    0.001) : si.smooth(0.1);
+noise_volume = hslider("noise-vol[alt:5][midi:30]",     0,     0,     1,    0.001) : si.smooth(0.1);
+glide        = hslider("glide[alt:23][midi:31]",        0.001, 0.001, 0.99, 0.001);
 
 // assignables
 pitch_bend_up   = hslider("pbend_up[asb:0]", 2,  0, 24, 1);
@@ -66,8 +66,11 @@ xor_raw = osc1_square xor osc2_square;
 xor_out = xor_raw * xor_volume;
 
 // lfo
-lfo_tri = os.lf_triangle(lfo_freq);
-lfo_sq = os.lf_squarewavepos(lfo_freq);
+lfo_freq_low = lfo_freq : it.remap(0.0, 1.0, 0.01, 20.0);
+lfo_freq_hi = lfo_freq : it.remap(0.0, 1.0, 20.0, 10000.0);
+lfo_frequency = lfo_freq_low, lfo_freq_hi : ba.selectn(2, lfo_range);
+lfo_tri = os.lf_triangle(lfo_frequency);
+lfo_sq = os.lf_squarewavepos(lfo_frequency);
 lfo_sh = noise : ba.latch(lfo_sq);
 lfo = lfo_tri, lfo_sq, lfo_sh : ba.selectn(3, lfo_wavform) <: attach(vbargraph("lfo[lfo:0]", 0 , 1));
 lfo_to_pitch   = (lfo - 0.5) * lfo2pitch * 1200 : ba.cent2ratio;
