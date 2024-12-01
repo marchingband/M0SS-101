@@ -15,24 +15,96 @@ void usb_midi_in(char ch);
 USB_NOCACHE_RAM_SECTION USB_MEM_ALIGNX uint8_t midi_buffer[512];
 int midi_run = 0;
 
-struct usbh_urb cdc_bulkin_urb;
-struct usbh_urb cdc_bulkout_urb;
 
 struct usbh_midi
 {
     struct usbh_hubport *hport;
 
     uint8_t intf;        /* interface number */
-    usbh_pipe_t bulkin;  /* BULK IN endpoint */
-    usbh_pipe_t bulkout; /* BULK OUT endpoint */
+    struct usb_endpoint_descriptor *bulkin;  /* BULK IN endpoint */
+    struct usb_endpoint_descriptor *bulkout; /* BULK OUT endpoint */
+    struct usbh_urb bulkin_urb;
+    struct usbh_urb bulkout_urb;
+    uint8_t minor;
 };
 
 #define DEV_FORMAT "/dev/midi"
 
+void usbh_midi_callback(void *arg, int nbytes)
+{
+    struct usbh_midi *midi_class = (struct usbh_midi *)arg;
+
+    if (nbytes > 0)
+    {
+        for (size_t i = 0; i < nbytes; i++)
+        {
+            USB_LOG_RAW("0x%02x ", midi_buffer[i]);
+        }
+        USB_LOG_RAW("nbytes:%d\r\n", nbytes);
+        if(midi_run == 1)
+        {
+            for (int i=0; i< nbytes; i+=4)
+            {
+                switch(midi_buffer[i]){
+                    case 0x8: // note off
+                    case 0x9: // note on
+                    case 0xB: // cc
+                    case 0xE: // pitch bend
+                        // all these are 3 bytes
+                        usb_midi_in(midi_buffer[i + 1]);
+                        usb_midi_in(midi_buffer[i + 2]);
+                        usb_midi_in(midi_buffer[i + 3]);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        usbh_submit_urb(&midi_class->bulkin_urb);
+    }
+}
+
+
+static void usbh_midi_thread(void *argument){
+    int ret;
+    struct usbh_midi *midi_class;
+    printf("strt usbh_midi_thread");
+
+    // clang-format off
+find_class:
+    // clang-format on
+    while ((midi_class = (struct usbh_midi *)usbh_find_class_instance("/dev/midi")) == NULL) {
+        goto delete;
+    }
+
+    memset(midi_buffer, 0, 512);
+
+    usbh_bulk_urb_fill(&midi_class->bulkin_urb, midi_class->hport, midi_class->bulkin, midi_buffer, 64, 3000, usbh_midi_callback, midi_class);
+    ret = usbh_submit_urb(&midi_class->bulkin_urb);
+    if ((ret < 0) && (ret != -16))
+    {
+        USB_LOG_RAW("bulk in error,ret:%d\r\n", ret);
+        // goto find_class;
+    } else {
+
+    }
+
+    // clang-format off
+delete: 
+    usb_osal_thread_delete(NULL);
+    // clang-format on
+}
+
+
+void usbh_midi_run(struct usbh_midi *midi_class)
+{
+    usb_osal_thread_create("usbh_midi", 2048, CONFIG_USBHOST_PSC_PRIO + 1, usbh_midi_thread, NULL);
+}
+
 static int usbh_midi_connect(struct usbh_hubport *hport, uint8_t intf)
 {
-    // printf("class connect");
-    struct usbh_endpoint_cfg ep_cfg = {0};
+    printf("class connect");
+    // struct usbh_endpoint_cfg ep_cfg = {0};
     struct usb_endpoint_descriptor *ep_desc;
     int ret;
 
@@ -40,7 +112,7 @@ static int usbh_midi_connect(struct usbh_hubport *hport, uint8_t intf)
     if (midi_class == NULL)
     {
         USB_LOG_ERR("Fail to alloc midi_class\r\n");
-        return -ENOMEM;
+        return -1;
     }
 
     memset(midi_class, 0, sizeof(struct usbh_midi));
@@ -55,26 +127,29 @@ static int usbh_midi_connect(struct usbh_hubport *hport, uint8_t intf)
 
         if (ep_desc->bEndpointAddress & 0x80)
         {
-            usbh_hport_activate_epx(&midi_class->bulkin, hport, ep_desc);
+            // usbh_hport_activate_epx(&midi_class->bulkin, hport, ep_desc);
+            USBH_EP_INIT(midi_class->bulkin, ep_desc);
         }
         else
         {
-            usbh_hport_activate_epx(&midi_class->bulkout, hport, ep_desc);
+        //     // usbh_hport_activate_epx(&midi_class->bulkout, hport, ep_desc);
+            USBH_EP_INIT(midi_class->bulkout, ep_desc);
         }
     }
 
     strncpy(hport->config.intf[intf].devname, DEV_FORMAT, CONFIG_USBHOST_DEV_NAMELEN);
-
     USB_LOG_INFO("Register MIDI Class:%s\r\n", hport->config.intf[intf].devname);
 
     midi_run = 1;
 
+    usbh_midi_run(midi_class);
     // return ret;
     return 0;
 }
 
 static int usbh_midi_disconnect(struct usbh_hubport *hport, uint8_t intf)
 {
+    printf("class disconnect");
     int ret = 0;
 
     struct usbh_midi *midi_class = (struct usbh_midi *)hport->config.intf[intf].priv;
@@ -83,22 +158,34 @@ static int usbh_midi_disconnect(struct usbh_hubport *hport, uint8_t intf)
     {
         if (midi_class->bulkin)
         {
-            usbh_pipe_free(midi_class->bulkin);
+            printf("usbh_kill_urb in ");
+            usbh_kill_urb(&midi_class->bulkin_urb);
+        } else {
+            printf("bulkin_urb not found");
         }
 
         if (midi_class->bulkout)
         {
-            usbh_pipe_free(midi_class->bulkout);
+            printf("usbh_kill_urb out");
+            usbh_kill_urb(&midi_class->bulkout_urb);
+        } else {
+            printf("bulkout_urb not found");
         }
 
         if (hport->config.intf[intf].devname[0] != '\0')
         {
-            USB_LOG_INFO("Unregister MIDI Class:%s\r\n", hport->config.intf[intf].devname);
+            // USB_LOG_INFO("Unregister MIDI Class:%s\r\n", hport->config.intf[intf].devname);
+            printf("Unregister MIDI Class:%s\r\n", hport->config.intf[intf].devname);
+            // usbh_cdc_acm_stop(midi_class);
             midi_run = 0;
+        } else {
+            printf("devname not found");
         }
 
         memset(midi_class, 0, sizeof(struct usbh_midi));
         usb_free(midi_class);
+    } else {
+        printf("midi_class not found");
     }
 
     return ret;
@@ -120,43 +207,11 @@ CLASS_INFO_DEFINE const struct usbh_class_info midi_streaming_class_info = {
 
 /* -------------------------- */
 
-void usbh_cdc_acm_callback(void *arg, int nbytes)
-{
-    // struct usbh_cdc_acm *cdc_acm_class = (struct usbh_cdc_acm *)arg;
-
-    if (nbytes > 0)
-    {
-        // for (size_t i = 0; i < nbytes; i++)
-        // {
-            // USB_LOG_RAW("0x%02x ", midi_buffer[i]);
-        // }
-        // USB_LOG_RAW("nbytes:%d\r\n", nbytes);
-        if(midi_run == 1)
-        {
-            for (int i=0; i< nbytes; i+=4)
-            {
-                switch(midi_buffer[i]){
-                    case 0x8: // note off
-                    case 0x9: // note on
-                    case 0xB: // cc
-                    case 0xE: // pitch bend
-                        // all these are 3 bytes
-                        usb_midi_in(midi_buffer[i + 1]);
-                        usb_midi_in(midi_buffer[i + 2]);
-                        usb_midi_in(midi_buffer[i + 3]);
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-    }
-}
-
-static void usbh_midi_thread(void *argument)
+static void _usbh_midi_thread(void *argument)
 {
     int ret;
     struct usbh_midi *midi_class;
+    printf("strt usbh_midi_thread");
 
     while (1)
     {
@@ -170,16 +225,16 @@ static void usbh_midi_thread(void *argument)
         }
         memset(midi_buffer, 0, 512);
 
-        // usbh_bulk_urb_fill(&cdc_bulkin_urb, midi_class->bulkin, midi_buffer, 64, 3000, NULL, NULL);
-        // ret = usbh_submit_urb(&cdc_bulkin_urb);
+        // usbh_bulk_urb_fill(&bulkin_urb, midi_class->bulkin, midi_buffer, 64, 3000, NULL, NULL);
+        // ret = usbh_submit_urb(&bulkin_urb);
         // if (ret < 0)
         // {
         //     USB_LOG_RAW("bulk in error,ret:%d\r\n", ret);
         // }
         // else
         // {
-        //     USB_LOG_RAW("recv over:%d\r\n", cdc_bulkin_urb.actual_length);
-        //     for (size_t i = 0; i < cdc_bulkin_urb.actual_length; i++)
+        //     USB_LOG_RAW("recv over:%d\r\n", bulkin_urb.actual_length);
+        //     for (size_t i = 0; i < bulkin_urb.actual_length; i++)
         //     {
         //         USB_LOG_RAW("0x%02x ", midi_buffer[i]);
         //     }
@@ -189,19 +244,19 @@ static void usbh_midi_thread(void *argument)
         // const uint8_t data1[10] = {0x02, 0x00, 0x00, 0x00, 0x02, 0x02, 0x08, 0x14};
 
         // memcpy(midi_buffer, data1, 8);
-        // usbh_bulk_urb_fill(&cdc_bulkout_urb, midi_class->bulkout, midi_buffer, 8, 3000, NULL, NULL);
-        // ret = usbh_submit_urb(&cdc_bulkout_urb);
+        // usbh_bulk_urb_fill(&bulkout_urb, midi_class->bulkout, midi_buffer, 8, 3000, NULL, NULL);
+        // ret = usbh_submit_urb(&bulkout_urb);
         // if (ret < 0)
         // {
         //     USB_LOG_RAW("bulk out error,ret:%d\r\n", ret);
         // }
         // else
         // {
-        //     USB_LOG_RAW("send over:%d\r\n", cdc_bulkout_urb.actual_length);
+        //     USB_LOG_RAW("send over:%d\r\n", bulkout_urb.actual_length);
         // }
 
-        // usbh_bulk_urb_fill(&cdc_bulkin_urb, midi_class->bulkin, midi_buffer, 64, 3000, usbh_cdc_acm_callback, midi_class);
-        // ret = usbh_submit_urb(&cdc_bulkin_urb);
+        // usbh_bulk_urb_fill(&bulkin_urb, midi_class->bulkin, midi_buffer, 64, 3000, usbh_midi_callback, midi_class);
+        // ret = usbh_submit_urb(&bulkin_urb);
         // if (ret < 0)
         // {
         //     USB_LOG_RAW("bulk in error,ret:%d\r\n", ret);
@@ -219,12 +274,12 @@ static void usbh_midi_thread(void *argument)
             }
             else
             {
-                usbh_bulk_urb_fill(&cdc_bulkin_urb, midi_class->bulkin, midi_buffer, 64, 3000, usbh_cdc_acm_callback, midi_class);
-                // usbh_bulk_urb_fill(&cdc_bulkin_urb, midi_class->bulkin, midi_buffer, 64, 0, usbh_cdc_acm_callback, midi_class);
-                ret = usbh_submit_urb(&cdc_bulkin_urb);
+                usbh_bulk_urb_fill(&midi_class->bulkin_urb, midi_class->hport, midi_class->bulkin, midi_buffer, 64, 100, usbh_midi_callback, midi_class);
+                // usbh_bulk_urb_fill(&bulkin_urb, midi_class->bulkin, midi_buffer, 64, 0, usbh_midi_callback, midi_class);
+                ret = usbh_submit_urb(&midi_class->bulkin_urb);
                 if ((ret < 0) && (ret != -16))
                 {
-                    // USB_LOG_RAW("bulk in error,ret:%d\r\n", ret);
+                    USB_LOG_RAW("bulk in error,ret:%d\r\n", ret);
                 }
             }
             usb_osal_msleep(10);

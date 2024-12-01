@@ -17,6 +17,7 @@ target_sources(app PRIVATE
     rotary_encoder.c
     audac.c
     gpio.c
+    spi_rgb.c
 )
 
 sdk_set_main_file(main.c)

@@ -7,5 +7,6 @@ struct encoder_change_event_t {
 };
 
 void encoder_init(void);
+void process_encoder(void);
 
 #endif

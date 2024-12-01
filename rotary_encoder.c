@@ -91,6 +91,8 @@
 #include "rotary_encoder.h"
 #include <FreeRTOS.h>
 #include "queue.h"
+#include "global.h"
+
 
 // #define ROTARY_ENCODER_DEBUG
 
@@ -142,7 +144,10 @@ static const uint8_t _ttable_full[TABLE_ROWS][TABLE_COLS] = {
     {F_CCW_NEXT, F_CCW_FINAL, F_CCW_BEGIN, R_START},           // F_CCW_NEXT
 };
 
-static uint8_t _process(rotary_encoder_info_t * info)
+static ATTR_NOCACHE_NOINIT_RAM_SECTION rotary_encoder_info_t _info = { 0 };
+rotary_encoder_info_t *info = &_info;
+
+static uint8_t _process()
 {
     uint8_t event = 0;
     if (info != NULL)
@@ -160,26 +165,26 @@ static uint8_t _process(rotary_encoder_info_t * info)
         // Return emit bits, i.e. the generated event.
         event = info->table_state & 0x30;
 #ifdef ROTARY_ENCODER_DEBUG
-        printf("BA %d%d, state 0x%02x, new state 0x%02x, event 0x%02x",
+        printf("BA %d%d, state 0x%02x, new state 0x%02x, event 0x%02x\n",
                        pin_state >> 1, pin_state & 1, old_state, info->table_state, event);
 #endif
     }
     return event;
 }
 
-static void _isr_rotenc(int irq, void *args)
+void _isr_rotenc(uint8_t pin)
 {
-    rotary_encoder_info_t * info = (rotary_encoder_info_t *)args;
 
-    if (bflb_gpio_get_intstatus(enc_gpio, info->pin_a)) {
-        bflb_gpio_int_clear(enc_gpio, info->pin_a);
-    }
+    // printf("int");
+    // if (bflb_gpio_get_intstatus(enc_gpio, info->pin_a)) {
+    //     bflb_gpio_int_clear(enc_gpio, info->pin_a);
+    // }
 
-    if (bflb_gpio_get_intstatus(enc_gpio, info->pin_b)) {
-        bflb_gpio_int_clear(enc_gpio, info->pin_b);
-    }
+    // if (bflb_gpio_get_intstatus(enc_gpio, info->pin_b)) {
+    //     bflb_gpio_int_clear(enc_gpio, info->pin_b);
+    // }
 
-    uint8_t event = _process(info);
+    uint8_t event = _process();
     bool send_event = false;
 
     switch (event)
@@ -210,14 +215,14 @@ static void _isr_rotenc(int irq, void *args)
         };
         BaseType_t task_woken = pdFALSE;
         xQueueOverwriteFromISR(info->queue, &queue_event, &task_woken);
-        // if (task_woken)
-        // {
-        //     portYIELD_FROM_ISR(false); // false?
-        // }
+        if (task_woken)
+        {
+            portYIELD_FROM_ISR(false); // false?
+        }
     }
 }
 
-void rotary_encoder_init(rotary_encoder_info_t * info, int pin_a, int pin_b)
+void rotary_encoder_init(int pin_a, int pin_b)
 {
     if (info)
     {
@@ -232,24 +237,30 @@ void rotary_encoder_init(rotary_encoder_info_t * info, int pin_a, int pin_b)
 
         bflb_irq_disable(enc_gpio->irq_num);
 
+        bflb_gpio_init(enc_gpio, info->pin_a, GPIO_INPUT | GPIO_PULLUP | GPIO_SMT_EN);
+        bflb_gpio_init(enc_gpio, info->pin_b, GPIO_INPUT | GPIO_PULLUP | GPIO_SMT_EN);
+
+
         bflb_gpio_int_init(enc_gpio, info->pin_a, GPIO_INT_TRIG_MODE_SYNC_FALLING_RISING_EDGE);
-        bflb_gpio_int_mask(enc_gpio, info->pin_a, false);
-        bflb_irq_attach(enc_gpio->irq_num, _isr_rotenc, (void *)info);
+        // bflb_gpio_int_mask(enc_gpio, info->pin_a, false);
+        bflb_gpio_irq_attach(info->pin_a, _isr_rotenc);
         // bflb_irq_enable(enc_gpio->irq_num);
 
         bflb_gpio_int_init(enc_gpio, info->pin_b, GPIO_INT_TRIG_MODE_SYNC_FALLING_RISING_EDGE);
-        bflb_gpio_int_mask(enc_gpio, info->pin_b, false);
-        bflb_irq_attach(enc_gpio->irq_num, _isr_rotenc, (void *)info);
-        
+        // bflb_gpio_int_mask(enc_gpio, info->pin_b, false);
+        bflb_gpio_irq_attach(info->pin_b, _isr_rotenc);
+
+        // bflb_irq_set_priority(enc_gpio->irq_num, IRQ_PRIO_ENC, 0);
+
         bflb_irq_enable(enc_gpio->irq_num);
     }
     else
     {
-        // printf("info is NULL");
+        printf("info is NULL");
     }
 }
 
-void rotary_encoder_enable_half_steps(rotary_encoder_info_t * info, bool enable)
+void rotary_encoder_enable_half_steps(bool enable)
 {
     if (info)
     {
@@ -258,11 +269,11 @@ void rotary_encoder_enable_half_steps(rotary_encoder_info_t * info, bool enable)
     }
     else
     {
-        // printf("info is NULL");
+        printf("info is NULL");
     }
 }
 
-void rotary_encoder_flip_direction(rotary_encoder_info_t * info)
+void rotary_encoder_flip_direction()
 {
     if (info)
     {
@@ -272,11 +283,11 @@ void rotary_encoder_flip_direction(rotary_encoder_info_t * info)
     }
     else
     {
-        // printf("info is NULL");
+        printf("info is NULL");
     }
 }
 
-void rotary_encoder_uninit(rotary_encoder_info_t * info)
+void rotary_encoder_uninit()
 {
     if (info)
     {
@@ -294,7 +305,7 @@ QueueHandle_t rotary_encoder_create_queue(void)
     return xQueueCreate(EVENT_QUEUE_LENGTH, sizeof(rotary_encoder_event_t));
 }
 
-void rotary_encoder_set_queue(rotary_encoder_info_t * info, QueueHandle_t queue)
+void rotary_encoder_set_queue(QueueHandle_t queue)
 {
     if (info)
     {
@@ -306,7 +317,7 @@ void rotary_encoder_set_queue(rotary_encoder_info_t * info, QueueHandle_t queue)
     }
 }
 
-void rotary_encoder_get_state(const rotary_encoder_info_t * info, rotary_encoder_state_t * state)
+void rotary_encoder_get_state(rotary_encoder_state_t * state)
 {
     if (info && state)
     {
@@ -320,7 +331,7 @@ void rotary_encoder_get_state(const rotary_encoder_info_t * info, rotary_encoder
     }
 }
 
-void rotary_encoder_reset(rotary_encoder_info_t * info)
+void rotary_encoder_reset()
 {
     if (info)
     {

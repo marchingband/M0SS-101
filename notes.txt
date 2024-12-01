@@ -15,4 +15,7 @@ audio render takes about 3ms (3000us) which is 5ms of samples
 rendering the LEDs takes about 0.037ms (37us)
 
 MEMORY CONSTRAINS
+faust -lang c -json ./m0ss.dsp
 faust patch can be up to 176724 bytes
+
+CURRENTLY USING moss_merge.dsp

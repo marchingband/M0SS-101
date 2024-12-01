@@ -25,6 +25,7 @@
 #include "flash.h"
 #include "encoder.h"
 #include "audac.h"
+#include "spi_rgb.h"
 
 void dsp_run(int16_t *dest);
 void dsp_init(size_t buf_size);
@@ -128,11 +129,12 @@ int main(void)
 
     /* usb midi host */
     // printf("usb_midi_init\r\n");
-    usb_midi_init();
+    // usb_midi_init();
 
     /* start the LEDs */
     // printf("rgb_led_init\r\n");
-    rgb_led_init();
+    // rgb_led_init();
+    spi_rgb_init();
 
     /* setup encoder */
     // printf("encoder_init\r\n");

@@ -9,8 +9,9 @@
 #include "rgb_led.h"
 #include "midi.h"
 #include "flash.h"
+#include "global.h"
+#include "spi_rgb.h"
 
-#define PIXEL_SIZE 3 // each colour takes 4 bytes
 #define PIXEL_SIZE 3 // each colour takes 4 bytes
 #define NUM_LED 37
 
@@ -77,12 +78,19 @@ static size_t time_p = 0;
 
 void update_leds(void)
 {
-    static int ping_pong = 1;
-    refresh_dma(ping_pong);
     render_lights();
-    encode_rgb(ping_pong == 0 ? pong : ping);
-    ping_pong = ping_pong == 0 ? 1 : 0;
+    encode_rgb(ping);
+    // spi_rgb_start(ping, 128);
+    spi_rgb_send(ping, 128);
 }
+// void update_leds(void)
+// {
+//     static int ping_pong = 1;
+//     refresh_dma(ping_pong);
+//     render_lights();
+//     encode_rgb(ping_pong == 0 ? pong : ping);
+//     ping_pong = ping_pong == 0 ? 1 : 0;
+// }
 
 static void i2s_gpio_init()
 {
@@ -139,8 +147,8 @@ void rgb_led_init(){
     bflb_l1c_dcache_clean_range(ping, sizeof ping);
     bflb_dma_channel_lli_reload(dma0_ch1, tx_llipool_ping, 1, tx_transfers_ping, 1);
     bflb_dma_channel_start(dma0_ch1);
-    // bflb_irq_set_priority(dma0_ch1->irq_num, 15, 0);
-    // bflb_irq_set_priority(i2s0->irq_num, 15, 0);
+    // bflb_irq_set_priority(dma0_ch1->irq_num, IRQ_PRIO_RGB, 0);
+    // bflb_irq_set_priority(i2s0->irq_num, IRQ_PRIO_RGB, 0);
 }
 
 

@@ -3,6 +3,8 @@
 
 #include "board.h"
 
+#include "global.h"
+
 #include "bflb_audac.h"
 #include "bflb_gpio.h"
 #include "bflb_dma.h"
@@ -14,6 +16,7 @@
 #include "audac.h"
 #include "dsp.h"
 #include "rgb_led.h"
+#include "encoder.h"
 
 int min(int a, int b)
 {
@@ -66,7 +69,7 @@ static void refresh_dma(int tictoc)
         dma_lli_cnt_tic = bflb_dma_channel_lli_reload(audac_dma_hd, lli_pool_tic, 10, transfers_tic, 1);
         bflb_dma_channel_start(audac_dma_hd);
     }
-    update_leds();
+    // update_leds();
 }
 
 static uint64_t times[100] = {0};
@@ -78,10 +81,11 @@ void audio_dma_callback(void *arg)
     // times[time_p++] = bflb_mtimer_get_time_us();
 
     static int tictoc = 1;
+    process_encoder();
     refresh_dma(tictoc);
     compute(tictoc == 0 ? 1 : 0);
     tictoc = tictoc == 0 ? 1 : 0;
-
+    update_leds();
     // times[time_p++] = bflb_mtimer_get_time_us();
 
     // if(time_p >= 100){
@@ -101,20 +105,9 @@ void audac_gpio_init(void)
     gpio = bflb_device_get_by_name("gpio");
 
     /* audac pwm output mode */
+    // bflb_gpio_init(gpio, GPIO_PIN_2, GPIO_ANALOG | GPIO_SMT_EN | GPIO_DRV_0);
+    // bflb_gpio_init(gpio, GPIO_PIN_3, GPIO_ANALOG | GPIO_SMT_EN | GPIO_DRV_0);
     bflb_gpio_init(gpio, GPIO_PIN_14, GPIO_FUNC_AUDAC_PWM | GPIO_ALTERNATE | GPIO_PULLUP | GPIO_SMT_EN | GPIO_DRV_2);
-    // bflb_gpio_init(gpio, GPIO_PIN_15, GPIO_FUNC_AUDAC_PWM | GPIO_ALTERNATE | GPIO_PULLUP | GPIO_SMT_EN | GPIO_DRV_2);
-
-    // bflb_gpio_init(gpio, GPIO_PIN_22, GPIO_FUNC_AUDAC_PWM | GPIO_ALTERNATE | GPIO_PULLUP | GPIO_SMT_EN | GPIO_DRV_2);
-    // bflb_gpio_init(gpio, GPIO_PIN_23, GPIO_FUNC_AUDAC_PWM | GPIO_ALTERNATE | GPIO_PULLUP | GPIO_SMT_EN | GPIO_DRV_2);
-
-    // bflb_gpio_init(gpio, GPIO_PIN_27, GPIO_FUNC_AUDAC_PWM | GPIO_ALTERNATE | GPIO_PULLUP | GPIO_SMT_EN | GPIO_DRV_2);
-    // bflb_gpio_init(gpio, GPIO_PIN_28, GPIO_FUNC_AUDAC_PWM | GPIO_ALTERNATE | GPIO_PULLUP | GPIO_SMT_EN | GPIO_DRV_2);
-
-    /* PA enable */
-    // bflb_gpio_init(gpio, GPIO_PIN_10, GPIO_OUTPUT | GPIO_PULLUP | GPIO_SMT_EN | GPIO_DRV_0);
-    // bflb_gpio_init(gpio, GPIO_PIN_11, GPIO_OUTPUT | GPIO_PULLUP | GPIO_SMT_EN | GPIO_DRV_0);
-    // bflb_gpio_set(gpio, GPIO_PIN_10);
-    // bflb_gpio_set(gpio, GPIO_PIN_11);
 }
 
 void audac_dma_init(void)
@@ -126,14 +119,18 @@ void audac_dma_init(void)
     audac_dma_cfg.dst_req = DMA_REQUEST_AUDAC_TX;
     audac_dma_cfg.src_addr_inc = DMA_ADDR_INCREMENT_ENABLE;
     audac_dma_cfg.dst_addr_inc = DMA_ADDR_INCREMENT_DISABLE;
-    audac_dma_cfg.src_burst_count = DMA_BURST_INCR8;
-    audac_dma_cfg.dst_burst_count = DMA_BURST_INCR8;
+    audac_dma_cfg.src_burst_count = DMA_BURST_INCR4;
+    audac_dma_cfg.dst_burst_count = DMA_BURST_INCR4;
+    // audac_dma_cfg.src_burst_count = DMA_BURST_INCR8;
+    // audac_dma_cfg.dst_burst_count = DMA_BURST_INCR8;
     audac_dma_cfg.src_width = DMA_DATA_WIDTH_16BIT;
     audac_dma_cfg.dst_width = DMA_DATA_WIDTH_16BIT;
 
     audac_dma_hd = bflb_device_get_by_name("dma0_ch0");
     bflb_dma_channel_init(audac_dma_hd, &audac_dma_cfg);
     bflb_dma_channel_irq_attach(audac_dma_hd, audio_dma_callback, NULL);
+    // bflb_irq_set_priority(audac_dma_hd->irq_num, IRQ_PRIO_AUDAC, 0);
+
 
     transfers_tic[0].src_addr = (uint32_t)tic;
     transfers_tic[0].dst_addr = (uint32_t)DMA_ADDR_AUDAC_TDR;
@@ -148,15 +145,15 @@ void audac_dma_init(void)
 static void audac_init(void)
 {
     struct bflb_audac_init_config_s audac_init_cfg = {
-        // .sampling_rate = AUDAC_SAMPLING_RATE_8K,
-        // .sampling_rate = AUDAC_SAMPLING_RATE_32K,
         .sampling_rate = AUDAC_SAMPLING_RATE_48K,
+        // .sampling_rate = AUDAC_SAMPLING_RATE_32K,
+        // .output_mode = AUDAC_OUTPUT_MODE_GPDAC_CH_A_B,
         .output_mode = AUDAC_OUTPUT_MODE_PWM,
-        // .source_channels_num = AUDAC_SOURCE_CHANNEL_DUAL,
         .source_channels_num = AUDAC_SOURCE_CHANNEL_SINGLE,
         .mixer_mode = AUDAC_MIXER_MODE_ONLY_L,
         .data_format = AUDAC_DATA_FORMAT_16BIT,
-        .fifo_threshold = 7,
+        .fifo_threshold = 3,
+        // .fifo_threshold = 7,
     };
 
     struct bflb_audac_volume_config_s audac_volume_cfg = {

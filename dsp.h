@@ -1,7 +1,7 @@
 #ifndef DSP_H
 #define DSP_H
 
-typedef struct {
+typedef struct c {
 	struct UIGlue *uiInterface;
 	void (*openVerticalBox)(struct UIGlue *uiInterface, char* key);
 	void (*openHorizontalBox)(struct UIGlue *uiInterface, char* key);
@@ -18,7 +18,7 @@ typedef struct {
 
 typedef void (* metaDeclareFun) (void* ui_interface, const char* key, const char* value);
 
-typedef struct {
+typedef struct b{
 	void* metaInterface;
     metaDeclareFun declare;
 } MetaGlue;
