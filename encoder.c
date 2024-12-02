@@ -133,5 +133,5 @@ void encoder_init(void)
     event_queue = rotary_encoder_create_queue();
     rotary_encoder_set_queue(event_queue);
     // xTaskCreate(encoder_task, "encoder_task", 2048, NULL, 2, NULL);
-    printf("encoder init done");
+    // printf("encoder init done");
 }

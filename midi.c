@@ -41,13 +41,15 @@ static struct bflb_device_s *uart0;
 QueueHandle_t uart_queue;
 int ch;
 int mode_learn_current_cc = 0;
+int learn_mode_state = LEARN_MODE_READY;
+int alt_switch_state = 0;
 bool encoder_pressed = false;
 
 static struct CC CCs[NUM_CC] = {0};
 static struct Mod Mods[NUM_BUTTONS] = {0};
 static struct Alt Alts[NUM_BUTTONS] = {0};
-static struct Sel Sels[NUM_SEL] = {0};
-static struct AltSel AltSels[NUM_ALT_SEL] = {0};
+static struct Sel Sels[NUM_BUTTONS] = {0};
+static struct AltSel AltSels[NUM_BUTTONS] = {0};
 static struct Sigs Signals = {
     .pitch = 0,
     .gate = 0,
@@ -95,6 +97,7 @@ int get_mode_learn_current_cc(void)
 void extract(const char *name, float *p, float init, float min, float max, float step)
 {
     // we can ignore the pitch and gate, and just calibrate for CC's
+    bool found = false;
     for(int i=0; i<NUM_CC; i++)
     {
         struct CC *cc = &CCs[i];
@@ -107,7 +110,7 @@ void extract(const char *name, float *p, float init, float min, float max, float
             float per = steps / 128.0;
             cc->mul = per;
             strcpy(cc->name, name);
-            // return;
+            found = true;
         }
     }
 
@@ -123,7 +126,7 @@ void extract(const char *name, float *p, float init, float min, float max, float
             float per = steps / 128.0;
             mod->mul = per;
             strcpy(mod->name, name);
-            // return;
+            found = true;
         }
     }
 
@@ -139,11 +142,11 @@ void extract(const char *name, float *p, float init, float min, float max, float
             float per = steps / 128.0;
             alt->mul = per;
             strcpy(alt->name, name);
-            // return;
+            found = true;
         }
     }
 
-    for(int i=0; i<NUM_SEL; i++)
+    for(int i=0; i<NUM_BUTTONS; i++)
     {
         struct Sel *sel = &Sels[i];
         if(sel->p == p){
@@ -151,11 +154,11 @@ void extract(const char *name, float *p, float init, float min, float max, float
             sel->max = max;
             sel->init = init;
             strcpy(sel->name, name);
-            // return;
+            found = true;
         }
     }
 
-    for(int i=0; i<NUM_ALT_SEL; i++)
+    for(int i=0; i<NUM_BUTTONS; i++)
     {
         struct AltSel *alt_sel = &AltSels[i];
         if(alt_sel->p == p){
@@ -163,17 +166,18 @@ void extract(const char *name, float *p, float init, float min, float max, float
             alt_sel->max = max;
             alt_sel->init = init;
             strcpy(alt_sel->name, name);
-            // return;
+            found = true;
         }
     }
-
-    // printf("failed to find cc for %s\n\r\r", name);
+    if(!found){
+        // printf("failed to find pointer for %s\n", name);
+    }
 }
 
 void declare(UIGlue *uiInterface, float *p, const char* key, const char* val){
     if(strcmp("midi", key) == 0) // its a cc
     {
-        // printf("got midi %s:%s\n\r\r", key, val);
+        // printf("got midi %s:%s\n", key, val);
         long num = strtol(val, NULL, 10);
 
         struct CC *cc = &CCs[num];
@@ -181,7 +185,7 @@ void declare(UIGlue *uiInterface, float *p, const char* key, const char* val){
     }
     if(strcmp("mod", key) == 0) // its a cc
     {
-        // printf("got mod %s:%s\n\r\r", key, val);
+        // printf("got mod %s:%s\n", key, val);
         long num = strtol(val, NULL, 10);
 
         struct Mod *mod = &Mods[num];
@@ -189,6 +193,7 @@ void declare(UIGlue *uiInterface, float *p, const char* key, const char* val){
     }
     if(strcmp("alt", key) == 0) // its a cc
     {
+        // printf("got alt %s:%s\n", key, val);
         long num = strtol(val, NULL, 10);
 
         struct Alt *alt = &Alts[num];
@@ -196,6 +201,7 @@ void declare(UIGlue *uiInterface, float *p, const char* key, const char* val){
     }
     if(strcmp("sel", key) == 0) // its a selection toggle
     {
+        // printf("got sel %s:%s\n", key, val);
         long num = strtol(val, NULL, 10);
 
         struct Sel *sel = &Sels[num];
@@ -203,11 +209,12 @@ void declare(UIGlue *uiInterface, float *p, const char* key, const char* val){
     }
     if(strcmp("alt-sel", key) == 0) // its a selection toggle with alt held
     {
+        // printf("got alt-sel %s:%s\n", key, val);
         long num = strtol(val, NULL, 10);
 
         struct AltSel *alt_sel = &AltSels[num];
         alt_sel->p = p;
-        printf("got alt_sel\n\r\r");
+        // printf("got alt_sel\n\r\r");
     }
     if(strcmp("pitch", key) == 0) // its the pitch
     {
@@ -242,6 +249,51 @@ void declare(UIGlue *uiInterface, float *p, const char* key, const char* val){
     }
 };
 
+int get_cc(int num, bool alt){
+    // printf("get_cc num:%d alt:%s\n", num, alt?"true":"false");
+    float *p = NULL;
+    if(alt){
+        // printf("get_cc alt held\n");
+        struct Alt *Alts = get_alts();
+        struct AltSel *AltSels = get_alt_sels();
+        struct Alt alt = Alts[num];
+        struct AltSel alt_sel = AltSels[num];
+        if(alt.p != 0){
+            // printf("found alt %s\n", alt.name);
+            p = alt.p;
+        } else if (alt_sel.p != 0){
+            // printf("found alt_sel %s\n", alt_sel.name);
+            p = alt_sel.p;
+        }
+    } else {
+        struct Mod *Mods = get_mods();
+        struct Sel *Sels = get_sels();
+        struct Mod mod = Mods[num];
+        struct Sel sel = Sels[num];
+        if(mod.p != 0){
+            // printf("found mod %s\n", mod.name);
+            p = mod.p;
+        } else if(sel.p != 0){
+            // printf("found sel %s\n", sel.name);
+            p = sel.p;
+        }
+    }
+    if(p == NULL){
+        // printf("nothing found for that button\n");
+        return -1; // nothing found on that button press
+    } 
+    struct CC *CCs = get_ccs();
+    // search all the CCs to find the matching pointer
+    for(int i=0; i<NUM_CC; i++){
+        if(CCs[i].p == p){
+            // printf("matched cc:%d %s\n", i, CCs[i].name);
+            return i;
+        }
+    }
+    // printf("found something but no CC found for that pointer\n");
+    return -1;
+}
+
 void handle_encoder_press(bool down)
 {
     *Signals.gate = down ? 1 : 0;
@@ -251,7 +303,7 @@ void handle_encoder_press(bool down)
 void handle_button_press(int num)
 // handles load, save, learn and cancelling the mode by pressing alt again
 {
-    printf("press %d", num);
+    // printf("press %d\n", num);
     int ui_mode = get_ui_mode();
     if(num == BUTTON_NUM_ALT) // alt button
     {
@@ -259,47 +311,73 @@ void handle_button_press(int num)
     }
     else if(alt_held())
     {
-        printf("alt held");
-        if(num == BUTTON_NUM_LOAD)
+        // printf("alt held\n");
+        if(ui_mode == UI_MODE_LEARN)
         {
-            set_ui_mode(UI_MODE_LOAD);
-        }
-        else if(num == BUTTON_NUM_SAVE)
-        {
-            set_ui_mode(UI_MODE_SAVE);
-        }
-        else if(num == BUTTON_NUM_LEARN)
-        {
-            set_ui_mode(UI_MODE_LEARN);
-            mode_learn_current_cc = 0;
-        }
-        else
-        {
-            struct AltSel *alt_sel = &AltSels[num];
-            if(alt_sel->p == 0) // no alt-sel to do for that button press
-            {
-                printf("nothing\n");
-                return;
+            int cc_num = get_cc(num, true);
+            // printf("learn cc %d\n", cc_num);
+            if(cc_num != -1){
+                mode_learn_current_cc = cc_num;
             }
-            printf("toggling\n");
-            float cur = *alt_sel->p;
-            if(cur < alt_sel->max)
+
+        } else {
+            if(num == BUTTON_NUM_LOAD)
             {
-                *alt_sel->p += 1;
+                set_ui_mode(UI_MODE_LOAD);
+            }
+            else if(num == BUTTON_NUM_SAVE)
+            {
+                set_ui_mode(UI_MODE_SAVE);
+            }
+            else if(num == BUTTON_NUM_LEARN)
+            {
+                set_ui_mode(UI_MODE_LEARN);
+                mode_learn_current_cc = 0;
+                learn_mode_state = LEARN_MODE_READY;
             }
             else
             {
-                *alt_sel->p = alt_sel->min;
+                struct AltSel *alt_sel = &AltSels[num];
+                if(alt_sel->p == 0) // no alt-sel to do for that button press
+                {
+                    // printf("nothing\n");
+                    return;
+                }
+                // printf("toggling\n");
+                float cur = *alt_sel->p;
+                if(cur < alt_sel->max)
+                {
+                    *alt_sel->p += 1;
+                }
+                else
+                {
+                    *alt_sel->p = alt_sel->min;
+                }
+                // check for switch displays
+                if(num == 13 || num == 7 || num == 12){
+                    if(*alt_sel->p == 0){
+                        alt_switch_state = ALT_SWITCH_STATE_OFF;
+                    } else {
+                        alt_switch_state = ALT_SWITCH_STATE_ON;
+                    }
+                }
             }
         }
     } 
     else if(ui_mode == UI_MODE_LEARN)
     {
-        int label = button_label(num);
-        if(label < 8)
-        {
-            mode_learn_current_cc = label + 1;
+        // int label = button_label(num);
+        // if(label < 8)
+        // {
+        //     mode_learn_current_cc = label + 1;
+        // }
+        int cc_num = get_cc(num, alt_held());
+        // printf("learn cc %d\n", cc_num);
+        if(cc_num != -1){
+            mode_learn_current_cc = cc_num;
+            learn_mode_state = LEARN_MODE_SELECTED;
         }
+
     }
     else if(ui_mode == UI_MODE_PLAY)
     {
@@ -332,12 +410,13 @@ void handle_button_press(int num)
     }
     else if(ui_mode == UI_MODE_SAVE)
     {
-        int label = button_label(num);
+        int label = button_label(num); // label is 1 indexed
         if(label)
         {
+            label--; // label is 1 indexed
             if(label < NUM_PRESETS)
             {
-                save(label - 1);
+                save(label);
             }
         }
         set_ui_mode(UI_MODE_PLAY);
@@ -441,6 +520,7 @@ void handle_midi(uint8_t *msg, uint8_t len)
             if(mode_learn_current_cc > 0)
             {
                 cc_map[cc_num_in - 1] = mode_learn_current_cc; // -1 because ccs are indexed at 1
+                learn_mode_state = LEARN_MODE_LEARNED;
             }
             // printf("no cc_learn selected\n\r\r");
             break;
@@ -494,7 +574,6 @@ void handle_midi(uint8_t *msg, uint8_t len)
                             *mod.p = val;
                             // printf("set led %f %f %f\n\r", val, mod.min, mod.max);
                             set_led_display(val, mod.min, mod.max);
-                            // cancel_button(i);
                         }
                     }
                 }

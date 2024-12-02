@@ -7,6 +7,8 @@
 #include "midi.h"
 #include "gpio.h"
 
+extern int alt_switch_state;
+
 struct bflb_device_s *b_gpio;
 
 const uint8_t mux_code[8][3] = {
@@ -55,7 +57,6 @@ const uint8_t mux_pins[24] = {
 #define BUTTON_NUM_ENCODER 26
 
 uint8_t button_pushes[NUM_BUTTONS]    = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-uint8_t button_cancelled[NUM_BUTTONS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 uint8_t button_state[NUM_BUTTONS]     = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 uint64_t button_time[NUM_BUTTONS]     = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
@@ -110,7 +111,11 @@ int button_label(int num){
         case 11: return 10;
         case 12: return 11;
         case 13: return 12;
-        case 23: return 13;
+        case 15: return 13;
+        case 18: return 14;
+        case 20: return 15;
+        case 24: return 16;
+        case 23: return 17;
         default: return 0;
     }
     return 0;
@@ -162,6 +167,8 @@ static void read_buttons(){
     button_state[26] = bflb_gpio_read(b_gpio, ENCODER_BUTTON_PIN);
 }
 
+bool alt_consumed = false;
+
 bool alt_held(void)
 {
     return button_state[BUTTON_NUM_ALT] == 0;
@@ -171,6 +178,7 @@ static void process_buttons(){
     for (int i =0; i< NUM_BUTTONS; i++)
     {
         bool state = button_state[i];
+        int ui_mode = get_ui_mode();
 
         // check for presses
         if(button_pushes[i] == 0) // not pushed
@@ -186,18 +194,13 @@ static void process_buttons(){
                     if(i == BUTTON_NUM_ENCODER){
                         handle_encoder_press(true);
                     }
-                    if(alt_held())
-                    {
-                        if(i == BUTTON_NUM_ALT) // its the alt button
-                        {
-                            handle_button_press(i);
-                        }
-                        // else if((i != BUTTON_NUM_LOAD) && (i != BUTTON_NUM_SAVE) && (i != BUTTON_NUM_LEARN)) // load / save / learn
-                        // {
-                        //     button_cancelled[i] = 1;
-                        // }
+                    if(i == BUTTON_NUM_ALT){
+                        // handle_button_press(i);
+                        alt_consumed = false;
                     }
-                    set_param_selected(i, alt_held());
+                    if(ui_mode == UI_MODE_PLAY){
+                        set_param_selected(i, alt_held());
+                    }
                     // printf("button %d pushed\n\r", i);
                 }
             }
@@ -219,16 +222,15 @@ static void process_buttons(){
                     {
                         handle_encoder_press(false);
                     }
-                    else if(button_cancelled[i])
-                    {
-                        button_cancelled[i] = 0;
-                    }
-                    else if(i == BUTTON_NUM_ALT) // its the alt button
-                    {
-                        continue;
+                    else if(i == BUTTON_NUM_ALT){
+                        alt_switch_state = ALT_SWITCH_STATE_NONE;
+                        if(!alt_consumed){
+                            handle_button_press(i); // trigger alt event on release
+                        }
                     }
                     else
                     {
+                        alt_consumed = true;
                         handle_button_press(i); // trigger event on release
                     }
                 }
@@ -240,11 +242,6 @@ static void process_buttons(){
 uint8_t *get_button_states(void)
 {
     return button_state;
-}
-
-void cancel_button(int num)
-{
-    button_cancelled[num] = 1;
 }
 
 uint8_t *get_button_pushes(void)

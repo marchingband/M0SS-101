@@ -41,7 +41,7 @@ key_track    = hslider("key-track[alt-sel:13][midi:19]", 1, 0, 1, 1);
 lfo2pitch    = hslider("lfo-to-osc[mod:10][midi:20]",    0, 0, 1, 0.001) ;
 lfo2vca      = hslider("lfo-to-vca[mod:8][midi:21]",     0, 0, 1, 0.001) ;
 lfo2vcf      = hslider("lfo-to-vcf[mod:11][midi:22]",    0, 0, 1, 0.001) ;
-lfo2pwm      = hslider("lfo-to-pwm[mod:6][midi:23",     0, 0, 1, 0.001) ;
+lfo2pwm      = hslider("lfo-to-pwm[mod:6][midi:23]",     0, 0, 1, 0.001) ;
 
 env2volume   = hslider("env-to-vca[mod:15][midi:24]",    1, 0, 1, 0.001) ;
 env2cutoff   = hslider("env-to-vcf[mod:18][midi:25]",    0, 0, 1, 0.001) ;

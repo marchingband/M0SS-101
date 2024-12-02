@@ -256,7 +256,7 @@ void rotary_encoder_init(int pin_a, int pin_b)
     }
     else
     {
-        printf("info is NULL");
+        // printf("info is NULL");
     }
 }
 
@@ -269,7 +269,7 @@ void rotary_encoder_enable_half_steps(bool enable)
     }
     else
     {
-        printf("info is NULL");
+        // printf("info is NULL");
     }
 }
 
@@ -283,7 +283,7 @@ void rotary_encoder_flip_direction()
     }
     else
     {
-        printf("info is NULL");
+        // printf("info is NULL");
     }
 }
 

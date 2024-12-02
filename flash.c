@@ -9,14 +9,14 @@
 
 #define SECTOR_SIZE 0x1000 // 4096
 
-#define NUM_FLOATS (NUM_CC + NUM_BUTTONS + NUM_BUTTONS + NUM_SEL)
+#define NUM_FLOATS (NUM_CC + NUM_BUTTONS + NUM_BUTTONS + NUM_BUTTONS)
 #define NUM_BYTES_PER_PRESET (NUM_FLOATS * sizeof(float))
 #define TOTAL_BYTES (NUM_BYTES_PER_PRESET * NUM_PRESETS)
 
 static int current_slot = -1;
 
 static struct Config default_config = {
-    .empty = { true, true, true, true, true, true, true, true, true, true, true, true, true, true },
+    .empty = { true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true },
     .cc_map = {
         1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,
         17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,
@@ -27,7 +27,7 @@ static struct Config default_config = {
         97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,
         113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128
     },
-    .magic = 124,
+    .magic = 127,
 };
 
 static struct Config current_config;
@@ -107,7 +107,7 @@ void save(int slot)
         floats_buf[idx++] = val;
     }
 
-    for(int i=0; i< NUM_SEL; i++)
+    for(int i=0; i< NUM_BUTTONS; i++)
     {
         float val = sels[i].p ? *sels[i].p : 0.0;
         // printf("writing %f to sels %d\n", val, i);
@@ -216,7 +216,7 @@ void load(int slot)
         *alts[i].p = val;
     }
 
-    for(int i=0; i< NUM_SEL; i++)
+    for(int i=0; i< NUM_BUTTONS; i++)
     {
         if(sels[i].p == 0)
         {

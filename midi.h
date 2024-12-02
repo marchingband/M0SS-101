@@ -1,9 +1,15 @@
 #ifndef MIDI_H
 #define MIDI_H
 
-#define NUM_SEL 27
-#define NUM_ALT_SEL 27
-#define NUM_CC 36
+#define NUM_CC 40
+
+#define LEARN_MODE_READY 0
+#define LEARN_MODE_SELECTED 1
+#define LEARN_MODE_LEARNED 2
+
+#define ALT_SWITCH_STATE_NONE 0
+#define ALT_SWITCH_STATE_ON 1
+#define ALT_SWITCH_STATE_OFF 2
 
 struct CC {
     float *p;

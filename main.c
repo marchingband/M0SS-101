@@ -133,7 +133,6 @@ int main(void)
 
     /* start the LEDs */
     // printf("rgb_led_init\r\n");
-    // rgb_led_init();
     spi_rgb_init();
 
     /* setup encoder */

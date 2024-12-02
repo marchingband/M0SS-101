@@ -104,11 +104,6 @@ uint8_t *get_button_states(void)
     return button_state;
 }
 
-void cancel_button(int num)
-{
-    button_cancelled[num] = 1;
-}
-
 uint8_t *get_button_pushes(void)
 {
     return button_pushes;

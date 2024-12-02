@@ -725,6 +725,7 @@ void buildUserInterfacemydsp(mydsp* dsp, UIGlue* ui_interface) {
 	ui_interface->declare(ui_interface->uiInterface, &dsp->fHslider21, "midi", "20");
 	ui_interface->declare(ui_interface->uiInterface, &dsp->fHslider21, "mod", "10");
 	ui_interface->addHorizontalSlider(ui_interface->uiInterface, "lfo-to-osc", &dsp->fHslider21, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)1.0f, (FAUSTFLOAT)0.001f);
+	ui_interface->declare(ui_interface->uiInterface, &dsp->fHslider28, "midi", "23");
 	ui_interface->declare(ui_interface->uiInterface, &dsp->fHslider28, "mod", "6");
 	ui_interface->addHorizontalSlider(ui_interface->uiInterface, "lfo-to-pwm", &dsp->fHslider28, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)0.0f, (FAUSTFLOAT)1.0f, (FAUSTFLOAT)0.001f);
 	ui_interface->declare(ui_interface->uiInterface, &dsp->fHslider38, "midi", "21");
@@ -874,7 +875,7 @@ void computemydsp(mydsp* dsp, int count, FAUSTFLOAT** RESTRICT inputs, FAUSTFLOA
 			dsp->iRec8[0] = 1103515245 * dsp->iRec8[1] + 12345;
 			float fTemp4 = 4.656613e-10f * (float)(dsp->iRec8[0]);
 			dsp->fRec9[0] = 0.5221894f * dsp->fRec9[3] + fTemp4 + 2.494956f * dsp->fRec9[1] - 2.0172658f * dsp->fRec9[2];
-			float fTemp5 = ((iSlow13) ? 8.0f * (0.049922034f * dsp->fRec9[0] + 0.0506127f * dsp->fRec9[2] - (0.095993534f * dsp->fRec9[1] + 0.004408786f * dsp->fRec9[3])) : fTemp4);
+			float fTemp5 = ((iSlow13) ? 3.0f * (0.049922034f * dsp->fRec9[0] + 0.0506127f * dsp->fRec9[2] - (0.095993534f * dsp->fRec9[1] + 0.004408786f * dsp->fRec9[3])) : fTemp4);
 			dsp->fRec7[0] = dsp->fRec7[1] * (float)(1 - iTemp3) + fTemp5 * (float)(iTemp3);
 			float fTemp6 = ((iSlow9) ? dsp->fRec7[0] : ((iSlow10) ? fTemp2 : 2.0f * (1.0f - fabsf(2.0f * dsp->fRec6[0] + -1.0f)) + -1.0f));
 			dsp->fVbargraph0 = (FAUSTFLOAT)(fTemp6);
