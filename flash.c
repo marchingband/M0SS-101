@@ -9,9 +9,13 @@
 
 #define SECTOR_SIZE 0x1000 // 4096
 
-#define NUM_FLOATS (NUM_CC + NUM_BUTTONS + NUM_BUTTONS + NUM_BUTTONS)
+#define NUM_CONFIG_VARS 1
+
+#define NUM_FLOATS (NUM_CC + NUM_BUTTONS + NUM_BUTTONS + NUM_BUTTONS + NUM_BUTTONS + NUM_CONFIG_VARS)
 #define NUM_BYTES_PER_PRESET (NUM_FLOATS * sizeof(float))
 #define TOTAL_BYTES (NUM_BYTES_PER_PRESET * NUM_PRESETS)
+
+extern int cur_midi_chan;
 
 static int current_slot = -1;
 
@@ -27,7 +31,7 @@ static struct Config default_config = {
         97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,
         113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128
     },
-    .magic = 127,
+    .magic = 128,
 };
 
 static struct Config current_config;
@@ -83,6 +87,7 @@ void save(int slot)
     struct Mod *mods = get_mods();
     struct Alt *alts = get_alts();
     struct Sel *sels = get_sels();
+    struct Asb *asbs = get_asbs();
 
     int idx = 0;
 
@@ -109,10 +114,21 @@ void save(int slot)
 
     for(int i=0; i< NUM_BUTTONS; i++)
     {
+        float val = asbs[i].p ? *asbs[i].p : 0.0;
+        // printf("writing %f to alts %d\n", val, i);
+        floats_buf[idx++] = val;
+    }
+
+    for(int i=0; i< NUM_BUTTONS; i++)
+    {
         float val = sels[i].p ? *sels[i].p : 0.0;
         // printf("writing %f to sels %d\n", val, i);
         floats_buf[idx++] = val;
     }
+
+    // add config vars
+    floats_buf[idx++] = (float)cur_midi_chan;
+
 
     // printf("erase slot\n");
     ret = bflb_flash_erase(base, sizeof(buf));
@@ -164,6 +180,7 @@ void load(int slot)
     struct Mod *mods = get_mods();
     struct Alt *alts = get_alts();
     struct Sel *sels = get_sels();
+    struct Asb *asbs = get_asbs();
 
     ret = bflb_flash_read(base, buf, sizeof(buf));
 
@@ -218,6 +235,19 @@ void load(int slot)
 
     for(int i=0; i< NUM_BUTTONS; i++)
     {
+        if(asbs[i].p == 0)
+        {
+            // printf("alt %d is null\n", i);
+            idx++;
+            continue;
+        }
+        float val = floats_buf[idx++];
+        // printf("reading %f to alts %d\n", val, i);
+        *asbs[i].p = val;
+    }
+
+    for(int i=0; i< NUM_BUTTONS; i++)
+    {
         if(sels[i].p == 0)
         {
             // printf("sel %d is null\n", i);
@@ -228,4 +258,6 @@ void load(int slot)
         // printf("reading %f to sels %d\n", val, i);
         *sels[i].p = val;
     }
+
+    cur_midi_chan = (int)floats_buf[idx++];
 }

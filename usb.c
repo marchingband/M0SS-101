@@ -15,7 +15,6 @@ void usb_midi_in(char ch);
 USB_NOCACHE_RAM_SECTION USB_MEM_ALIGNX uint8_t midi_buffer[512];
 int midi_run = 0;
 
-
 struct usbh_midi
 {
     struct usbh_hubport *hport;

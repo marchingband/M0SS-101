@@ -39,6 +39,9 @@ void set_filter(uint8_t val);
 
 static struct bflb_device_s *uart0;
 QueueHandle_t uart_queue;
+
+int cur_midi_chan = 1;
+
 int ch;
 int mode_learn_current_cc = 0;
 int learn_mode_state = LEARN_MODE_READY;
@@ -50,6 +53,7 @@ static struct Mod Mods[NUM_BUTTONS] = {0};
 static struct Alt Alts[NUM_BUTTONS] = {0};
 static struct Sel Sels[NUM_BUTTONS] = {0};
 static struct AltSel AltSels[NUM_BUTTONS] = {0};
+static struct Asb Asbs[NUM_BUTTONS] = {0};
 static struct Sigs Signals = {
     .pitch = 0,
     .gate = 0,
@@ -67,6 +71,11 @@ struct Sel *get_sels(void)
 struct AltSel *get_alt_sels(void)
 {
     return &AltSels[0];
+}
+
+struct Asb *get_asbs(void)
+{
+    return &Asbs[0];
 }
 
 struct Mod *get_mods(void)
@@ -169,6 +178,23 @@ void extract(const char *name, float *p, float init, float min, float max, float
             found = true;
         }
     }
+
+    for(int i=0; i<NUM_BUTTONS; i++)
+    {
+        struct Asb *asb = &Asbs[i];
+        if(asb->p == p){
+            asb->min = min;
+            asb->max = max;
+            asb->init = init;
+            asb->step = step;
+            float steps = (max - min) / step;
+            float per = steps / 128.0;
+            asb->mul = per;
+            strcpy(asb->name, name);
+            found = true;
+        }
+    }
+    
     if(!found){
         // printf("failed to find pointer for %s\n", name);
     }
@@ -214,6 +240,15 @@ void declare(UIGlue *uiInterface, float *p, const char* key, const char* val){
 
         struct AltSel *alt_sel = &AltSels[num];
         alt_sel->p = p;
+        // printf("got alt_sel\n\r\r");
+    }
+    if(strcmp("asb", key) == 0) // its a modifuer with alt held
+    {
+        printf("got asb %s:%s\n", key, val);
+        long num = strtol(val, NULL, 10);
+
+        struct Asb *asb = &Asbs[num];
+        asb->p = p;
         // printf("got alt_sel\n\r\r");
     }
     if(strcmp("pitch", key) == 0) // its the pitch
@@ -354,7 +389,7 @@ void handle_button_press(int num)
                     *alt_sel->p = alt_sel->min;
                 }
                 // check for switch displays
-                if(num == 13 || num == 7 || num == 12){
+                if(num == 7 || num == 12 || num == 13 || num == 15){
                     if(*alt_sel->p == 0){
                         alt_switch_state = ALT_SWITCH_STATE_OFF;
                     } else {
@@ -458,7 +493,8 @@ void handle_midi(uint8_t *msg, uint8_t len)
     // printf("msg len %d -> %d %d %d\n\r\r", len, msg[0], msg[1], msg[2]);
     
     uint8_t channel = msg[0] & 0b00001111;
-    if(channel != 0){
+    if((channel + 1) != cur_midi_chan) // channels are 0 indexed but we use 1 indexed
+    {
         return;
     }
 
@@ -649,6 +685,7 @@ void poll_uart(void)
 
 void usb_midi_in(char ch)
 {
+    bflb_uart_putchar(uart0, ch); // send to midi out
     int ret = parse(ch);
     if (ret == 1)
     {
@@ -660,6 +697,7 @@ void uart_task(void *args){
     uint8_t ch;
     while(1){
         if(xQueueReceive(uart_queue, &ch, portMAX_DELAY)){
+            bflb_uart_putchar(uart0, ch); // send to midi out
             int ret = parse(ch);
             if (ret)
             {

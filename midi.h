@@ -1,7 +1,7 @@
 #ifndef MIDI_H
 #define MIDI_H
 
-#define NUM_CC 40
+#define NUM_CC 41
 
 #define LEARN_MODE_READY 0
 #define LEARN_MODE_SELECTED 1
@@ -56,6 +56,15 @@ struct AltSel {
     float init;
     char name[20];
 };
+struct Asb {
+    float *p;
+    float min;
+    float max;
+    float init;
+    float step;
+    float mul;
+    char name[20];
+};
 
 struct Sigs {
     float *pitch;
@@ -68,6 +77,7 @@ struct Sigs {
 
 struct Sel *get_sels(void);
 struct AltSel *get_alt_sels(void);
+struct Asb *get_asbs(void);
 struct Mod *get_mods(void);
 struct Alt *get_alts(void);
 struct CC *get_ccs(void);

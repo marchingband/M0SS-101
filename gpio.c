@@ -8,6 +8,8 @@
 #include "gpio.h"
 
 extern int alt_switch_state;
+extern int cur_midi_chan;
+extern int cur_disp_num;
 
 struct bflb_device_s *b_gpio;
 
@@ -55,6 +57,7 @@ const uint8_t mux_pins[24] = {
 #define BUTTON_NUM_ALT 22
 #define BUTTON_NUM_LEARN 24
 #define BUTTON_NUM_ENCODER 26
+#define BUTTON_NUM_MIDI_CHAN 6
 
 uint8_t button_pushes[NUM_BUTTONS]    = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 uint8_t button_state[NUM_BUTTONS]     = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
@@ -68,6 +71,10 @@ struct Param param_selected = {
 struct Param get_param_selected(void){
     return param_selected;
 }
+
+bool set_midi_chan_active = false;
+bool asb_active = false;
+int cur_asb = 0;
 
 void set_param_selected(int num, bool alt)
 {
@@ -191,14 +198,23 @@ static void process_buttons(){
                     button_pushes[i] = 1;
                     button_state[i] = 0;
                     button_time[i] = now;
-                    if(i == BUTTON_NUM_ENCODER){
+                    if( i == BUTTON_NUM_ENCODER ){
                         handle_encoder_press(true);
-                    }
-                    if(i == BUTTON_NUM_ALT){
+                    } else if( i == BUTTON_NUM_ALT ){
                         // handle_button_press(i);
                         alt_consumed = false;
-                    }
-                    if(ui_mode == UI_MODE_PLAY){
+                    } else if( alt_held() && get_asbs()[i].p != 0 ){
+                        // its an asb
+                        // printf("got asb on button %d\n", i);
+                        cur_asb = i;
+                        asb_active = true;
+                        cur_disp_num = (int)*get_asbs()[i].p;
+                        set_ui_mode(UI_MODE_DISP_NUM);
+                    } else if( alt_held() && i == BUTTON_NUM_MIDI_CHAN ){
+                        set_midi_chan_active = true;
+                        cur_disp_num = cur_midi_chan;
+                        set_ui_mode(UI_MODE_DISP_NUM);
+                    } else if( ui_mode == UI_MODE_PLAY ){
                         set_param_selected(i, alt_held());
                     }
                     // printf("button %d pushed\n\r", i);
@@ -218,7 +234,19 @@ static void process_buttons(){
                     button_state[i] = 1;
                     button_time[i] = now;
                     // printf("button %d released\n\r", i);
-                    if(i == BUTTON_NUM_ENCODER)
+                    // chack for assignable events
+
+                    if(asb_active && i == cur_asb)
+                    {
+                        asb_active == false;
+                        set_ui_mode(UI_MODE_PLAY);
+                    } 
+                    else if(set_midi_chan_active && i == BUTTON_NUM_MIDI_CHAN)
+                    {
+                        set_midi_chan_active == false;
+                        set_ui_mode(UI_MODE_PLAY);
+                    } 
+                    else if(i == BUTTON_NUM_ENCODER)
                     {
                         handle_encoder_press(false);
                     }
@@ -227,6 +255,7 @@ static void process_buttons(){
                         if(!alt_consumed){
                             handle_button_press(i); // trigger alt event on release
                         }
+                        asb_active = false;
                     }
                     else
                     {

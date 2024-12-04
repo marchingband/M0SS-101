@@ -17,6 +17,7 @@
 
 extern int learn_mode_state;
 extern int alt_switch_state;
+int cur_disp_num = 0;
 
 static ATTR_NOCACHE_NOINIT_RAM_SECTION uint32_t data_buf[128] __ALIGNED(4);
 static const uint16_t bit_patterns[4] = {0x88, 0x8e, 0xe8, 0xee}; // original
@@ -110,7 +111,7 @@ const struct pixel_t light_green = {
     .blue = 0
 };
 
-const uint8_t number_select_lights[NUM_PRESETS] = { 0, 2, 7, 6, 10, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23 };
+const uint8_t number_select_lights[NUM_PRESETS] = { 0, 2, 7, 6, 17, 10, 13, 14, 15, 16, 12, 23, 19, 20, 21, 22, 18 };
 int ui_mode = UI_MODE_PLAY;
 
 void set_ui_mode(int mode)
@@ -321,6 +322,23 @@ void render_lights(void){
                 pixel_buf[i] = learn_mode_state == LEARN_MODE_READY ? light_pink : 
                             learn_mode_state == LEARN_MODE_SELECTED ? light_green : 
                             light_blue; 
+            }
+            break;
+        }
+        case UI_MODE_DISP_NUM:
+        {
+            for(int i=0; i<NUM_LED; i++)
+            {
+                pixel_buf[i] = pixel_off; 
+            }
+
+            for(int i=0; i<NUM_PRESETS; i++)
+            {
+                uint8_t light_num = number_select_lights[i];
+                if(i + 1 == cur_disp_num) // i==0 is actually number 1
+                {
+                    pixel_buf[light_num] = light_green;
+                }
             }
             break;
         }

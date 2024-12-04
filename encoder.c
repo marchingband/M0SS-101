@@ -29,6 +29,12 @@ uint64_t last_click = 0;
 #define CLICK_FAST 15000
 
 extern bool encoder_pressed;
+extern bool asb_active;
+extern int cur_asb;
+extern bool set_midi_chan_active;
+extern int cur_midi_chan;
+extern int cur_disp_num;
+
 
 static void on_encoder(bool up){
     uint64_t now = bflb_mtimer_get_time_us();
@@ -38,8 +44,28 @@ static void on_encoder(bool up){
     // printf("time %llu\n\r", passed);
     // printf("mul %d\n\r", click_multiplier);
     // uint8_t *button_states = get_button_states();
-    struct Param param = get_param_selected();
-    if(alt_held()){
+
+    if(asb_active)
+    {
+        //asignable held
+        struct Asb asb = get_asbs()[cur_asb];
+        float cur = *asb.p;
+        float step = asb.step * asb.mul * click_multiplier;
+        float next = up ? cur + step : cur - step;
+        float clamped = next > asb.max ? asb.max : next < asb.min ? asb.min : next;
+        *asb.p = clamped;
+        cur_disp_num = clamped;
+    } 
+    else if(set_midi_chan_active)
+    {
+        int new_chan = up ? cur_midi_chan + 1 : cur_midi_chan - 1;
+        if(new_chan >= 1 && new_chan <= 16){
+            cur_midi_chan = new_chan;
+            cur_disp_num = new_chan;
+        }
+    } 
+    else if(alt_held()) // pitch bend
+    { 
         struct Sigs *sigs = get_signals();
         if(encoder_pressed){
             // 0 to 16,383
@@ -51,64 +77,56 @@ static void on_encoder(bool up){
         }
         return;
     }
-    if(param.button == -1)
-    {
-        // printf("nothing selected\n\r");
-        return;
-    }
-
-    if(param.alt)
-    {
-        struct Alt *Alts = get_alts();
-        struct Alt alt = Alts[param.button];
-        if(alt.p == 0)
-        {
-            // printf("got unknown Alt %d\n\r", param.button);
-        }
-        else
-        {
-            float cur = *alt.p;
-            float step = alt.step * alt.mul * click_multiplier;
-            float next = up ? cur + step : cur - step;
-            float clamped = next > alt.max ? alt.max : next < alt.min ? alt.min : next;
-            *alt.p = clamped;
-            // printf("set led %f %f %f\n\r", clamped, alt.min, alt.max);
-            set_led_display(clamped, alt.min, alt.max);
-        }
-
-    }
     else
     {
-        struct Mod *Mods = get_mods();
-        struct Mod mod = Mods[param.button];
-        if(mod.p == 0)
+
+        struct Param param = get_param_selected();
+
+        if(param.button == -1)
         {
-            // printf("got unknown Mod %d\n\r", param.button);
+            // printf("nothing selected\n\r");
+            return;
+        }
+
+        if(param.alt)
+        {
+            struct Alt *Alts = get_alts();
+            struct Alt alt = Alts[param.button];
+            if(alt.p == 0)
+            {
+                // printf("got unknown Alt %d\n\r", param.button);
+            }
+            else
+            {
+                float cur = *alt.p;
+                float step = alt.step * alt.mul * click_multiplier;
+                float next = up ? cur + step : cur - step;
+                float clamped = next > alt.max ? alt.max : next < alt.min ? alt.min : next;
+                *alt.p = clamped;
+                // printf("set led %f %f %f\n\r", clamped, alt.min, alt.max);
+                set_led_display(clamped, alt.min, alt.max);
+            }
+
         }
         else
         {
-            float cur = *mod.p;
-            float step = mod.step * mod.mul * click_multiplier;
-            float next = up ? cur + step : cur - step;
-            float clamped = next > mod.max ? mod.max : next < mod.min ? mod.min : next;
-            *mod.p = clamped;
-            // printf("set led %f %f %f\n\r", clamped, mod.min, mod.max);
-            set_led_display(clamped, mod.min, mod.max);
+            struct Mod *Mods = get_mods();
+            struct Mod mod = Mods[param.button];
+            if(mod.p == 0)
+            {
+                // printf("got unknown Mod %d\n\r", param.button);
+            }
+            else
+            {
+                float cur = *mod.p;
+                float step = mod.step * mod.mul * click_multiplier;
+                float next = up ? cur + step : cur - step;
+                float clamped = next > mod.max ? mod.max : next < mod.min ? mod.min : next;
+                *mod.p = clamped;
+                // printf("set led %f %f %f\n\r", clamped, mod.min, mod.max);
+                set_led_display(clamped, mod.min, mod.max);
+            }
         }
-    }
-}
-
-static void encoder_task(void* arg)
-{
-    for(;;)
-    {
-        rotary_encoder_event_t event = { 0 };
-        if (xQueueReceive(event_queue, &event, portMAX_DELAY))
-        {
-            on_encoder(event.state.direction == ROTARY_ENCODER_DIRECTION_CLOCKWISE);
-            // printf("Event: position %d, direction %s\n\r", event.state.position,
-            //          event.state.direction ? (event.state.direction == ROTARY_ENCODER_DIRECTION_CLOCKWISE ? "CW" : "CCW") : "NOT_SET");
-        }    
     }
 }
 
@@ -132,6 +150,4 @@ void encoder_init(void)
 #endif
     event_queue = rotary_encoder_create_queue();
     rotary_encoder_set_queue(event_queue);
-    // xTaskCreate(encoder_task, "encoder_task", 2048, NULL, 2, NULL);
-    // printf("encoder init done");
 }
