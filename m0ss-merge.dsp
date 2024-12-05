@@ -39,14 +39,14 @@ lfo_range    = hslider("lfo-range[alt-sel:12][midi:19]", 0, 0, 1, 1);
 env_vca_inv  = hslider("env-vca-inv[alt-sel:15][midi:20]", 1, 0, 1, 1);
 
 // modifiers
-lfo2pitch    = hslider("lfo-to-osc[mod:10][midi:21]",    0, 0, 1, 0.001) ;
+lfo2pitch    = hslider("lfo-to-osc[mod:10][midi:21]",    0, 0, 1, 0.001) : ba.lin2LogGain;
 lfo2vca      = hslider("lfo-to-vca[mod:8][midi:22]",     0, 0, 1, 0.001) ;
 lfo2vcf      = hslider("lfo-to-vcf[mod:11][midi:23]",    0, 0, 1, 0.001) ;
 lfo2pwm      = hslider("lfo-to-pwm[mod:6][midi:24]",     0, 0, 1, 0.001) ;
 
 env2volume   = hslider("env-to-vca[mod:15][midi:25]",    1, 0, 1, 0.001) ;
 env2cutoff   = hslider("env-to-vcf[mod:18][midi:26]",    0, 0, 1, 0.001) ;
-env2pitch    = hslider("env-to-osc[mod:20][midi:27]",    0, 0, 1, 0.001) ;
+env2pitch    = hslider("env-to-osc[mod:20][midi:27]",    0, 0, 1, 0.001) : ba.lin2LogGain;
 env2pwm      = hslider("env-to-pwm[mod:24][midi:28]",    0, 0, 1, 0.001) ;
 
 decay        = hslider("decay[mod:19][midi:29]",         0.001, 0.001, 1, 0.0001): ba.lin2LogGain : it.remap(0.0, 1.0, 0.001, 20.0);
@@ -87,7 +87,7 @@ lfo_tri = os.lf_trianglepos(lfo_frequency);
 lfo_sq = os.lf_squarewavepos(lfo_frequency);
 lfo_sh = noise / 2 + 0.5 : ba.latch(lfo_sq);
 lfo = lfo_tri, lfo_sq, lfo_sh : ba.selectn(3, lfo_wavform) <: attach(vbargraph("lfo[lfo:0]", 0 , 1));
-lfo_to_pitch   = (lfo - 0.5) * lfo2pitch * 1200 : ba.cent2ratio;
+lfo_to_pitch   = (lfo - 0.5) * lfo2pitch * 100 * 127 : ba.cent2ratio;
 lfo_to_cuttoff = lfo * lfo2vcf;
 lfo_to_volume  = (lfo * lfo2vca) + 1;
 
@@ -118,7 +118,7 @@ env_trig = gate, lfo_sq : ba.selectn(2, lfo2env);
 env = en.adsr_bias(attack, decay, sustain, release, 1.0 - bias_f, bias_f, bias_f, 1, env_trig) <: attach(vbargraph("env[env:0]", 0 , 1));
 vca = env_to_volume * lfo_to_volume <: attach(vbargraph("vca[vca:0]", 0 , 1));
 
-env_to_pitch  = env * env2pitch * 100 : ba.cent2ratio;
+env_to_pitch  = env * env2pitch * 100 * 127 : ba.cent2ratio;
 env_to_volume_norm = (env * env2volume);
 env_to_volume_inv = 1 - ((1-env) * env2volume);
 env_to_volume = env_to_volume_norm, env_to_volume_inv : ba.selectn(2, env_vca_inv);
