@@ -59,7 +59,7 @@ static void on_encoder(bool up){
     else if(set_midi_chan_active)
     {
         int new_chan = up ? cur_midi_chan + 1 : cur_midi_chan - 1;
-        if(new_chan >= 1 && new_chan <= 16){
+        if(new_chan >= 1 && new_chan <= MIDI_CHANNEL_OMNI){
             cur_midi_chan = new_chan;
             cur_disp_num = new_chan;
         }

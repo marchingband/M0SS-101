@@ -11,6 +11,8 @@
 #define ALT_SWITCH_STATE_ON 1
 #define ALT_SWITCH_STATE_OFF 2
 
+#define MIDI_CHANNEL_OMNI 17
+
 struct CC {
     float *p;
     float min;

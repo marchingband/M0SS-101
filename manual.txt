@@ -15,8 +15,8 @@ M0SS-101 is a monophonic virtual analog synth, programmed in the Faust DSP langu
 1 pichbend module with adjustable upward and downward range.
 9 patch-points with gain, connecting the LFO and ENV to the VCF cutoff, PW, OSC pitch, and VCA, or to trigger the ENV from the LFO square wave.
 1 flash memory unit to store up to 17 presets, and to remap MIDI channels per preset.
-2 MIDI inputs (USB Host and 1/8" Type-A), with selectable channel.
-1 MIDI 1/8" Type-A output.
+2 MIDI inputs (USB Host and 1/8" Type-A input), with OMNI / assignable channel.
+1 MIDI thru 1/8" Type-A output.
 1 1/4" mono audio output, line level, 100kohm impedance.
 1 9V dc power input, center negative.
 1 knob to adjust parameters, which can be depressed (click) to trigger the ENV.

@@ -40,7 +40,7 @@ void set_filter(uint8_t val);
 static struct bflb_device_s *uart0;
 QueueHandle_t uart_queue;
 
-int cur_midi_chan = 1;
+int cur_midi_chan = MIDI_CHANNEL_OMNI;
 
 int ch;
 int mode_learn_current_cc = 0;
@@ -510,7 +510,7 @@ void handle_midi(uint8_t *msg, uint8_t len)
     // printf("msg len %d -> %d %d %d\n\r\r", len, msg[0], msg[1], msg[2]);
     
     uint8_t channel = msg[0] & 0b00001111;
-    if((channel + 1) != cur_midi_chan) // channels are 0 indexed but we use 1 indexed
+    if(cur_midi_chan != MIDI_CHANNEL_OMNI && cur_midi_chan != (channel + 1)) // channels are 0 indexed but we use 1 indexed
     {
         return;
     }
