@@ -3,8 +3,6 @@
 
 #include "board.h"
 
-#include "global.h"
-
 #include "bflb_audac.h"
 #include "bflb_gpio.h"
 #include "bflb_dma.h"
@@ -129,8 +127,6 @@ void audac_dma_init(void)
     audac_dma_hd = bflb_device_get_by_name("dma0_ch0");
     bflb_dma_channel_init(audac_dma_hd, &audac_dma_cfg);
     bflb_dma_channel_irq_attach(audac_dma_hd, audio_dma_callback, NULL);
-    // bflb_irq_set_priority(audac_dma_hd->irq_num, IRQ_PRIO_AUDAC, 0);
-
 
     transfers_tic[0].src_addr = (uint32_t)tic;
     transfers_tic[0].dst_addr = (uint32_t)DMA_ADDR_AUDAC_TDR;
@@ -146,8 +142,6 @@ static void audac_init(void)
 {
     struct bflb_audac_init_config_s audac_init_cfg = {
         .sampling_rate = AUDAC_SAMPLING_RATE_48K,
-        // .sampling_rate = AUDAC_SAMPLING_RATE_32K,
-        // .output_mode = AUDAC_OUTPUT_MODE_GPDAC_CH_A_B,
         .output_mode = AUDAC_OUTPUT_MODE_PWM,
         .source_channels_num = AUDAC_SOURCE_CHANNEL_SINGLE,
         .mixer_mode = AUDAC_MIXER_MODE_ONLY_L,

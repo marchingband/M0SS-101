@@ -68,12 +68,17 @@ static void on_encoder(bool up){
     { 
         struct Sigs *sigs = get_signals();
         if(encoder_pressed){
-            // 0 to 16,383
-            float modifier = up ? click_multiplier * 10 : click_multiplier * -10;
-            float next = *sigs->pitch_bend + modifier ;
-            *sigs->pitch_bend = next > 16383 ? 16383 : next < 0 ? 0 : next;
+            float cur = *sigs->transpose;
+            float step = click_multiplier;
+            float next = up ? cur + step : cur - step;
+            float clamped = next > 127 ? 127 : next < -127 ? -127 : next;
+            *sigs->transpose = clamped;
         } else {
-            *sigs->pitch = up ? *sigs->pitch + 1 : *sigs->pitch - 1;
+            float cur = *sigs->fine_tune;
+            float step = click_multiplier;
+            float next = up ? cur + step : cur - step;
+            float clamped = next > 127 ? 127 : next < -127 ? -127 : next;
+            *sigs->fine_tune = clamped;
         }
         return;
     }
@@ -104,7 +109,7 @@ static void on_encoder(bool up){
                 float clamped = next > alt.max ? alt.max : next < alt.min ? alt.min : next;
                 *alt.p = clamped;
                 // printf("set led %f %f %f\n\r", clamped, alt.min, alt.max);
-                set_led_display(clamped, alt.min, alt.max);
+                set_led_display(alt.p, alt.min, alt.max);
             }
 
         }
@@ -124,7 +129,7 @@ static void on_encoder(bool up){
                 float clamped = next > mod.max ? mod.max : next < mod.min ? mod.min : next;
                 *mod.p = clamped;
                 // printf("set led %f %f %f\n\r", clamped, mod.min, mod.max);
-                set_led_display(clamped, mod.min, mod.max);
+                set_led_display(mod.p, mod.min, mod.max);
             }
         }
     }

@@ -61,6 +61,7 @@ static struct Sigs Signals = {
     .env = 0,
     .pitch_bend = 0,
     .vca = 0,
+
 };
 
 struct Sel *get_sels(void)
@@ -244,7 +245,7 @@ void declare(UIGlue *uiInterface, float *p, const char* key, const char* val){
     }
     if(strcmp("asb", key) == 0) // its a modifuer with alt held
     {
-        printf("got asb %s:%s\n", key, val);
+        // printf("got asb %s:%s\n", key, val);
         long num = strtol(val, NULL, 10);
 
         struct Asb *asb = &Asbs[num];
@@ -271,6 +272,16 @@ void declare(UIGlue *uiInterface, float *p, const char* key, const char* val){
     {
         // printf("got pitch bend pointer\n\r\r");
         Signals.pitch_bend = p;
+    }
+    if(strcmp("fine-tune", key) == 0) // its the fine tuning
+    {
+        // printf("got fine-tune pointer\n\r\r");
+        Signals.fine_tune = p;
+    }
+    if(strcmp("transpose", key) == 0) // its the transpose
+    {
+        // printf("got transpose pointer\n\r\r");
+        Signals.transpose = p;
     }
     if(strcmp("lfo", key) == 0) // its the lfo
     {
@@ -597,7 +608,7 @@ void handle_midi(uint8_t *msg, uint8_t len)
                             float val = (alt.step * whole_steps) + alt.min;
                             *alt.p = val;
                             // printf("set led %f %f %f\n\r", val, alt.min, alt.max);
-                            set_led_display(val, alt.min, alt.max);
+                            set_led_display(alt.p, alt.min, alt.max);
                         }
                     }
                     else
@@ -615,7 +626,7 @@ void handle_midi(uint8_t *msg, uint8_t len)
                             float val = (mod.step * whole_steps) + mod.min;
                             *mod.p = val;
                             // printf("set led %f %f %f\n\r", val, mod.min, mod.max);
-                            set_led_display(val, mod.min, mod.max);
+                            set_led_display(mod.p, mod.min, mod.max);
                         }
                     }
                 }

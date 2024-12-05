@@ -9,7 +9,6 @@
 #include "rgb_led.h"
 #include "midi.h"
 #include "flash.h"
-#include "global.h"
 #include "spi_rgb.h"
 
 #define PIXEL_SIZE 3 // each colour takes 4 bytes
@@ -149,7 +148,45 @@ struct pixel_t pixel_fade_lfo(float temp, float val){
 
 float led_display[10] = {0};
 
-void set_led_display(float val, float min, float max){
+static float *led_disp_val_p = NULL;
+static float led_disp_min = 0;
+static float led_disp_max = 0;
+
+void set_led_display(float *val, float min, float max){
+    led_disp_val_p = val;
+    led_disp_min = min;
+    led_disp_max = max;
+}
+
+void update_led_display(void){
+    if(led_disp_val_p == NULL){
+        return;
+    }
+
+    float val = *led_disp_val_p;
+    float max = led_disp_max;
+
+    val -= led_disp_min;
+    max -= led_disp_min;
+    float out = val / max * 10;
+    for(int i=0; i<11; i++)
+    {
+        if(out > (i + 1))
+        {
+            led_display[i] = 1;
+        }
+        else if(out < i)
+        {
+            led_display[i] = 0;
+        }
+        else
+        {
+            led_display[i] = out - i; // just the fractional part
+        }
+    }
+}
+
+void _set_led_display(float val, float min, float max){
     val -= min;
     max -= min;
     float out = val / max * 10;
@@ -230,6 +267,7 @@ void render_lights(void){
             pixel_buf[22] = pixel_fade((*(sigs->env)) * (*mods[24].p)); // env.pwm
 
             if(alt_switch_state == ALT_SWITCH_STATE_NONE){
+                update_led_display();
                 pixel_buf[36] = pixel_on;
                 pixel_buf[35] = led_display[0] == 1 ? pixel_on : led_display[0] == 0 ? pixel_off : pixel_fade(led_display[0]);
                 pixel_buf[34] = led_display[1] == 1 ? pixel_on : led_display[1] == 0 ? pixel_off : pixel_fade(led_display[1]); 

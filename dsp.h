@@ -23,4 +23,6 @@ typedef struct b{
     metaDeclareFun declare;
 } MetaGlue;
 
+void dsp_init(size_t buf_size);
+
 #endif

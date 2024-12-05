@@ -73,6 +73,8 @@ struct Sigs {
     float *env;
     float *pitch_bend;
     float *vca;
+    float *fine_tune;
+    float *transpose;
 };
 
 struct Sel *get_sels(void);
@@ -86,5 +88,6 @@ uint8_t *get_cc_map(void);
 int get_mode_learn_current_cc(void);
 
 void handle_button_press(int num);
+void uart_receive_init(void);
 
 #endif

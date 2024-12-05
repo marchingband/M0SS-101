@@ -91,8 +91,6 @@
 #include "rotary_encoder.h"
 #include <FreeRTOS.h>
 #include "queue.h"
-#include "global.h"
-
 
 // #define ROTARY_ENCODER_DEBUG
 
@@ -242,15 +240,10 @@ void rotary_encoder_init(int pin_a, int pin_b)
 
 
         bflb_gpio_int_init(enc_gpio, info->pin_a, GPIO_INT_TRIG_MODE_SYNC_FALLING_RISING_EDGE);
-        // bflb_gpio_int_mask(enc_gpio, info->pin_a, false);
         bflb_gpio_irq_attach(info->pin_a, _isr_rotenc);
-        // bflb_irq_enable(enc_gpio->irq_num);
-
+        
         bflb_gpio_int_init(enc_gpio, info->pin_b, GPIO_INT_TRIG_MODE_SYNC_FALLING_RISING_EDGE);
-        // bflb_gpio_int_mask(enc_gpio, info->pin_b, false);
         bflb_gpio_irq_attach(info->pin_b, _isr_rotenc);
-
-        // bflb_irq_set_priority(enc_gpio->irq_num, IRQ_PRIO_ENC, 0);
 
         bflb_irq_enable(enc_gpio->irq_num);
     }

@@ -67,7 +67,7 @@ void usbh_midi_callback(void *arg, int nbytes)
 static void usbh_midi_thread(void *argument){
     int ret;
     struct usbh_midi *midi_class;
-    printf("strt usbh_midi_thread");
+    // printf("strt usbh_midi_thread");
 
     // clang-format off
 find_class:
@@ -102,7 +102,7 @@ void usbh_midi_run(struct usbh_midi *midi_class)
 
 static int usbh_midi_connect(struct usbh_hubport *hport, uint8_t intf)
 {
-    printf("class connect");
+    // printf("class connect");
     // struct usbh_endpoint_cfg ep_cfg = {0};
     struct usb_endpoint_descriptor *ep_desc;
     int ret;
@@ -148,7 +148,7 @@ static int usbh_midi_connect(struct usbh_hubport *hport, uint8_t intf)
 
 static int usbh_midi_disconnect(struct usbh_hubport *hport, uint8_t intf)
 {
-    printf("class disconnect");
+    // printf("class disconnect");
     int ret = 0;
 
     struct usbh_midi *midi_class = (struct usbh_midi *)hport->config.intf[intf].priv;
@@ -157,34 +157,34 @@ static int usbh_midi_disconnect(struct usbh_hubport *hport, uint8_t intf)
     {
         if (midi_class->bulkin)
         {
-            printf("usbh_kill_urb in ");
+            // printf("usbh_kill_urb in ");
             usbh_kill_urb(&midi_class->bulkin_urb);
         } else {
-            printf("bulkin_urb not found");
+            // printf("bulkin_urb not found");
         }
 
         if (midi_class->bulkout)
         {
-            printf("usbh_kill_urb out");
+            // printf("usbh_kill_urb out");
             usbh_kill_urb(&midi_class->bulkout_urb);
         } else {
-            printf("bulkout_urb not found");
+            // printf("bulkout_urb not found");
         }
 
         if (hport->config.intf[intf].devname[0] != '\0')
         {
             // USB_LOG_INFO("Unregister MIDI Class:%s\r\n", hport->config.intf[intf].devname);
-            printf("Unregister MIDI Class:%s\r\n", hport->config.intf[intf].devname);
+            // printf("Unregister MIDI Class:%s\r\n", hport->config.intf[intf].devname);
             // usbh_cdc_acm_stop(midi_class);
             midi_run = 0;
         } else {
-            printf("devname not found");
+            // printf("devname not found");
         }
 
         memset(midi_class, 0, sizeof(struct usbh_midi));
         usb_free(midi_class);
     } else {
-        printf("midi_class not found");
+        // printf("midi_class not found");
     }
 
     return ret;
@@ -210,7 +210,7 @@ static void _usbh_midi_thread(void *argument)
 {
     int ret;
     struct usbh_midi *midi_class;
-    printf("strt usbh_midi_thread");
+    // printf("strt usbh_midi_thread");
 
     while (1)
     {
