@@ -1,7 +1,7 @@
 #ifndef MIDI_H
 #define MIDI_H
 
-#define NUM_CC 41
+#define NUM_CC 42
 
 #define LEARN_MODE_READY 0
 #define LEARN_MODE_SELECTED 1

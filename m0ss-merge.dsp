@@ -32,13 +32,11 @@ lfo_wavform  = hslider("lfo-wavform[sel:7][midi:14]",    0, 0, 2, 1);
 lfo2env      = hslider("lfo-to-env[sel:9][midi:15]",     0, 0, 1, 1);
 filter_type  = hslider("hp-lp-bp[sel:13][midi:16]",      1, 0, 2, 1);
 
-//alternate selections
+// alternate selections
 key_track    = hslider("key-track[alt-sel:13][midi:17]", 1, 0, 1, 1);
 noise_color  = hslider("noise-color[alt-sel:7][midi:18]",0, 0, 1, 1);
 lfo_range    = hslider("lfo-range[alt-sel:12][midi:19]", 0, 0, 1, 1);
 env_vca_inv  = hslider("env-vca-inv[alt-sel:15][midi:20]", 1, 0, 1, 1);
-
-pb_up        = hslider("env-vca-inv[hold-alt-sel:6][midi:20]", 1, 0, 1, 1);
 
 // modifiers
 lfo2pitch    = hslider("lfo-to-osc[mod:10][midi:21]",    0, 0, 1, 0.001) ;
@@ -51,7 +49,8 @@ env2cutoff   = hslider("env-to-vcf[mod:18][midi:26]",    0, 0, 1, 0.001) ;
 env2pitch    = hslider("env-to-osc[mod:20][midi:27]",    0, 0, 1, 0.001) ;
 env2pwm      = hslider("env-to-pwm[mod:24][midi:28]",    0, 0, 1, 0.001) ;
 
-decay        = hslider("decay[mod:19][midi:29]",         0.01, 0.01, 1, 0.001) ;
+decay        = hslider("decay[mod:19][midi:29]",         0.001, 0.001, 1, 0.0001): ba.lin2LogGain : it.remap(0.0, 1.0, 0.001, 20.0);
+// decay        = hslider("decay[mod:19][midi:29]",         0.01, 0.01, 1, 0.001) ;
 sustain      = hslider("sustain[mod:21][midi:30]",       1,    0.001, 1, 0.001) ;
 
 // alts
@@ -65,9 +64,10 @@ delay_fb     = hslider("d_fb[alt:21][midi:37]",         0,     0,     1,    0.00
 delay_wet    = hslider("d_wet[alt:25][midi:38]",        0,     0,     0.5,  0.001);
 
 // assignables
-midi_chan       = hslider("midi-chan[asb:6][midi:39]", 1, 1, 16, 1) <: attach(vbargraph("dummy", 0 , 1));
-pitch_bend_up   = hslider("pbend-up[asb:10][midi:40]", 2, 0, 12, 1);
-pitch_bend_down = hslider("pbend-dn[asb:11][midi:41]", 2, 0, 12, 1);
+midi_chan       = hslider("midi-chan[asb:6]", 1, 1, 16, 1) <: attach(vbargraph("dummy", 0 , 1));
+pitch_bend_up   = hslider("pbend-up[asb:10][midi:39]", 2, 0, 12, 1);
+pitch_bend_down = hslider("pbend-dn[asb:11][midi:40]", 2, 0, 12, 1);
+adsr_bias       = hslider("adsr-bias[asb:16][midi:41]", 5, 1, 9, 1);
 
 // noise
 w_noise = no.noise;
@@ -113,8 +113,9 @@ bpf = ve.oberheimBPF(cutoff, resonance);
 vcf = _ <: hpf, lpf, bpf : ba.selectn(3, filter_type) ;
 
 // env
+bias_f = adsr_bias / 10;
 env_trig = gate, lfo_sq : ba.selectn(2, lfo2env);
-env = en.adsr_bias(attack, decay, sustain, release, 0.5, 0.5, 0.5, 1, env_trig) <: attach(vbargraph("env[env:0]", 0 , 1));
+env = en.adsr_bias(attack, decay, sustain, release, 1.0 - bias_f, bias_f, bias_f, 1, env_trig) <: attach(vbargraph("env[env:0]", 0 , 1));
 vca = env_to_volume * lfo_to_volume <: attach(vbargraph("vca[vca:0]", 0 , 1));
 
 env_to_pitch  = env * env2pitch * 100 : ba.cent2ratio;

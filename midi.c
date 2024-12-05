@@ -291,14 +291,19 @@ int get_cc(int num, bool alt){
         // printf("get_cc alt held\n");
         struct Alt *Alts = get_alts();
         struct AltSel *AltSels = get_alt_sels();
+        struct Asb *Asbs = get_asbs();
         struct Alt alt = Alts[num];
         struct AltSel alt_sel = AltSels[num];
+        struct Asb asb = Asbs[num];
         if(alt.p != 0){
             // printf("found alt %s\n", alt.name);
             p = alt.p;
         } else if (alt_sel.p != 0){
             // printf("found alt_sel %s\n", alt_sel.name);
             p = alt_sel.p;
+        } else if (asb.p != 0){
+            // printf("found asb %s\n", asb.name);
+            p = asb.p;
         }
     } else {
         struct Mod *Mods = get_mods();
@@ -353,6 +358,7 @@ void handle_button_press(int num)
             // printf("learn cc %d\n", cc_num);
             if(cc_num != -1){
                 mode_learn_current_cc = cc_num;
+                learn_mode_state = LEARN_MODE_SELECTED;
             }
 
         } else {
