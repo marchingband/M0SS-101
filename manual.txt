@@ -57,10 +57,10 @@ Now setting ENV.VCF to 10, the ENV will use the VFC to open and close the sound 
 There are some unmarked controls:
 hold (ALT + LFO.VCF)                = pichbend down semitones (1 ~ 12)
 hold (ALT + LFO.OSC)                = pichbend up semitones (1 ~ 12)
-hold (ALT + LFO.PWM)                = MIDI channel (1 ~ 16)
+hold (ALT + LFO.PWM)                = MIDI channel (1 ~ 17, 17 = OMNI)
 hold (ALT + A)                      = ENV curves (1 ~ 9) (1 = very logarithmic, 5 = linear, 9 = very exponential)
-hold ALT + turn knob                = change pitch (semitones)
-hold ALT + click knob + turn knob   = change pitch (cents)
+hold ALT + click knob + turn knob   = transpose pitch (semitones)
+hold ALT + turn knob                = fine-tune pitch (cents)
 Alt + ENV.VCA                       = ENV inversion mode (de)ativate
 
 GLOSSARY

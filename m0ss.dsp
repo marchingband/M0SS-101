@@ -71,8 +71,8 @@ pitch_bend_down = hslider("pbend-dn[asb:11][midi:40]", 2, 0, 12, 1);
 adsr_bias       = hslider("adsr-bias[asb:16][midi:41]", 5, 1, 9, 1);
 
 // signals
-fine_tune  = hslider("fine-tune[fine-tune][midi:42]", 0, -100, 100, 1) : ba.cent2ratio;
-transpose  = hslider("transpose[transpose][midi:43]", 0, -127, 127, 1) : ba.semi2ratio;
+fine_tune  = hslider("fine-tune[fine-tune:0][midi:42]", 0, -100, 100, 1) : ba.cent2ratio;
+transpose  = hslider("transpose[transpose:0][midi:43]", 0, -127, 127, 1) : ba.semi2ratio;
 
 // noise
 w_noise = no.noise;

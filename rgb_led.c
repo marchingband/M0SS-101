@@ -146,7 +146,7 @@ struct pixel_t pixel_fade_lfo(float temp, float val){
     return pixel;
 }
 
-float led_display[10] = {0};
+float led_display[11] = {0};
 
 static float *led_disp_val_p = NULL;
 static float led_disp_min = 0;
@@ -168,27 +168,6 @@ void update_led_display(void){
 
     val -= led_disp_min;
     max -= led_disp_min;
-    float out = val / max * 10;
-    for(int i=0; i<11; i++)
-    {
-        if(out > (i + 1))
-        {
-            led_display[i] = 1;
-        }
-        else if(out < i)
-        {
-            led_display[i] = 0;
-        }
-        else
-        {
-            led_display[i] = out - i; // just the fractional part
-        }
-    }
-}
-
-void _set_led_display(float val, float min, float max){
-    val -= min;
-    max -= min;
     float out = val / max * 10;
     for(int i=0; i<11; i++)
     {
@@ -382,17 +361,4 @@ void render_lights(void){
         }
         default: break;
     }
-
-    // rgb_set_color(pixel_buf);
 }
-
-// void test_rgb_lights(){
-//     for(int i=0; i<NUM_LED; i++)
-//     {
-//         pixel_buf[i] = pixel_on;
-//     }
-//     // pixel_buf[0]  = pixel_on;
-//     // pixel_buf[1]  = pixel_on;
-//     // pixel_buf[2]  = pixel_on;
-//     rgb_set_color(pixel_buf);
-// }

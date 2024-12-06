@@ -1,7 +1,7 @@
 #ifndef MIDI_H
 #define MIDI_H
 
-#define NUM_CC 42
+#define NUM_CC 44 // must be the highest CC value + 1, CC's are 1 indexed.
 
 #define LEARN_MODE_READY 0
 #define LEARN_MODE_SELECTED 1
