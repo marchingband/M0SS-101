@@ -7,7 +7,7 @@ log3(n) = n * n * n;
 
 gate  = button("gate[gate]");
 
-pitch_bend = hslider("pitch-bend[pitch-bend:0]", 8192, 0, 16383, 1); // 14bit
+pitch_bend = hslider("pitch-bend[pitch-bend]", 8192, 0, 16383, 1); // 14bit
 pitch_bend_float = pitch_bend / 8192.0 - 1;
 pitch_bend_ratio = ba.if(pitch_bend_float > 0.0, pitch_bend_float * pitch_bend_up, pitch_bend_float * pitch_bend_down) : ba.semi2ratio : si.smoo;
 pitch = hslider("pitch[pitch]", 40, 0, 127, 1) : ba.midikey2hz : si.smooth(ba.tau2pole(glide)) : (_ * pitch_bend_ratio * lfo_to_pitch * env_to_pitch * fine_tune * transpose) : si.smooth(0.1);
@@ -71,8 +71,8 @@ pitch_bend_down = hslider("pbend-dn[asb:11][midi:40]", 2, 0, 12, 1);
 adsr_bias       = hslider("adsr-bias[asb:16][midi:41]", 5, 1, 9, 1);
 
 // signals
-fine_tune  = hslider("fine-tune[fine-tune:0][midi:42]", 0, -100, 100, 1) : ba.cent2ratio;
-transpose  = hslider("transpose[transpose:0][midi:43]", 0, -127, 127, 1) : ba.semi2ratio;
+fine_tune  = hslider("fine-tune[fine-tune][midi:42]", 0, -100, 100, 1) : ba.cent2ratio;
+transpose  = hslider("transpose[transpose][midi:43]", 0, -127, 127, 1) : ba.semi2ratio;
 
 // noise
 w_noise = no.noise;
@@ -91,7 +91,7 @@ lfo_frequency = lfo_freq_low, lfo_freq_hi : ba.selectn(2, lfo_range);
 lfo_tri = os.lf_trianglepos(lfo_frequency);
 lfo_sq = os.lf_squarewavepos(lfo_frequency);
 lfo_sh = noise / 2 + 0.5 : ba.latch(lfo_sq);
-lfo = lfo_tri, lfo_sq, lfo_sh : ba.selectn(3, lfo_wavform) <: attach(vbargraph("lfo[lfo:0]", 0 , 1));
+lfo = lfo_tri, lfo_sq, lfo_sh : ba.selectn(3, lfo_wavform) <: attach(vbargraph("lfo[lfo]", 0 , 1));
 lfo_to_pitch   = (lfo - 0.5) * lfo2pitch * 100 * 127 : ba.cent2ratio;
 lfo_to_cuttoff = lfo * lfo2vcf;
 lfo_to_volume  = (lfo * lfo2vca) + 1;
@@ -121,8 +121,8 @@ vcf = _ <: hpf, lpf, bpf : ba.selectn(3, filter_type) ;
 // env
 bias_f = adsr_bias / 10;
 env_trig = gate, lfo_sq : ba.selectn(2, lfo2env);
-env = en.adsr_bias(attack, decay, sustain, release, 1.0 - bias_f, bias_f, bias_f, 1, env_trig) <: attach(vbargraph("env[env:0]", 0 , 1));
-vca = env_to_volume * lfo_to_volume <: attach(vbargraph("vca[vca:0]", 0 , 1));
+env = en.adsr_bias(attack, decay, sustain, release, 1.0 - bias_f, bias_f, bias_f, 1, env_trig) <: attach(vbargraph("env[env]", 0 , 1));
+vca = env_to_volume * lfo_to_volume <: attach(vbargraph("vca[vca]", 0 , 1));
 
 env_to_pitch  = env * env2pitch * 100 * 127 : ba.cent2ratio;
 env_to_volume_norm = (env * env2volume);

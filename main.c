@@ -35,7 +35,7 @@
 extern uint32_t __HeapBase;
 extern uint32_t __HeapLimit;
 
-static void uart_init(){
+static void uart_init(bool set_console){
     struct bflb_device_s *gpio;
     struct bflb_device_s *uart0;
 
@@ -54,6 +54,10 @@ static void uart_init(){
     cfg.bit_order = UART_LSB_FIRST;
     uart0 = bflb_device_get_by_name("uart0");
     bflb_uart_init(uart0, &cfg);
+
+    if(set_console){
+        bflb_uart_set_console(uart0);
+    }
 }
 
 static void peripheral_clock_init(void)
@@ -101,7 +105,7 @@ static void system_clock_init(void)
 }
 
 
-static void m0ss_board_init(){
+static void m0ss_board_init(bool set_console){
     int ret = -1;
     uintptr_t flag;
     size_t heap_len;
@@ -111,7 +115,7 @@ static void m0ss_board_init(){
     system_clock_init();
     peripheral_clock_init();
     bflb_irq_initialize();
-    uart_init();
+    uart_init(set_console);
 
     heap_len = ((size_t)&__HeapLimit - (size_t)&__HeapBase);
     kmem_init((void *)&__HeapBase, heap_len);
@@ -122,8 +126,8 @@ static void m0ss_board_init(){
 int main(void)
 {
     /* board init */
-    board_init();
-    // m0ss_board_init();
+    // board_init();
+    m0ss_board_init(/*set console*/ false);
 
     /* load the config struct or initialize it */
     // printf("flash_init\r\n");
