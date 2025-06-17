@@ -515,7 +515,14 @@ void handle_midi(uint8_t *msg, uint8_t len)
         return;
     }
 
+    // check for stupid note-offs
     uint8_t code = (msg[0] >> 4) & 0b00001111;
+    if(code == MIDI_NOTE_ON){
+        uint8_t velocity = msg[2] & 0b01111111;
+        if(velocity == 0){
+            code = MIDI_NOTE_OFF;
+        }
+    }
     
     switch (code)
     {

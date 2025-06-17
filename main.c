@@ -127,7 +127,7 @@ int main(void)
 {
     /* board init */
     // board_init();
-    m0ss_board_init(/*set console*/ false);
+    m0ss_board_init( /*set console*/ false );
 
     /* load the config struct or initialize it */
     // printf("flash_init\r\n");

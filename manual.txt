@@ -28,6 +28,10 @@ If you activate a control, the row of bulbs near the bottom will often display i
 FADER: this shows a value from 0 to 100, each bulb represents 10, and its faded value represents the 1's.
 SWITCH: the left 5 bulbs glow for on, the right 5 for off.
 
+Most toggling and switching controls have a corresponding bulb which will glow yellow to indicate its state.
+For most signals, a corresponding bulb will glow green, pulsing with its signal level.
+When the LFO is set to its high range, this signal will instead show as red~yellow, and the color temperature indicates its frequency.
+
 Sometimes a control will have a specific number to indicate, for example MIDI channel.
 In this case a bulb will light near a control which has a small number stamped to its left. There are bulbs and controls for numbers 1 ~ 17.
 

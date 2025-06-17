@@ -1,6 +1,8 @@
+This is the good SDK
+
 BUILD + FLASH
 make CHIP=bl616 BOARD=bl616dk ; make flash CHIP=bl616 COMX=COM4
-make CHIP=bl616 BOARD=bl616dk && make flash CHIP=bl616 COMX=/dev/cu.usbserial-A50285BI
+make CHIP=bl616 BOARD=bl616dk && make flash CHIP=bl616 COMX=/dev/cu.usbmodem1101
 
 BUILD FAUST FILE
 faust -lang c -o m0s.h m0ss.dsp
