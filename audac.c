@@ -102,9 +102,12 @@ void audac_gpio_init(void)
 
     gpio = bflb_device_get_by_name("gpio");
 
-    /* audac pwm output mode */
+    /* audac gpadc output mode */
     // bflb_gpio_init(gpio, GPIO_PIN_2, GPIO_ANALOG | GPIO_SMT_EN | GPIO_DRV_0);
     // bflb_gpio_init(gpio, GPIO_PIN_3, GPIO_ANALOG | GPIO_SMT_EN | GPIO_DRV_0);
+
+    
+    /* audac pwm output mode */
     bflb_gpio_init(gpio, GPIO_PIN_14, GPIO_FUNC_AUDAC_PWM | GPIO_ALTERNATE | GPIO_PULLUP | GPIO_SMT_EN | GPIO_DRV_2);
 }
 
@@ -142,7 +145,11 @@ static void audac_init(void)
 {
     struct bflb_audac_init_config_s audac_init_cfg = {
         .sampling_rate = AUDAC_SAMPLING_RATE_48K,
+        // .sampling_rate = AUDAC_SAMPLING_RATE_32K,
         .output_mode = AUDAC_OUTPUT_MODE_PWM,
+        // .output_mode = AUDAC_OUTPUT_MODE_GPDAC_CH_A,
+        // .output_mode = AUDAC_OUTPUT_MODE_GPDAC_CH_A_B,
+        // .source_channels_num = AUDAC_SOURCE_CHANNEL_DUAL,
         .source_channels_num = AUDAC_SOURCE_CHANNEL_SINGLE,
         .mixer_mode = AUDAC_MIXER_MODE_ONLY_L,
         .data_format = AUDAC_DATA_FORMAT_16BIT,
