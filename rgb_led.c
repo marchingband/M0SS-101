@@ -14,6 +14,8 @@
 #define PIXEL_SIZE 3 // each colour takes 4 bytes
 #define NUM_LED 37
 
+void test_lights(void);
+
 extern int learn_mode_state;
 extern int alt_switch_state;
 int cur_disp_num = 0;
@@ -48,6 +50,7 @@ static size_t time_p = 0;
 
 void update_leds(void)
 {
+    // test_lights(); // 201
     render_lights();
     encode_rgb(data_buf);
     spi_rgb_send(data_buf, 128);
@@ -361,4 +364,33 @@ void render_lights(void){
         }
         default: break;
     }
+}
+
+// TEST 201 (also modify spi_rgb.c for larger xfer)
+
+static ATTR_NOCACHE_NOINIT_RAM_SECTION uint32_t test_data_buf[256] __ALIGNED(4);
+#define NUM 67
+
+void test_lights(void){
+    struct pixel_t test_pixel_buf[NUM];
+    for (int i = 0; i < NUM; i++) {
+        test_pixel_buf[i] = pixel_on;
+        int loc = i * PIXEL_SIZE;
+
+        test_data_buf[loc]     = (bit_patterns[test_pixel_buf[i].green >> 6 & 0x03]  << 24) | 
+                        (bit_patterns[test_pixel_buf[i].green >> 4 & 0x03] << 16) | 
+                        (bit_patterns[test_pixel_buf[i].green >> 2 & 0x03] << 8)  | 
+                         bit_patterns[test_pixel_buf[i].green & 0x03];
+
+        test_data_buf[loc + 1] = (bit_patterns[test_pixel_buf[i].red >> 6 & 0x03]    << 24) | 
+                        (bit_patterns[test_pixel_buf[i].red >> 4 & 0x03]   << 16) |
+                        (bit_patterns[test_pixel_buf[i].red   >> 2 & 0x03] << 8)  | 
+                         bit_patterns[test_pixel_buf[i].red & 0x03];
+                         
+        test_data_buf[loc + 2] = (bit_patterns[test_pixel_buf[i].blue >> 6 & 0x03]   << 24) | 
+                        (bit_patterns[test_pixel_buf[i].blue >> 4 & 0x03]  << 16) |
+                        (bit_patterns[test_pixel_buf[i].blue  >> 2 & 0x03] << 8)  |
+                         bit_patterns[test_pixel_buf[i].blue & 0x03];
+    }
+    spi_rgb_send(test_data_buf, 256);
 }
