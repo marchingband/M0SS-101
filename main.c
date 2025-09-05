@@ -95,7 +95,6 @@ static void peripheral_clock_init(void)
     GLB_Swap_MCU_SPI_0_MOSI_With_MISO(0);
 }
 
-
 static void system_clock_init(void)
 {
     /* wifipll/audiopll */
@@ -103,7 +102,6 @@ static void system_clock_init(void)
     GLB_Set_MCU_System_CLK(GLB_MCU_SYS_CLK_TOP_WIFIPLL_320M);
     CPU_Set_MTimer_CLK(ENABLE, BL_MTIMER_SOURCE_CLOCK_MCU_XCLK, Clock_System_Clock_Get(BL_SYSTEM_CLOCK_XCLK) / 1000000 - 1);
 }
-
 
 static void m0ss_board_init(bool set_console){
     int ret = -1;

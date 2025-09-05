@@ -455,7 +455,8 @@ void handle_button_press(int num)
         {
             if(label < NUM_PRESETS)
             {
-                load(label - 1);
+                // load(label - 1);
+                load_preset(label - 1);
             }
         }
         set_ui_mode(UI_MODE_PLAY);
