@@ -8,6 +8,8 @@
 #define BUTTON_NUM_ALT 22
 #define BUTTON_NUM_LEARN 24
 
+#define ONE_SECOND 1000000
+
 struct Param {
     int button;
     bool alt;

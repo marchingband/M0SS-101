@@ -8,16 +8,19 @@
 #include "board.h"
 #include "rgb_led.h"
 #include "midi.h"
+#include "gpio.h"
 #include "flash.h"
 #include "spi_rgb.h"
 
 #define PIXEL_SIZE 3 // each colour takes 4 bytes
 #define NUM_LED 37
+#define FLASH_INTERVAL (ONE_SECOND / 6)
 
 void test_lights(void);
 
 extern int learn_mode_state;
 extern int alt_switch_state;
+extern uint64_t reset_mode_started;
 int cur_disp_num = 0;
 
 static ATTR_NOCACHE_NOINIT_RAM_SECTION uint32_t data_buf[128] __ALIGNED(4);
@@ -97,16 +100,19 @@ const struct pixel_t p1 = {
     .green = 1,
     .blue = 0
 };
+
 const struct pixel_t light_blue = {
     .red = 0,
     .green = 1,
     .blue = 1
 };
+
 const struct pixel_t light_pink = {
     .red = 2,
     .green = 1,
     .blue = 1
 };
+
 const struct pixel_t light_green = {
     .red = 1,
     .green = 2,
@@ -361,6 +367,16 @@ void render_lights(void){
                 }
             }
             break;
+        }
+        case UI_MODE_RST:
+        {
+            uint64_t now = bflb_mtimer_get_time_us();
+            uint64_t elapsed = now - reset_mode_started;
+            uint8_t flash = elapsed / FLASH_INTERVAL;
+            for(int i=0; i<NUM_LED; i++)
+            {
+                pixel_buf[i] = flash % 2 ? pixel_off : pixel_on; 
+            }
         }
         default: break;
     }

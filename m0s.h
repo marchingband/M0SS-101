@@ -192,7 +192,7 @@ void metadatamydsp(MetaGlue* m) {
 	m->declare(m->metaInterface, "filters.lib/iir:author", "Julius O. Smith III");
 	m->declare(m->metaInterface, "filters.lib/iir:copyright", "Copyright (C) 2003-2019 by Julius O. Smith III <jos@ccrma.stanford.edu>");
 	m->declare(m->metaInterface, "filters.lib/iir:license", "MIT-style STK-4.3 license");
-	m->declare(m->metaInterface, "filters.lib/lowpass0_highpass1", "MIT-style STK-4.3 license");
+	m->declare(m->metaInterface, "filters.lib/lowpass0_highpass1", "Copyright (C) 2003-2019 by Julius O. Smith III <jos@ccrma.stanford.edu>");
 	m->declare(m->metaInterface, "filters.lib/name", "Faust Filters Library");
 	m->declare(m->metaInterface, "filters.lib/version", "1.3.0");
 	m->declare(m->metaInterface, "interpolators.lib/name", "Faust Interpolator Library");

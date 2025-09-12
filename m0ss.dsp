@@ -98,17 +98,40 @@ lfo_to_volume  = (lfo * lfo2vca) + 1;
 
 // osc 1
 osc1_pw = osc_1_pw * (1 - (lfo2pwm * lfo)) * (1 - env2pwm); // mod pulse wav duty
-
 osc1_freq   = pitch, pitch / 2, pitch / 4 : ba.selectn(3, osc1_octave);
 osc1_square = os.pulsetrain(osc1_freq, osc1_pw);
 osc1_saw    = os.sawNp(2, osc1_freq, osc1_pw);
 osc1        = osc1_square, osc1_saw, (osc1_square, osc1_saw :> _)  : ba.selectn(3, osc1_wavform) : (_ * osc1_vol);
+
+// osc1_pw = osc_1_pw * (1 - (lfo2pwm * lfo)) * (1 - env2pwm); // mod pulse wav duty
+// osc1_square_1 = os.pulsetrain(pitch, osc1_pw);
+// osc1_square_2 = os.pulsetrain(pitch / 2, osc1_pw);
+// osc1_square_3 = os.pulsetrain(pitch / 4, osc1_pw);
+// osc1_square = osc1_square_1, osc1_square_2, osc1_square_3 : ba.selectn(3, osc1_octave);
+// osc1_saw_1    = os.sawNp(2, pitch, osc1_pw);
+// osc1_saw_2    = os.sawNp(2, pitch / 2, osc1_pw);
+// osc1_saw_3    = os.sawNp(2, pitch / 4, osc1_pw);
+// osc1_saw = osc1_saw_1, osc1_saw_2, osc1_saw_3 : ba.selectn(3, osc1_octave);
+// osc1        = osc1_square, osc1_saw, (osc1_square, osc1_saw :> _)  : ba.selectn(3, osc1_wavform) : (_ * osc1_vol);
+
 
 // osc 2
 osc2_freq   = pitch, pitch / 2, pitch / 4 : ba.selectn(3, osc2_octave) : (_ * detune);
 osc2_square = os.pulsetrain(osc2_freq, osc_2_pw);
 osc2_saw    = os.sawNp(2, osc2_freq, osc_2_pw);
 osc2        = osc2_square, osc2_saw, (osc2_square, osc2_saw :> _) : ba.selectn(3, osc2_wavform) : (_ * osc2_vol);
+
+// osc2_freq   = pitch * detune;
+// osc2_square_1 = os.pulsetrain(osc2_freq, osc_2_pw);
+// osc2_square_2 = os.pulsetrain(osc2_freq / 2, osc_2_pw);
+// osc2_square_3 = os.pulsetrain(osc2_freq / 4, osc_2_pw);
+// osc2_square = osc2_square_1, osc2_square_2, osc2_square_3 : ba.selectn(3, osc2_octave);
+// osc2_saw_1    = os.sawNp(2, osc2_freq, 0);
+// osc2_saw_2    = os.sawNp(2, osc2_freq / 2, 0);
+// osc2_saw_3    = os.sawNp(2, osc2_freq / 4, 0);
+// osc2_saw = osc2_saw_1, osc2_saw_2, osc2_saw_3 : ba.selectn(3, osc2_octave);
+// osc2        = osc2_square, osc2_saw, (osc2_square, osc2_saw :> _) : ba.selectn(3, osc2_wavform) : (_ * osc2_vol);
+
 
 // vcf
 kt_pitch_ratio_440 = pitch / 440.0;

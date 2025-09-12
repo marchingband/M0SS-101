@@ -345,6 +345,24 @@ int get_cc(int num, bool alt){
     return -1;
 }
 
+void reset_params(void){
+    int i;
+    for(i=0; i<NUM_BUTTONS; i++){
+        if(Mods[i].p != NULL){
+            *(Mods[i].p) = Mods[i].init;
+        }
+        if(Alts[i].p != NULL){
+            *(Alts[i].p) = Alts[i].init;
+        }
+        if(Sels[i].p != NULL){
+            *(Sels[i].p) = Sels[i].init;
+        }
+        if(AltSels[i].p != NULL){
+            *(AltSels[i].p) = AltSels[i].init;
+        }
+    }
+}
+
 void handle_encoder_press(bool down)
 {
     *Signals.gate = down ? 1 : 0;
@@ -453,17 +471,18 @@ void handle_button_press(int num)
         int label = button_label(num);
         if(label)
         {
+            label--; // label is 1 indexed
             if(label < NUM_PRESETS)
             {
-                // load(label - 1);
-                load_preset(label - 1);
+                // load(label);
+                load_preset(label);
             }
         }
         set_ui_mode(UI_MODE_PLAY);
     }
     else if(ui_mode == UI_MODE_SAVE)
     {
-        int label = button_label(num); // label is 1 indexed
+        int label = button_label(num);
         if(label)
         {
             label--; // label is 1 indexed
@@ -561,6 +580,7 @@ void handle_midi(uint8_t *msg, uint8_t len)
     case MIDI_PROGRAM_CHANGE:
     {
         uint8_t voice = msg[1] & 0b01111111;
+        load_preset(voice);
         break;
     }
     case MIDI_CC:
