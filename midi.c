@@ -504,7 +504,9 @@ void push_note(uint8_t note){
 }
 
 void pop_note(void){
-    note_lifo_p--;
+    if(note_lifo_p > 0){
+        note_lifo_p--;
+    }
 }
 
 uint8_t peek_note(void){
@@ -528,7 +530,7 @@ void remove_note(uint8_t note){
 
 void handle_midi(uint8_t *msg, uint8_t len)
 {
-    // printf("msg len %d -> %d %d %d\n\r\r", len, msg[0], msg[1], msg[2]);
+    // printf("msg len %d -> %d %d %d\n", len, msg[0], msg[1], msg[2]);
     
     uint8_t channel = msg[0] & 0b00001111;
     if(cur_midi_chan != MIDI_CHANNEL_OMNI && cur_midi_chan != (channel + 1)) // channels are 0 indexed but we use 1 indexed
@@ -782,7 +784,7 @@ void uart_task(void *args){
         if(xQueueReceive(uart_queue, &ch, portMAX_DELAY)){
             bflb_uart_putchar(uart0, ch); // send to midi out
             bool ret = parse(ch);
-            printf("%c", ch);
+            // printf("%c", ch);
             if (ret)
             {
                 handle_midi(getMidiMsg(), getMidiMsgLen());
