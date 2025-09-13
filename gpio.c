@@ -200,7 +200,6 @@ static void process_buttons(){
             {
                 if(button_state[0] == 0 && button_state[3] == 0) // factory reset
                 {
-                    // factory_reset();
                     set_ui_mode(UI_MODE_FACTORY_RST);
                 } else {
                     reset_params();
@@ -208,7 +207,7 @@ static void process_buttons(){
                 }
             }
             return;
-        } else if(ui_mode == UI_MODE_FACTORY_RST){ // wait till a button release to do the reset
+        } else if(ui_mode == UI_MODE_FACTORY_RST){ // wait for a button release to do the factory reset
             if(button_state[BUTTON_NUM_ALT] || button_state[8] || button_state[BUTTON_NUM_ENCODER]) // one was released
             {
                 factory_reset();

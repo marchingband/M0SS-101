@@ -10,7 +10,7 @@
 
 #define SECTOR_SIZE 0x1000 // 4096
 
-#define NUM_CONFIG_VARS (1 + 128) // midi_chan + CC map
+#define NUM_CONFIG_VARS (1 + NUM_CC_MAP) // midi_chan + CC map
 
 #define NUM_MODS NUM_BUTTONS
 #define NUM_ALTS NUM_BUTTONS
@@ -30,18 +30,17 @@ static float presets[NUM_PRESETS][NUM_FLOATS];
 static int current_slot = -1;
 
 static struct Config default_config = {
-    .empty = { true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true },
+    .empty = { true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true }, // 17
     .cc_map = {
         1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,
         17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,
-        33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,
-        49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,
-        65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,
-        81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,
-        97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,
-        113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128
+        33,34,35,36,37,38,39,40,41,42,43,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0 // 130
     },
-    .magic = 4,
+    .magic = 9,
 };
 
 static struct Config current_config;
@@ -61,12 +60,12 @@ struct Config *get_config(void)
 
 void flash_init(void)
 {
-    // printf("initializing flash\n");
+    printf("initializing flash\n");
     struct Config conf;
     bflb_flash_read(CONFIG_BASE, &conf, sizeof(struct Config));
     if(conf.magic == default_config.magic)
     {
-        // printf("the magic number in flash was correct\n");
+        printf("the magic number in flash was correct\n");
         current_config = conf;
         // for(int i=0; i< 127; i++)
         // {
@@ -75,8 +74,8 @@ void flash_init(void)
     }
     else
     {
-        // printf("the magic number in flash was NOT correct\n");
-        // printf("initializing flash storage!\n");
+        printf("the magic number in flash was NOT correct\n");
+        printf("initializing flash storage!\n");
         bflb_flash_erase(CONFIG_BASE, sizeof(struct Config));
         bflb_flash_erase(PRESET_BASE, TOTAL_BYTES);
         bflb_flash_write(CONFIG_BASE, &default_config, sizeof(struct Config));

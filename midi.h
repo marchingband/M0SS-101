@@ -2,6 +2,8 @@
 #define MIDI_H
 
 #define NUM_CC 44 // must be the highest CC value + 1, CC's are 1 indexed.
+#define CC_MAP_VELOCITY_IDX     128
+#define CC_MAP_AFTERTOUCH_IDX   129
 
 #define LEARN_MODE_READY 0
 #define LEARN_MODE_SELECTED 1
