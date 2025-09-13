@@ -1,11 +1,12 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <FreeRTOS.h>
+
 #include "bflb_gpio.h"
 #include "rgb_led.h"
-
 #include "midi.h"
 #include "gpio.h"
+#include "flash.h"
 
 extern int alt_switch_state;
 extern int cur_midi_chan;
@@ -191,7 +192,7 @@ static void process_buttons(){
 
         // check params reset logic
         if(ui_mode == UI_MODE_RST){
-            if(button_state[BUTTON_NUM_ALT] || button_state[9] || button_state[BUTTON_NUM_ENCODER]) // one was released
+            if(button_state[BUTTON_NUM_ALT] || button_state[8] || button_state[BUTTON_NUM_ENCODER]) // one was released
             {
                 set_ui_mode(UI_MODE_PLAY);
             }
@@ -199,11 +200,18 @@ static void process_buttons(){
             {
                 if(button_state[0] == 0 && button_state[3] == 0) // factory reset
                 {
-                    // factory reset
+                    // factory_reset();
+                    set_ui_mode(UI_MODE_FACTORY_RST);
                 } else {
                     reset_params();
+                    set_ui_mode(UI_MODE_PLAY);
                 }
-                set_ui_mode(UI_MODE_PLAY);
+            }
+            return;
+        } else if(ui_mode == UI_MODE_FACTORY_RST){ // wait till a button release to do the reset
+            if(button_state[BUTTON_NUM_ALT] || button_state[8] || button_state[BUTTON_NUM_ENCODER]) // one was released
+            {
+                factory_reset();
             }
             return;
         }
@@ -220,7 +228,7 @@ static void process_buttons(){
                     button_time[i] = now;
                     if( i == BUTTON_NUM_ENCODER ){
                         // check for reset command
-                        if(button_state[BUTTON_NUM_ALT] == 0 && button_state[9] == 0) // alt and env-release are held
+                        if(button_state[BUTTON_NUM_ALT] == 0 && button_state[8] == 0) // alt and lfo-vca are held
                         {
                             set_ui_mode(UI_MODE_RST);
                             reset_mode_started = bflb_mtimer_get_time_us();
