@@ -21,6 +21,15 @@ void test_lights(void);
 extern int learn_mode_state;
 extern int alt_switch_state;
 extern uint64_t reset_mode_started;
+
+// test mode
+extern bool test_mode;
+extern bool test_button_pressed;
+extern bool test_midi_data_in;
+extern bool test_encoder_left;
+extern bool test_encoder_right;
+int test_data_cnt = 0;
+
 int cur_disp_num = 0;
 
 static ATTR_NOCACHE_NOINIT_RAM_SECTION uint32_t data_buf[128] __ALIGNED(4);
@@ -196,13 +205,28 @@ void update_led_display(void){
 }
 
 void render_lights(void){
-
     int current_slot = get_current_slot();
     struct Sel *sels = get_sels();
     struct Mod *mods = get_mods();
     struct Sigs *sigs = get_signals();
     struct AltSel *altSels = get_alt_sels();
     struct Config *config = get_config();
+
+    if(test_mode){
+        if(test_midi_data_in || test_encoder_left || test_encoder_right){
+            if(test_data_cnt++ > 100){
+                test_midi_data_in = false;
+                test_encoder_left = false;
+                test_encoder_right = false;
+                test_data_cnt = 0;
+            }
+        }
+        for(int i=0; i<NUM_LED; i++){
+            pixel_buf[i] = test_button_pressed ? pixel_red : (test_midi_data_in || test_encoder_left) ? pixel_blue : test_encoder_right ? pixel_green : pixel_on;
+        }
+        *(sigs->gate) = 1;
+        return;
+    }
 
     switch(ui_mode){
         case UI_MODE_PLAY:
@@ -224,7 +248,8 @@ void render_lights(void){
             pixel_buf[10] = *(sels[7].p)  == 0 ? pixel_on : pixel_off; // lfotri
             pixel_buf[11] = *(sels[7].p)  == 1 ? pixel_on : pixel_off; // lfosqr
             pixel_buf[12] = *(sels[7].p)  == 2 ? pixel_on : pixel_off; // lfornd
-            pixel_buf[14] = *(sels[9].p)  == 1 ? pixel_on : pixel_off; // lfornd
+
+            pixel_buf[14] = *(sels[9].p)  == 1 ? pixel_on : pixel_off; // lfo.env
 
             pixel_buf[23] = *(sels[13].p)  == 0 ? pixel_on : pixel_off; // vcfhp
             pixel_buf[24] = *(sels[13].p)  == 1 ? pixel_on : pixel_off; // vcflp
@@ -233,26 +258,51 @@ void render_lights(void){
             // pixel_buf[16] = *(sels[11].p) == 0 ? pixel_on : pixel_off; // envasr
             // pixel_buf[17] = *(sels[11].p) == 1 ? pixel_on : pixel_off; // envar
 
+
+            // ****************************************
+            // temperature pixels for LFO in high range
+            // ****************************************
+
             if(*(altSels[12].p) == 0){
                 // low lfo range
                 pixel_buf[17] = pixel_fade((*sigs->lfo) * (*mods[6].p));     // lfo.pwm
                 pixel_buf[15] = pixel_fade((*sigs->lfo) * (*mods[10].p));    // lfo.osc
                 pixel_buf[16] = pixel_fade((*sigs->lfo) * (*mods[11].p));    // lfo.vcf
                 pixel_buf[13] = pixel_fade((*sigs->lfo) * (*mods[8].p));     // lfo.vca
-                pixel_buf[18] = pixel_fade(*sigs->vca);                     // vca
+                // pixel_buf[18] = pixel_fade(*sigs->vca);                      // vca
             } else {
                 // high lfo range
                 pixel_buf[17] = pixel_fade_lfo((*mods[12].p), (*mods[6].p));     // lfo.pwm
                 pixel_buf[15] = pixel_fade_lfo((*mods[12].p), (*mods[10].p));    // lfo.osc
                 pixel_buf[16] = pixel_fade_lfo((*mods[12].p), (*mods[11].p));    // lfo.vcf
                 pixel_buf[13] = pixel_fade_lfo((*mods[12].p), (*mods[8].p));     // lfo.vca
-                pixel_buf[18] = pixel_fade_lfo((*mods[12].p), (*sigs->env));                     // vca
+                // pixel_buf[18] = pixel_fade_lfo((*mods[12].p), (*sigs->env));     // vca
+            }
+            
+            // if(*(altSels[12].p) == 1 && (*mods[8].p) > 0.0){ // lfo high range and lfo.vca active
+            if(*(altSels[12].p)){ // lfo high range
+                if(*(sels[9].p) == 1){ // lfo.env active
+                    pixel_buf[18] = pixel_fade_lfo((*mods[12].p), 1);     // vca
+                } else if ((*mods[8].p) > 0.0){ // lfo.vca active
+                    pixel_buf[18] = pixel_fade_lfo((*mods[12].p), (*sigs->env));     // vca
+                } else {
+                    pixel_buf[18] = pixel_fade(*sigs->vca);                          // vca
+                }
+            } else {
+                pixel_buf[18] = pixel_fade(*sigs->vca);                          // vca
             }
 
-            pixel_buf[20] = pixel_fade((*(sigs->env)) * (*mods[18].p)); // env.vcf
-            pixel_buf[19] = pixel_fade((*(sigs->env)) * (*mods[15].p)); // env.vca
-            pixel_buf[21] = pixel_fade((*(sigs->env)) * (*mods[20].p)); // env.osc
-            pixel_buf[22] = pixel_fade((*(sigs->env)) * (*mods[24].p)); // env.pwm
+            if(*(altSels[12].p) == 1 && *(sels[9].p) == 1){ // lfo high range and lfo.env active
+                pixel_buf[20] = pixel_fade_lfo((*mods[12].p), (*mods[18].p)); // env.vcf
+                pixel_buf[19] = pixel_fade_lfo((*mods[12].p), (*mods[15].p)); // env.vca
+                pixel_buf[21] = pixel_fade_lfo((*mods[12].p), (*mods[20].p)); // env.osc
+                pixel_buf[22] = pixel_fade_lfo((*mods[12].p), (*mods[24].p)); // env.pwm
+            } else {
+                pixel_buf[20] = pixel_fade((*(sigs->env)) * (*mods[18].p)); // env.vcf
+                pixel_buf[19] = pixel_fade((*(sigs->env)) * (*mods[15].p)); // env.vca
+                pixel_buf[21] = pixel_fade((*(sigs->env)) * (*mods[20].p)); // env.osc
+                pixel_buf[22] = pixel_fade((*(sigs->env)) * (*mods[24].p)); // env.pwm
+            }
 
             if(alt_switch_state == ALT_SWITCH_STATE_NONE){
                 update_led_display();

@@ -49,6 +49,9 @@ int learn_mode_state = LEARN_MODE_READY;
 int alt_switch_state = 0;
 bool encoder_pressed = false;
 
+//test mode
+bool test_midi_data_in = false;
+
 static struct CC CCs[NUM_CC] = {0};
 static struct Mod Mods[NUM_BUTTONS] = {0};
 static struct Alt Alts[NUM_BUTTONS] = {0};
@@ -531,6 +534,7 @@ void remove_note(uint8_t note){
 void handle_midi(uint8_t *msg, uint8_t len)
 {
     // printf("msg len %d -> %d %d %d\n", len, msg[0], msg[1], msg[2]);
+    test_midi_data_in = true;
     
     uint8_t channel = msg[0] & 0b00001111;
     if(cur_midi_chan != MIDI_CHANNEL_OMNI && cur_midi_chan != (channel + 1)) // channels are 0 indexed but we use 1 indexed
@@ -755,18 +759,18 @@ static void uart_receive_isr(int irq, void *arg)
     }
 }
 
-void poll_uart(void)
-{
-    ch = bflb_uart_getchar(uart0);
-    if (ch != -1)
-    {
-        int ret = parse(ch);
-        if (ret)
-        {
-            handle_midi(getMidiMsg(), getMidiMsgLen());
-        }
-    }
-}
+// void poll_uart(void)
+// {
+//     ch = bflb_uart_getchar(uart0);
+//     if (ch != -1)
+//     {
+//         int ret = parse(ch);
+//         if (ret)
+//         {
+//             handle_midi(getMidiMsg(), getMidiMsgLen());
+//         }
+//     }
+// }
 
 void usb_midi_in(char ch)
 {

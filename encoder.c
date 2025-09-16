@@ -34,9 +34,17 @@ extern int cur_asb;
 extern bool set_midi_chan_active;
 extern int cur_midi_chan;
 extern int cur_disp_num;
+extern bool test_mode;
+
+bool test_encoder_left;
+bool test_encoder_right;
 
 
 static void on_encoder(bool up){
+    if(test_mode){
+        test_encoder_left = up == false;
+        test_encoder_right = up == true;
+    }
     uint64_t now = bflb_mtimer_get_time_us();
     uint64_t passed = now - last_click;
     last_click = now;

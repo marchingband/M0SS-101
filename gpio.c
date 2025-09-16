@@ -3,6 +3,8 @@
 #include <FreeRTOS.h>
 
 #include "bflb_gpio.h"
+#include "bl616_glb.h"
+
 #include "rgb_led.h"
 #include "midi.h"
 #include "gpio.h"
@@ -11,6 +13,7 @@
 extern int alt_switch_state;
 extern int cur_midi_chan;
 extern int cur_disp_num;
+extern bool test_mode;
 
 struct bflb_device_s *b_gpio;
 
@@ -77,6 +80,7 @@ bool set_midi_chan_active = false;
 bool asb_active = false;
 int cur_asb = 0;
 uint64_t reset_mode_started = 0;
+bool test_button_pressed = false;
 
 void set_param_selected(int num, bool alt)
 {
@@ -184,8 +188,18 @@ bool alt_held(void)
 }
 
 static void process_buttons(){
+    bool test_pressed = false;
     for (int i =0; i< NUM_BUTTONS; i++)
     {
+        if(test_mode)
+        {
+            if(button_state[i] == 0)
+            {
+                test_pressed = true;
+            }
+            continue;
+        }
+
         bool state = button_state[i];
         int ui_mode = get_ui_mode();
         uint64_t now = bflb_mtimer_get_time_us();
@@ -202,8 +216,9 @@ static void process_buttons(){
                 {
                     set_ui_mode(UI_MODE_FACTORY_RST);
                 } else {
-                    reset_params();
-                    set_ui_mode(UI_MODE_PLAY);
+                    // reset_params();
+                    // set_ui_mode(UI_MODE_PLAY);
+                    GLB_SW_System_Reset();
                 }
             }
             return;
@@ -216,7 +231,7 @@ static void process_buttons(){
         }
 
         // check for presses
-        if(button_pushes[i] == 0) // not pushed
+        if(button_pushes[i] == 0) // was not pushed
         {
             if(state == 0) // maybe pushed ( 0 is low so maybe pressed )
             {
@@ -257,7 +272,7 @@ static void process_buttons(){
         }
 
         // check for releases
-        else if(button_pushes[i] == 1) // is pushed
+        else if(button_pushes[i] == 1) // was pushed
         {
             if(state == 1) // maybe released ( 1 is high so released)
             {
@@ -272,12 +287,12 @@ static void process_buttons(){
 
                     if(asb_active && i == cur_asb)
                     {
-                        asb_active == false;
+                        asb_active = false;
                         set_ui_mode(UI_MODE_PLAY);
                     } 
                     else if(set_midi_chan_active && i == BUTTON_NUM_MIDI_CHAN)
                     {
-                        set_midi_chan_active == false;
+                        set_midi_chan_active = false;
                         set_ui_mode(UI_MODE_PLAY);
                     } 
                     else if(i == BUTTON_NUM_ENCODER)
@@ -300,6 +315,7 @@ static void process_buttons(){
             }
         }
     }
+    test_button_pressed = test_pressed;
 }
 
 uint8_t *get_button_states(void)
@@ -322,13 +338,19 @@ void poll_gpio(){
     process_buttons();
 }
 
-static void button_task(void* arg){
-    while(1)
-    {
-        poll_gpio();
-        vTaskDelay(10);
-    }
+bool check_test_mode(void)
+{
+    read_buttons();
+    return alt_held();
 }
+
+// static void button_task(void* arg){
+//     while(1)
+//     {
+//         poll_gpio();
+//         vTaskDelay(10);
+//     }
+// }
 
 void buttons_init(){
     mux_gpio_init();

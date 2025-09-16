@@ -24,5 +24,6 @@ void clear_button_pushes(void);
 bool alt_held(void);
 int button_label(int num);
 struct Param get_param_selected(void);
+bool check_test_mode(void);
 
 #endif

@@ -122,13 +122,20 @@ static void m0ss_board_init(bool set_console){
 }
 
 bool is_initial_boot = false;
+bool test_mode = false;
 
 int main(void)
 {
     /* board init */
-    board_init();
-    // m0ss_board_init( /*set console*/ false );
+    // board_init();
+    m0ss_board_init( /*set console*/ false );
 
+    /* setup button scanners */
+    // printf("gpio_init\r\n");
+    buttons_init();
+
+    test_mode = check_test_mode();
+    
     /* dsp init */
     // printf("dsp_init\r\n");
     dsp_init(BUF_SIZE);
@@ -136,10 +143,6 @@ int main(void)
     /* load the config struct or initialize it */
     // printf("flash_init\r\n");
     flash_init();
-
-    /* setup button scanners */
-    // printf("gpio_init\r\n");
-    buttons_init();
 
     /* start usb */
     // printf("usbh_initialize\r\n");
