@@ -14,6 +14,7 @@ extern int alt_switch_state;
 extern int cur_midi_chan;
 extern int cur_disp_num;
 extern bool test_mode;
+extern bool envII_active;
 
 struct bflb_device_s *b_gpio;
 
@@ -88,6 +89,7 @@ struct Param get_param_selected(void){
 
 void set_param_selected(int num, bool alt)
 {
+    bool is_env_II = check_env_II(num);
     if(alt)
     {
         struct Alt *Alts = get_alts();
@@ -102,7 +104,9 @@ void set_param_selected(int num, bool alt)
     else
     {
         struct Mod *Mods = get_mods();
+        struct EnvIIMod *EnvIIMods = get_envIImods();
         struct Mod mod = Mods[num];
+        if(is_env_II) mod = EnvIIMods[num];
         if(mod.p == 0){
             return;
         }
@@ -112,6 +116,7 @@ void set_param_selected(int num, bool alt)
     // if we get here it is a valid Alt or Mod
     param_selected.button = num;
     param_selected.alt = alt;
+    param_selected.envII = is_env_II;
 }
 
 int button_label(int num){

@@ -1,7 +1,7 @@
 #ifndef MIDI_H
 #define MIDI_H
 
-#define NUM_CC 44 // must be the highest CC value + 1, CC's are 1 indexed.
+#define NUM_CC 54 // must be the highest CC value + 1, CC's are 1 indexed.
 #define CC_MAP_VELOCITY_IDX     128
 #define CC_MAP_AFTERTOUCH_IDX   129
 
@@ -35,6 +35,7 @@ struct Mod {
     char name[20];
 };
 
+#define EnvIIMod Mod
 struct Alt {
     float *p;
     float min;
@@ -53,6 +54,7 @@ struct Sel {
     char name[20];
 };
 
+#define EnvIISel Sel
 struct AltSel {
     float *p;
     float min;
@@ -60,6 +62,8 @@ struct AltSel {
     float init;
     char name[20];
 };
+
+#define EnvIIAltSel AltSel
 struct Asb {
     float *p;
     float min;
@@ -75,6 +79,7 @@ struct Sigs {
     float *gate;
     float *lfo;
     float *env;
+    float *envII;
     float *pitch_bend;
     float *vca;
     float *fine_tune;
@@ -86,10 +91,14 @@ struct AltSel *get_alt_sels(void);
 struct Asb *get_asbs(void);
 struct Mod *get_mods(void);
 struct Alt *get_alts(void);
+struct EnvIIMod *get_envIImods(void);
+struct EnvIIAltSel *get_EnvIIalt_sels(void);
+struct EnvIISel *get_envIIsels(void);
 struct CC *get_ccs(void);
 struct Sigs *get_signals(void);
 int get_mode_learn_current_cc(void);
 void reset_params(void);
+bool check_env_II(int num);
 
 void handle_button_press(int num);
 void uart_receive_init(void);

@@ -48,21 +48,26 @@ int mode_learn_current_cc = 0;
 int learn_mode_state = LEARN_MODE_READY;
 int alt_switch_state = 0;
 bool encoder_pressed = false;
+bool envII_active = false;
 
 //test mode
 bool test_midi_data_in = false;
 
 static struct CC CCs[NUM_CC] = {0};
 static struct Mod Mods[NUM_BUTTONS] = {0};
+static struct EnvIIMod EnvIIMods[NUM_BUTTONS] = {0};
 static struct Alt Alts[NUM_BUTTONS] = {0};
 static struct Sel Sels[NUM_BUTTONS] = {0};
 static struct AltSel AltSels[NUM_BUTTONS] = {0};
+static struct EnvIISel EnvIISels[NUM_BUTTONS] = {0};
+static struct EnvIIAltSel EnvIIAltSels[NUM_BUTTONS] = {0};
 static struct Asb Asbs[NUM_BUTTONS] = {0};
 static struct Sigs Signals = {
     .pitch = 0,
     .gate = 0,
     .lfo = 0,
     .env = 0,
+    .envII = 0,
     .pitch_bend = 0,
     .vca = 0
 };
@@ -77,6 +82,16 @@ struct AltSel *get_alt_sels(void)
     return &AltSels[0];
 }
 
+struct EnvIISel *get_envIIsels(void)
+{
+    return &EnvIISels[0];
+}
+
+struct EnvIIAltSel *get_EnvIIalt_sels(void)
+{
+    return &EnvIIAltSels[0];
+}
+
 struct Asb *get_asbs(void)
 {
     return &Asbs[0];
@@ -85,6 +100,11 @@ struct Asb *get_asbs(void)
 struct Mod *get_mods(void)
 {
     return &Mods[0];
+}
+
+struct EnvIIMod *get_envIImods(void)
+{
+    return &EnvIIMods[0];
 }
 
 struct Alt *get_alts(void)
@@ -145,6 +165,22 @@ void extract(const char *name, float *p, float init, float min, float max, float
 
     for(int i=0; i<NUM_BUTTONS; i++)
     {
+        struct EnvIIMod *mod = &EnvIIMods[i];
+        if(mod->p == p){
+            mod->min = min;
+            mod->max = max;
+            mod->init = init;
+            mod->step = step;
+            float steps = (max - min) / step;
+            float per = steps / 128.0;
+            mod->mul = per;
+            strcpy(mod->name, name);
+            found = true;
+        }
+    }
+
+    for(int i=0; i<NUM_BUTTONS; i++)
+    {
         struct Alt *alt = &Alts[i];
         if(alt->p == p){
             alt->min = min;
@@ -174,6 +210,30 @@ void extract(const char *name, float *p, float init, float min, float max, float
     for(int i=0; i<NUM_BUTTONS; i++)
     {
         struct AltSel *alt_sel = &AltSels[i];
+        if(alt_sel->p == p){
+            alt_sel->min = min;
+            alt_sel->max = max;
+            alt_sel->init = init;
+            strcpy(alt_sel->name, name);
+            found = true;
+        }
+    }
+
+    for(int i=0; i<NUM_BUTTONS; i++)
+    {
+        struct EnvIISel *sel = &EnvIISels[i];
+        if(sel->p == p){
+            sel->min = min;
+            sel->max = max;
+            sel->init = init;
+            strcpy(sel->name, name);
+            found = true;
+        }
+    }
+
+    for(int i=0; i<NUM_BUTTONS; i++)
+    {
+        struct EnvIIAltSel *alt_sel = &EnvIIAltSels[i];
         if(alt_sel->p == p){
             alt_sel->min = min;
             alt_sel->max = max;
@@ -221,6 +281,14 @@ void declare(UIGlue *uiInterface, float *p, const char* key, const char* val){
         struct Mod *mod = &Mods[num];
         mod->p = p;
     }
+    if(strcmp("envII-mod", key) == 0) // its a cc
+    {
+        // printf("got mod %s:%s\n", key, val);
+        long num = strtol(val, NULL, 10);
+
+        struct EnvIIMod *mod = &EnvIIMods[num];
+        mod->p = p;
+    }
     if(strcmp("alt", key) == 0) // its a cc
     {
         // printf("got alt %s:%s\n", key, val);
@@ -243,6 +311,23 @@ void declare(UIGlue *uiInterface, float *p, const char* key, const char* val){
         long num = strtol(val, NULL, 10);
 
         struct AltSel *alt_sel = &AltSels[num];
+        alt_sel->p = p;
+        // printf("got alt_sel\n\r\r");
+    }
+    if(strcmp("envII-sel", key) == 0) // its a selection toggle
+    {
+        // printf("got sel %s:%s\n", key, val);
+        long num = strtol(val, NULL, 10);
+
+        struct EnvIISel *sel = &EnvIISels[num];
+        sel->p = p;
+    }
+    if(strcmp("envII-alt-sel", key) == 0) // its a selection toggle with alt held
+    {
+        // printf("got alt-sel %s:%s\n", key, val);
+        long num = strtol(val, NULL, 10);
+
+        struct EnvIIAltSel *alt_sel = &EnvIIAltSels[num];
         alt_sel->p = p;
         // printf("got alt_sel\n\r\r");
     }
@@ -296,6 +381,11 @@ void declare(UIGlue *uiInterface, float *p, const char* key, const char* val){
         // printf("got env pointer\n\r\r");
         Signals.env = p;
     }
+    if(strcmp("envII", key) == 0) // its the env
+    {
+        // printf("got envII pointer\n\r\r");
+        Signals.envII = p;
+    }
 };
 
 int get_cc(int num, bool alt){
@@ -305,9 +395,11 @@ int get_cc(int num, bool alt){
         // printf("get_cc alt held\n");
         struct Alt *Alts = get_alts();
         struct AltSel *AltSels = get_alt_sels();
+        struct EnvIIAltSel *EnvIIAltSels = get_EnvIIalt_sels();
         struct Asb *Asbs = get_asbs();
         struct Alt alt = Alts[num];
         struct AltSel alt_sel = AltSels[num];
+        struct EnvIIAltSel EnvIIalt_sel = EnvIIAltSels[num];
         struct Asb asb = Asbs[num];
         if(alt.p != 0){
             // printf("found alt %s\n", alt.name);
@@ -315,21 +407,34 @@ int get_cc(int num, bool alt){
         } else if (alt_sel.p != 0){
             // printf("found alt_sel %s\n", alt_sel.name);
             p = alt_sel.p;
+        } else if (EnvIIalt_sel.p != 0){
+            // printf("found EnvIIalt_sel %s\n", alt_sel.name);
+            p = EnvIIalt_sel.p;
         } else if (asb.p != 0){
             // printf("found asb %s\n", asb.name);
             p = asb.p;
         }
     } else {
         struct Mod *Mods = get_mods();
+        struct EnvIIMod *EnvIIMods = get_envIImods();
         struct Sel *Sels = get_sels();
+        struct EnvIISel *EnvIISels = get_envIIsels();
         struct Mod mod = Mods[num];
+        struct EnvIIMod envIImod = EnvIIMods[num];
         struct Sel sel = Sels[num];
+        struct EnvIISel envIIsel = EnvIISels[num];
         if(mod.p != 0){
             // printf("found mod %s\n", mod.name);
             p = mod.p;
+        } else if(envIImod.p != 0){
+            // printf("found mod %s\n", mod.name);
+            p = envIImod.p;
         } else if(sel.p != 0){
             // printf("found sel %s\n", sel.name);
             p = sel.p;
+        } else if(envIIsel.p != 0){
+            // printf("found sel %s\n", sel.name);
+            p = envIIsel.p;
         }
     }
     if(p == NULL){
@@ -354,6 +459,9 @@ void reset_params(void){
         if(Mods[i].p != NULL){
             *(Mods[i].p) = Mods[i].init;
         }
+        if(EnvIIMods[i].p != NULL){
+            *(EnvIIMods[i].p) = EnvIIMods[i].init;
+        }
         if(Alts[i].p != NULL){
             *(Alts[i].p) = Alts[i].init;
         }
@@ -362,6 +470,12 @@ void reset_params(void){
         }
         if(AltSels[i].p != NULL){
             *(AltSels[i].p) = AltSels[i].init;
+        }
+        if(EnvIISels[i].p != NULL){
+            *(EnvIISels[i].p) = EnvIISels[i].init;
+        }
+        if(EnvIIAltSels[i].p != NULL){
+            *(EnvIIAltSels[i].p) = EnvIIAltSels[i].init;
         }
     }
 }
@@ -379,11 +493,23 @@ void handle_encoder_press(bool down)
     encoder_pressed = down;
 }
 
+bool check_env_II(int num){
+    static int env_buttons[9] = {9, 15, 18, 20, 24, 16, 25, 19, 21};
+    static int env_alt_button = 15;
+    if(!envII_active) return false;
+    if(alt_held()) return num == env_alt_button;
+    for(int i=0; i<9; i++){
+        if(num == env_buttons[i]) return true;
+    }
+    return false;
+}
+
 void handle_button_press(int num)
 // handles load, save, learn and cancelling the mode by pressing alt again
 {
     // printf("press %d\n", num);
     int ui_mode = get_ui_mode();
+    bool is_env_II = check_env_II(num);
     if(num == BUTTON_NUM_ALT) // alt button
     {
         set_ui_mode(UI_MODE_PLAY);
@@ -415,9 +541,14 @@ void handle_button_press(int num)
                 mode_learn_current_cc = 0;
                 learn_mode_state = LEARN_MODE_READY;
             }
+            else if(num == BUTTON_NUM_ENVII)
+            {
+                envII_active = envII_active ? false : true;
+            }
             else
             {
                 struct AltSel *alt_sel = &AltSels[num];
+                if(is_env_II) alt_sel = &EnvIIAltSels[num];
                 if(alt_sel->p == 0) // no alt-sel to do for that button press
                 {
                     // printf("nothing\n");
@@ -462,6 +593,7 @@ void handle_button_press(int num)
     else if(ui_mode == UI_MODE_PLAY)
     {
         struct Sel *sel = &Sels[num];
+        if(is_env_II) sel = &EnvIISels[num];
         if(sel->p == 0) // no sel for that button press
         {
             return;

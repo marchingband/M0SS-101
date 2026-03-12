@@ -7,12 +7,14 @@
 #define BUTTON_NUM_LOAD 17
 #define BUTTON_NUM_ALT 22
 #define BUTTON_NUM_LEARN 24
+#define BUTTON_NUM_ENVII 15
 
 #define ONE_SECOND 1000000
 
 struct Param {
     int button;
     bool alt;
+    bool envII;
 };
 
 void buttons_init();

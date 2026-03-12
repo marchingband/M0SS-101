@@ -120,7 +120,9 @@ static void on_encoder(bool up){
         else
         {
             struct Mod *Mods = get_mods();
+            struct EnvIIMod *EnvIIMods = get_envIImods();
             struct Mod mod = Mods[param.button];
+            if(param.envII) mod = EnvIIMods[param.button];
             if(mod.p == 0)
             {
                 // printf("got unknown Mod %d\n\r", param.button);

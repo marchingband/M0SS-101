@@ -21,6 +21,7 @@ void test_lights(void);
 extern int learn_mode_state;
 extern int alt_switch_state;
 extern uint64_t reset_mode_started;
+extern bool envII_active;
 
 // test mode
 extern bool test_mode;
@@ -90,12 +91,12 @@ const struct pixel_t pixel_on = {
     .red = 4,
     .green = 3,
     .blue = 1
-    // .red = 5,
-    // .green = 30,
-    // .blue = 0
-    // .red = 2,
-    // .green = 1,
-    // .blue = 0
+};
+
+const struct pixel_t envii_pixel_on = {
+    .red = 1,
+    .green = 1,
+    .blue = 6
 };
 
 const struct pixel_t pixel_off = {
@@ -146,6 +147,15 @@ struct pixel_t pixel_fade(float val){
         .red = (uint8_t)(10.0 * val),
         .green = (uint8_t)(150.0 * val),
         .blue = (uint8_t)(50.0 * val)
+    };
+    return pixel;
+}
+
+struct pixel_t pixel_fade_envII(float val){
+    struct pixel_t pixel = {
+        .red = (uint8_t)(10.0 * val),
+        .green = (uint8_t)(50.0 * val),
+        .blue = (uint8_t)(150.0 * val)
     };
     return pixel;
 }
@@ -207,9 +217,12 @@ void update_led_display(void){
 void render_lights(void){
     int current_slot = get_current_slot();
     struct Sel *sels = get_sels();
+    struct EnvIISel *envIIsels = get_envIIsels();
     struct Mod *mods = get_mods();
+    struct EnvIIMod *envIImods = get_envIImods();
     struct Sigs *sigs = get_signals();
     struct AltSel *altSels = get_alt_sels();
+    struct EnvIIAltSel *envIIaltSels = get_EnvIIalt_sels();
     struct Config *config = get_config();
 
     if(test_mode){
@@ -249,7 +262,11 @@ void render_lights(void){
             pixel_buf[11] = *(sels[7].p)  == 1 ? pixel_on : pixel_off; // lfosqr
             pixel_buf[12] = *(sels[7].p)  == 2 ? pixel_on : pixel_off; // lfornd
 
-            pixel_buf[14] = *(sels[9].p)  == 1 ? pixel_on : pixel_off; // lfo.env
+            if(envII_active){
+                pixel_buf[14] = *(envIIsels[9].p)  == 1 ? envii_pixel_on : pixel_off; // lfo.env
+            } else {
+                pixel_buf[14] = *(sels[9].p)  == 1 ? pixel_on : pixel_off; // lfo.env
+            }
 
             pixel_buf[23] = *(sels[13].p)  == 0 ? pixel_on : pixel_off; // vcfhp
             pixel_buf[24] = *(sels[13].p)  == 1 ? pixel_on : pixel_off; // vcflp
@@ -291,17 +308,30 @@ void render_lights(void){
             } else {
                 pixel_buf[18] = pixel_fade(*sigs->vca);                          // vca
             }
-
-            if(*(altSels[12].p) == 1 && *(sels[9].p) == 1){ // lfo high range and lfo.env active
-                pixel_buf[20] = pixel_fade_lfo((*mods[12].p), (*mods[18].p)); // env.vcf
-                pixel_buf[19] = pixel_fade_lfo((*mods[12].p), (*mods[15].p)); // env.vca
-                pixel_buf[21] = pixel_fade_lfo((*mods[12].p), (*mods[20].p)); // env.osc
-                pixel_buf[22] = pixel_fade_lfo((*mods[12].p), (*mods[24].p)); // env.pwm
+            if(envII_active){
+                if(*(altSels[12].p) == 1 && *(sels[9].p) == 1){ // lfo high range and lfo.env active
+                    pixel_buf[20] = pixel_fade_lfo((*mods[12].p), (*envIImods[18].p)); // env.vcf
+                    pixel_buf[19] = pixel_fade_lfo((*mods[12].p), (*envIImods[15].p)); // env.vca
+                    pixel_buf[21] = pixel_fade_lfo((*mods[12].p), (*envIImods[20].p)); // env.osc
+                    pixel_buf[22] = pixel_fade_lfo((*mods[12].p), (*envIImods[24].p)); // env.pwm
+                } else {
+                    pixel_buf[20] = pixel_fade_envII((*(sigs->envII)) * (*envIImods[18].p)); // env.vcf
+                    pixel_buf[19] = pixel_fade_envII((*(sigs->envII)) * (*envIImods[15].p)); // env.vca
+                    pixel_buf[21] = pixel_fade_envII((*(sigs->envII)) * (*envIImods[20].p)); // env.osc
+                    pixel_buf[22] = pixel_fade_envII((*(sigs->envII)) * (*envIImods[24].p)); // env.pwm
+                }
             } else {
-                pixel_buf[20] = pixel_fade((*(sigs->env)) * (*mods[18].p)); // env.vcf
-                pixel_buf[19] = pixel_fade((*(sigs->env)) * (*mods[15].p)); // env.vca
-                pixel_buf[21] = pixel_fade((*(sigs->env)) * (*mods[20].p)); // env.osc
-                pixel_buf[22] = pixel_fade((*(sigs->env)) * (*mods[24].p)); // env.pwm
+                if(*(altSels[12].p) == 1 && *(sels[9].p) == 1){ // lfo high range and lfo.env active
+                    pixel_buf[20] = pixel_fade_lfo((*mods[12].p), (*mods[18].p)); // env.vcf
+                    pixel_buf[19] = pixel_fade_lfo((*mods[12].p), (*mods[15].p)); // env.vca
+                    pixel_buf[21] = pixel_fade_lfo((*mods[12].p), (*mods[20].p)); // env.osc
+                    pixel_buf[22] = pixel_fade_lfo((*mods[12].p), (*mods[24].p)); // env.pwm
+                } else {
+                    pixel_buf[20] = pixel_fade((*(sigs->env)) * (*mods[18].p)); // env.vcf
+                    pixel_buf[19] = pixel_fade((*(sigs->env)) * (*mods[15].p)); // env.vca
+                    pixel_buf[21] = pixel_fade((*(sigs->env)) * (*mods[20].p)); // env.osc
+                    pixel_buf[22] = pixel_fade((*(sigs->env)) * (*mods[24].p)); // env.pwm
+                }
             }
 
             if(alt_switch_state == ALT_SWITCH_STATE_NONE){

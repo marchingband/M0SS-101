@@ -10,11 +10,11 @@ gate  = button("gate[gate]");
 pitch_bend = hslider("pitch-bend[pitch-bend]", 8192, 0, 16383, 1); // 14bit
 pitch_bend_float = (pitch_bend - 8192.0) / 8191.0 : clamp(-1.0, 1.0) ;
 pitch_bend_ratio = ba.if(pitch_bend_float > 0.0, pitch_bend_float * pitch_bend_up, pitch_bend_float * pitch_bend_down) : ba.semi2ratio : si.smoo;
-pitch = hslider("pitch[pitch]", 45, 0, 127, 1) : ba.midikey2hz : si.smooth(ba.tau2pole(glide)) : (_ * pitch_bend_ratio * lfo_to_pitch * env_to_pitch * fine_tune * transpose) : si.smooth(0.1);
+pitch = hslider("pitch[pitch]", 45, 0, 127, 1) : ba.midikey2hz : si.smooth(ba.tau2pole(glide)) : (_ * pitch_bend_ratio * lfo_to_pitch * env_to_pitch * envII_to_pitch * fine_tune * transpose) : si.smooth(0.1);
 
 // CC 1-4 
 attack    = hslider("attack[mod:16][midi:1]",    0.001, 0.001, 1,   0.0001) : log3 : it.remap(0.0, 1.0, 0.001, 20.0);
-cutoff    = hslider("cutoff[mod:14][midi:2]",    1,     0,     1,   0.0001) : (_ + lfo_to_cuttoff + env_to_cutoff) : si.smooth(ba.tau2pole(0.05)) : ba.lin2LogGain : clamp(0, 1);
+cutoff    = hslider("cutoff[mod:14][midi:2]",    1,     0,     1,   0.0001) : (_ + lfo_to_cuttoff + env_to_cutoff + envII_to_cutoff) : si.smooth(ba.tau2pole(0.05)) : ba.lin2LogGain : clamp(0, 1);
 lfo_freq  = hslider("lfo-freq[mod:12][midi:3]",  0.3,   0.0,   1.0, 0.0001) : ba.lin2LogGain;
 osc1_vol  = hslider("osc1-vol[mod:4][midi:4]",   0.5,   0,     0.5,   0.0001) : si.smooth(0.1);
 osc2_vol  = hslider("osc2-vol[mod:5][midi:5]",   0,     0,     0.5,   0.0001) : si.smooth(0.1);
@@ -56,7 +56,6 @@ decay        = hslider("decay[mod:19][midi:29]",         0.001, 0.001, 1, 0.0001
 sustain      = hslider("sustain[mod:21][midi:30]",       1,    0.001, 1, 0.001) ;
 
 // alts
-// osc_1_pw     = hslider("osc-1-pw[alt:0][midi:31]",      0.5,   0.1,   0.9,  0.001) : si.smooth(sm);
 osc_1_pw     = hslider("osc-1-pw[alt:0][midi:31]",      0.5,   0.1,   0.5,  0.001) : si.smooth(sm);
 osc_2_pw     = hslider("osc-2-pw[alt:3][midi:32]",      0.5,   0.1,   0.5,  0.001) : si.smooth(sm);
 xor_volume   = hslider("xor-vol[alt:4][midi:33]",       0,     0,     1,    0.001) : si.smooth(0.1);
@@ -75,6 +74,18 @@ adsr_bias       = hslider("adsr-bias[asb:16][midi:41]", 5, 1, 9, 1);            
 // signals
 fine_tune  = hslider("fine-tune[fine-tune][midi:42]", 0, -100, 100, 1) : ba.cent2ratio;
 transpose  = hslider("transpose[transpose][midi:43]", 0, -127, 127, 1) : ba.semi2ratio;
+
+// envII
+lfo2envII      = hslider("lfo-to-envII[envII-sel:9][midi:44]",      0, 0, 1, 1);
+envII_vca_inv  = hslider("envII-vca-inv[envII-alt-sel:15][midi:45]",1, 0, 1, 1);
+envII2volume   = hslider("envII-to-vca[envII-mod:15][midi:46]",     0, 0, 1, 0.001) : si.smoo;
+envII2cutoff   = hslider("envII-to-vcf[envII-mod:18][midi:47]",     0, 0, 1, 0.001) : si.smoo;
+envII2pitch    = hslider("envII-to-osc[envII-mod:20][midi:48]",     0, 0, 1, 0.001) : si.smoo : ba.lin2LogGain;
+envII2pwm      = hslider("envII-to-pwm[envII-mod:24][midi:49]",     0, 0, 1, 0.001) : si.smoo;
+attackII       = hslider("attackII[envII-mod:16][midi:50]",         0.001, 0.001, 1,   0.0001) : log3 : it.remap(0.0, 1.0, 0.001, 20.0);
+releaseII      = hslider("releaseII[envII-mod:25][midi:51]",        0.001, 0.001, 1,  0.0001) : ba.lin2LogGain : it.remap(0.0, 1.0, 0.001, 20.0);
+decayII        = hslider("decayII[envII-mod:19][midi:52]",          0.001, 0.001, 1, 0.0001): ba.lin2LogGain : it.remap(0.0, 1.0, 0.001, 20.0);
+sustainII      = hslider("sustainII[envII-mod:21][midi:53]",        1,    0.001, 1, 0.001) ;
 
 // noise
 w_noise = no.noise;
@@ -99,41 +110,17 @@ lfo_to_cuttoff = lfo * lfo2vcf;
 lfo_to_volume  = (lfo * lfo2vca) + 1;
 
 // osc 1
-osc1_pw = osc_1_pw * (1 - (lfo2pwm * lfo)) * (1 - env2pwm); // mod pulse wav duty
+osc1_pw = osc_1_pw * (1 - (lfo2pwm * lfo)) * (1 - env2pwm) * (1 - envII2pwm); // mod pulse wav duty
 osc1_freq   = pitch, pitch / 2, pitch / 4 : ba.selectn(3, osc1_octave);
 osc1_square = os.pulsetrain(osc1_freq, osc1_pw);
 osc1_saw    = os.sawNp(2, osc1_freq, osc1_pw);
 osc1        = osc1_square, osc1_saw, (osc1_square, osc1_saw :> _)  : ba.selectn(3, osc1_wavform) : (_ * osc1_vol);
-
-// osc1_pw = osc_1_pw * (1 - (lfo2pwm * lfo)) * (1 - env2pwm); // mod pulse wav duty
-// osc1_square_1 = os.pulsetrain(pitch, osc1_pw);
-// osc1_square_2 = os.pulsetrain(pitch / 2, osc1_pw);
-// osc1_square_3 = os.pulsetrain(pitch / 4, osc1_pw);
-// osc1_square = osc1_square_1, osc1_square_2, osc1_square_3 : ba.selectn(3, osc1_octave);
-// osc1_saw_1    = os.sawNp(2, pitch, osc1_pw);
-// osc1_saw_2    = os.sawNp(2, pitch / 2, osc1_pw);
-// osc1_saw_3    = os.sawNp(2, pitch / 4, osc1_pw);
-// osc1_saw = osc1_saw_1, osc1_saw_2, osc1_saw_3 : ba.selectn(3, osc1_octave);
-// osc1        = osc1_square, osc1_saw, (osc1_square, osc1_saw :> _)  : ba.selectn(3, osc1_wavform) : (_ * osc1_vol);
-
 
 // osc 2
 osc2_freq   = pitch, pitch / 2, pitch / 4 : ba.selectn(3, osc2_octave) : (_ * detune);
 osc2_square = os.pulsetrain(osc2_freq, osc_2_pw);
 osc2_saw    = os.sawNp(2, osc2_freq, osc_2_pw);
 osc2        = osc2_square, osc2_saw, (osc2_square, osc2_saw :> _) : ba.selectn(3, osc2_wavform) : (_ * osc2_vol);
-
-// osc2_freq   = pitch * detune;
-// osc2_square_1 = os.pulsetrain(osc2_freq, osc_2_pw);
-// osc2_square_2 = os.pulsetrain(osc2_freq / 2, osc_2_pw);
-// osc2_square_3 = os.pulsetrain(osc2_freq / 4, osc_2_pw);
-// osc2_square = osc2_square_1, osc2_square_2, osc2_square_3 : ba.selectn(3, osc2_octave);
-// osc2_saw_1    = os.sawNp(2, osc2_freq, 0);
-// osc2_saw_2    = os.sawNp(2, osc2_freq / 2, 0);
-// osc2_saw_3    = os.sawNp(2, osc2_freq / 4, 0);
-// osc2_saw = osc2_saw_1, osc2_saw_2, osc2_saw_3 : ba.selectn(3, osc2_octave);
-// osc2        = osc2_square, osc2_saw, (osc2_square, osc2_saw :> _) : ba.selectn(3, osc2_wavform) : (_ * osc2_vol);
-
 
 // vcf
 kt_pitch_ratio_440 = pitch / 440.0;
@@ -146,14 +133,22 @@ vcf = _ <: hpf, lpf, bpf : ba.selectn(3, filter_type) ;
 // env
 bias_f = adsr_bias / 10;
 env_trig = gate, lfo_sq : ba.selectn(2, lfo2env);
-env = en.adsr_bias(attack, decay, sustain, release, 1.0 - bias_f, bias_f, bias_f, 1, env_trig) <: attach(vbargraph("env[env]", 0 , 1));
-vca = env_to_volume * lfo_to_volume <: attach(vbargraph("vca[vca]", 0 , 1));
+env = en.adsr(attack, decay, sustain, release, env_trig) <: attach(vbargraph("env[env]", 0 , 1));
+vca = env_to_volume * envII_to_volume * lfo_to_volume <: attach(vbargraph("vca[vca]", 0 , 1));
 
 env_to_pitch  = env * env2pitch * 100 * 127 : ba.cent2ratio;
 env_to_volume_norm = (env * env2volume);
 env_to_volume_inv = 1 - ((1-env) * env2volume);
 env_to_volume = env_to_volume_norm, env_to_volume_inv : ba.selectn(2, env_vca_inv);
 env_to_cutoff = env * env2cutoff;
+
+envII_trig = gate, lfo_sq : ba.selectn(2, lfo2envII);
+envII = en.adsr(attackII, decayII, sustainII, releaseII, envII_trig) <: attach(vbargraph("envII[envII]", 0 , 1));
+envII_to_pitch  = envII * envII2pitch * 100 * 127 : ba.cent2ratio;
+envII_to_volume_norm = (envII * envII2volume);
+envII_to_volume_inv = 1 - ((1-envII) * envII2volume);
+envII_to_volume = envII_to_volume_norm, envII_to_volume_inv : ba.selectn(2, envII_vca_inv);
+envII_to_cutoff = envII * envII2cutoff;
 
 volume = vca * master_volume;
 

@@ -58,7 +58,7 @@ static struct Config default_config = {
         0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
         0,0,0,0 // 130
     },
-    .magic = 9,
+    .magic = 10,
 };
 
 static struct Config current_config;
