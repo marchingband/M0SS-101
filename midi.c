@@ -64,8 +64,7 @@ static struct Sigs Signals = {
     .lfo = 0,
     .env = 0,
     .pitch_bend = 0,
-    .vca = 0,
-
+    .vca = 0
 };
 
 struct Sel *get_sels(void)
@@ -364,6 +363,13 @@ void reset_params(void){
         if(AltSels[i].p != NULL){
             *(AltSels[i].p) = AltSels[i].init;
         }
+    }
+}
+
+void reset_ccs(void){
+    uint8_t *cc_map = &get_config()->cc_map[0];
+    for(int i=0; i<NUM_CC_MAP; i++){
+        cc_map[i] = 0;
     }
 }
 

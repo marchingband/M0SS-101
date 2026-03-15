@@ -63,6 +63,8 @@ const uint8_t mux_pins[24] = {
 #define BUTTON_NUM_ENCODER 26
 #define BUTTON_NUM_MIDI_CHAN 6
 
+const uint8_t mux_drain_pins[] = { MUX_0_DRAIN_PIN, MUX_1_DRAIN_PIN, MUX_2_DRAIN_PIN };
+
 uint8_t button_pushes[NUM_BUTTONS]    = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 uint8_t button_state[NUM_BUTTONS]     = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 uint64_t button_time[NUM_BUTTONS]     = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -72,15 +74,17 @@ struct Param param_selected = {
     .alt = false
 };
 
-struct Param get_param_selected(void){
-    return param_selected;
-}
-
 bool set_midi_chan_active = false;
 bool asb_active = false;
 int cur_asb = 0;
+bool alt_consumed = false;
+
 uint64_t reset_mode_started = 0;
 bool test_button_pressed = false;
+
+struct Param get_param_selected(void){
+    return param_selected;
+}
 
 void set_param_selected(int num, bool alt)
 {
@@ -153,8 +157,6 @@ static void connected_buttons_init(){
     bflb_gpio_init(b_gpio, ENCODER_BUTTON_PIN, GPIO_INPUT | GPIO_FLOAT | GPIO_SMT_EN | GPIO_DRV_0);
 }
 
-const uint8_t mux_drain_pins[] = { MUX_0_DRAIN_PIN, MUX_1_DRAIN_PIN, MUX_2_DRAIN_PIN };
-
 static void read_buttons(){
     // poll mux
     for(int i=0; i<8; i++) // 8 pins per mux
@@ -180,8 +182,6 @@ static void read_buttons(){
     button_state[26] = bflb_gpio_read(b_gpio, ENCODER_BUTTON_PIN);
 }
 
-bool alt_consumed = false;
-
 bool alt_held(void)
 {
     return button_state[BUTTON_NUM_ALT] == 0;
@@ -206,26 +206,32 @@ static void process_buttons(){
 
         // check params reset logic
         if(ui_mode == UI_MODE_RST){
-            if(button_state[BUTTON_NUM_ALT] || button_state[8] || button_state[BUTTON_NUM_ENCODER]) // one was released
+            if(button_state[BUTTON_NUM_ALT] || button_state[9] || button_state[BUTTON_NUM_ENCODER]) // one was released
             {
                 set_ui_mode(UI_MODE_PLAY);
             }
             if(now - reset_mode_started > ONE_SECOND)
             {
-                if(button_state[0] == 0 && button_state[3] == 0) // factory reset
-                {
+                if(button_state[0] == 0 && button_state[3] == 0){ // factory reset
                     set_ui_mode(UI_MODE_FACTORY_RST);
+                } else if (button_state[3] == 0){
+                    set_ui_mode(UI_MODE_CC_RST);
                 } else {
-                    // reset_params();
-                    // set_ui_mode(UI_MODE_PLAY);
-                    GLB_SW_System_Reset();
+                    set_ui_mode(UI_MODE_PANIC_RST);
                 }
             }
             return;
-        } else if(ui_mode == UI_MODE_FACTORY_RST){ // wait for a button release to do the factory reset
-            if(button_state[BUTTON_NUM_ALT] || button_state[8] || button_state[BUTTON_NUM_ENCODER]) // one was released
+        } else if(ui_mode == UI_MODE_FACTORY_RST || ui_mode == UI_MODE_PANIC_RST || ui_mode == UI_MODE_CC_RST){ // wait for a button release to do the factory reset
+            if(button_state[BUTTON_NUM_ALT] || button_state[9] || button_state[BUTTON_NUM_ENCODER]) // one was released
             {
-                factory_reset();
+                bflb_mtimer_delay_ms(500); // short delay for user to release all the buttons
+                if(ui_mode == UI_MODE_FACTORY_RST){
+                    factory_reset();
+                } else if (ui_mode == UI_MODE_PANIC_RST){
+                    GLB_SW_System_Reset();
+                } else {
+                    reset_ccs();
+                }
             }
             return;
         }
@@ -242,7 +248,7 @@ static void process_buttons(){
                     button_time[i] = now;
                     if( i == BUTTON_NUM_ENCODER ){
                         // check for reset command
-                        if(button_state[BUTTON_NUM_ALT] == 0 && button_state[8] == 0) // alt and lfo-vca are held
+                        if(button_state[BUTTON_NUM_ALT] == 0 && button_state[9] == 0) // alt and lfo-env are held
                         {
                             set_ui_mode(UI_MODE_RST);
                             reset_mode_started = bflb_mtimer_get_time_us();
@@ -328,10 +334,10 @@ uint8_t *get_button_pushes(void)
     return button_pushes;
 }
 
-void clear_button_pushes(void)
-{
-    memset(button_pushes, 0, sizeof button_pushes); // clear it on every read
-}
+// void clear_button_pushes(void)
+// {
+//     memset(button_pushes, 0, sizeof button_pushes); // clear it on every read
+// }
 
 void poll_gpio(){
     read_buttons();
@@ -341,19 +347,10 @@ void poll_gpio(){
 bool check_test_mode(void)
 {
     read_buttons();
-    return alt_held();
+    return (button_state[23] == 0 && alt_held());
 }
-
-// static void button_task(void* arg){
-//     while(1)
-//     {
-//         poll_gpio();
-//         vTaskDelay(10);
-//     }
-// }
 
 void buttons_init(){
     mux_gpio_init();
     connected_buttons_init();
-    // xTaskCreate(button_task, "button_task", 2048, NULL, 2, NULL);
 }

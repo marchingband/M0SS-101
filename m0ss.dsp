@@ -22,7 +22,8 @@ osc2_vol  = hslider("osc2-vol[mod:5][midi:5]",   0,     0,     0.5,   0.0001) : 
 // CC 5-8
 release       = hslider("release[mod:25][midi:6]",   0.001, 0.001, 1,  0.0001) : ba.lin2LogGain : it.remap(0.0, 1.0, 0.001, 20.0);
 resonance     = hslider("resonance[mod:17][midi:7]", 0.001, 0.0,   1,  0.0001) : it.remap(0.0, 1.0, 0.707, 25.0);
-detune        = hslider("detune[alt:2][midi:8]",     0,     0,     1, 0.0001) : ba.lin2LogGain: (_ * 1200) : ba.cent2ratio : si.smooth(0.1);
+detune        = hslider("detune[alt:2][midi:8]",     0,     0,     1, 0.0001) : ba.lin2LogGain : (_ * 1200) : ba.cent2ratio : si.smooth(0.1);
+// detune        = hslider("detune[alt:2][midi:8]",     0,     0,     1, 0.0001) : ba.lin2LogGain : (_ * 1200) : si.smooth(ba.tau2pole(0.1)) : ba.cent2ratio;
 master_volume = hslider("volume[mod:23][midi:9]",    1,     0,     1,  0.001)  : si.smooth(0.1);
 
 // selections

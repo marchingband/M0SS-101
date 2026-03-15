@@ -20,7 +20,7 @@ void poll_gpio();
 
 uint8_t *get_button_states(void);
 uint8_t *get_button_pushes(void);
-void clear_button_pushes(void);
+// void clear_button_pushes(void);
 bool alt_held(void);
 int button_label(int num);
 struct Param get_param_selected(void);

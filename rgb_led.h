@@ -8,6 +8,8 @@
 #define UI_MODE_DISP_NUM      4
 #define UI_MODE_RST           5
 #define UI_MODE_FACTORY_RST   6
+#define UI_MODE_PANIC_RST     7
+#define UI_MODE_CC_RST        8
 
 struct pixel_t {
   uint8_t green;

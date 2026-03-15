@@ -21,3 +21,7 @@ faust -lang c -json ./m0ss.dsp
 faust patch can be up to 176724 bytes
 
 CURRENTLY USING moss_merge.dsp
+
+features:
+no MIDI CC default mappings
+Button combo to clear MIDI CC map
