@@ -40,11 +40,13 @@ void usbh_midi_callback(void *arg, int nbytes)
             USB_LOG_RAW("0x%02x ", midi_buffer[i]);
         }
         USB_LOG_RAW("nbytes:%d\r\n", nbytes);
-        if(midi_run == 1)
+        if (midi_run == 1)
         {
-            for (int i=0; i< nbytes; i+=4)
+            for (size_t i = 0; (i + 3) < (size_t)nbytes; i += 4)
             {
-                switch(midi_buffer[i]){
+                /* USB-MIDI packet: [CN|CIN, midi0, midi1, midi2] */
+                uint8_t cin = midi_buffer[i] & 0x0f;
+                switch (cin) {
                     case 0x8: // note off
                     case 0x9: // note on
                     case 0xB: // cc
@@ -54,11 +56,20 @@ void usbh_midi_callback(void *arg, int nbytes)
                         usb_midi_in(midi_buffer[i + 2]);
                         usb_midi_in(midi_buffer[i + 3]);
                         break;
+                    case 0xC: // program change (2 bytes)
+                    case 0xD: // channel pressure (2 bytes)
+                        usb_midi_in(midi_buffer[i + 1]);
+                        usb_midi_in(midi_buffer[i + 2]);
+                        break;
                     default:
                         break;
                 }
             }
         }
+    }
+
+    /* Keep the RX URB armed, even after short or empty packets. */
+    if (midi_run == 1 && midi_class && midi_class->bulkin && nbytes >= 0) {
         usbh_submit_urb(&midi_class->bulkin_urb);
     }
 }
