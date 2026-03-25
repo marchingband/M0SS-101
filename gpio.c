@@ -231,6 +231,7 @@ static void process_buttons(){
                     GLB_SW_System_Reset();
                 } else {
                     reset_ccs();
+                    set_ui_mode(UI_MODE_PLAY);
                 }
             }
             return;

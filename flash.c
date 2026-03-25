@@ -5,10 +5,19 @@
 #include "flash.h"
 #include "bl616_glb.h"
 
-#define CONFIG_BASE 0x40000
-#define PRESET_BASE 0x20000
-
 #define SECTOR_SIZE 0x1000 // 4096
+
+/* From build/build_out/partition.bin:
+ *   media   @ 0x378000, size 0x71000
+ *   DATA    @ 0x3F3000, size 0x5000
+ */
+#define MEDIA_PART_BASE 0x378000
+#define MEDIA_PART_SIZE 0x071000
+#define DATA_PART_BASE  0x3F3000
+#define DATA_PART_SIZE  0x005000
+
+#define CONFIG_BASE DATA_PART_BASE
+#define PRESET_BASE MEDIA_PART_BASE
 
 #define NUM_CONFIG_VARS (1 + NUM_CC_MAP) // midi_chan + CC map
 
@@ -20,7 +29,16 @@
 
 #define NUM_FLOATS (NUM_CC + NUM_MODS + NUM_ALTS + NUM_SELS + NUM_ALTSELS + NUM_ASBS + NUM_CONFIG_VARS)
 #define NUM_BYTES_PER_PRESET (NUM_FLOATS * sizeof(float)) // 612
-#define TOTAL_BYTES (NUM_BYTES_PER_PRESET * NUM_PRESETS) // 10,414
+#define TOTAL_BYTES (NUM_BYTES_PER_PRESET * NUM_PRESETS) // 10,414 packed payload bytes
+#define PRESET_REGION_BYTES (SECTOR_SIZE * NUM_PRESETS)  // 69,632 (one sector per slot)
+
+#if (SECTOR_SIZE > DATA_PART_SIZE)
+#error "Config sector does not fit in DATA partition"
+#endif
+
+#if (PRESET_REGION_BYTES > MEDIA_PART_SIZE)
+#error "Preset sectors do not fit in media partition"
+#endif
 
 extern int cur_midi_chan;
 extern bool is_initial_boot;
@@ -76,8 +94,8 @@ void flash_init(void)
     {
         printf("the magic number in flash was NOT correct\n");
         printf("initializing flash storage!\n");
-        bflb_flash_erase(CONFIG_BASE, sizeof(struct Config));
-        bflb_flash_erase(PRESET_BASE, TOTAL_BYTES);
+        bflb_flash_erase(CONFIG_BASE, SECTOR_SIZE);
+        bflb_flash_erase(PRESET_BASE, PRESET_REGION_BYTES);
         bflb_flash_write(CONFIG_BASE, &default_config, sizeof(struct Config));
         current_config = default_config;
         is_initial_boot = true;
@@ -155,7 +173,7 @@ void save(int slot)
     memcpy(&presets[slot], buf, NUM_BYTES_PER_PRESET);
 
     // printf("erase slot\n");
-    ret = bflb_flash_erase(base, sizeof(buf));
+    ret = bflb_flash_erase(base, SECTOR_SIZE);
     if(ret < 0)
     {
         // printf("bflb_flash_erase returned %d\n", ret);
@@ -170,7 +188,7 @@ void save(int slot)
     }
 
     // printf("erase config\n");
-    ret = bflb_flash_erase(CONFIG_BASE, sizeof(struct Config));
+    ret = bflb_flash_erase(CONFIG_BASE, SECTOR_SIZE);
     if(ret < 0)
     {
         // printf("bflb_flash_erase returned %d\n", ret);
@@ -441,6 +459,6 @@ void load_preset(int slot){
 }
 
 void factory_reset(void){
-    bflb_flash_erase(CONFIG_BASE, sizeof(struct Config));
+    bflb_flash_erase(CONFIG_BASE, SECTOR_SIZE);
     GLB_SW_System_Reset();
 }
