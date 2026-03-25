@@ -614,7 +614,9 @@ void handle_midi(uint8_t *msg, uint8_t len)
     case MIDI_PROGRAM_CHANGE:
     {
         uint8_t voice = msg[1] & 0b01111111;
-        load_preset(voice);
+        if(voice < NUM_PRESETS){
+            load_preset(voice);
+        }
         break;
     }
     case MIDI_CC:
