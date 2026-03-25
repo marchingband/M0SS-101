@@ -231,6 +231,12 @@ static void process_buttons(){
                     GLB_SW_System_Reset();
                 } else {
                     reset_ccs();
+                    /* Consume releases from the reset chord so they don't trigger actions */
+                    for (int j = 0; j < NUM_BUTTONS; j++) {
+                        button_pushes[j] = 0;
+                        button_state[j] = 1;  // treat as released
+                        button_time[j] = now; // debounce from this moment
+                    }
                     set_ui_mode(UI_MODE_PLAY);
                 }
             }
