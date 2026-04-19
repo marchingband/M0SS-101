@@ -544,6 +544,7 @@ void handle_button_press(int num)
             else if(num == BUTTON_NUM_ENVII)
             {
                 envII_active = envII_active ? false : true;
+                alt_switch_state = envII_active ? ALT_SWITCH_STATE_ON : ALT_SWITCH_STATE_OFF;
             }
             else
             {
