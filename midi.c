@@ -523,18 +523,13 @@ uint8_t peek_note(void){
 }
 
 void remove_note(uint8_t note){
-    int idx = -1;
-    for(int i=0; i< note_lifo_p; i++){
-        if(note_lifo[i] == note){
-            idx = i;
-            break;
+    size_t write_idx = 0;
+    for(size_t read_idx = 0; read_idx < note_lifo_p; read_idx++){
+        if(note_lifo[read_idx] != note){
+            note_lifo[write_idx++] = note_lifo[read_idx];
         }
     }
-    if(idx == -1) return;
-    for(int i=idx; i< note_lifo_p; i++){
-        note_lifo[i] = note_lifo [i + 1];
-    }
-    note_lifo_p --;
+    note_lifo_p = write_idx;
 }
 
 void handle_midi(uint8_t *msg, uint8_t len)
@@ -595,19 +590,12 @@ void handle_midi(uint8_t *msg, uint8_t len)
     case MIDI_NOTE_OFF:
     {
         uint8_t note = msg[1] & 0b01111111;
-        // stop(note);
-        if(*Signals.pitch == note)
-        {
-            // the last note played has been stopped
-            pop_note(); // remove the last note.
-            if(note_lifo_p > 0){ // we have decremented note_lifo_p, if it is still positive, there are more notes.
-                uint8_t next_note = peek_note();
-                *Signals.pitch = next_note;
-            } else {
-                *Signals.gate = 0;
-            }
+        remove_note(note);
+        if(note_lifo_p > 0){
+            *Signals.pitch = peek_note();
+            *Signals.gate = 1;
         } else {
-            remove_note(note);
+            *Signals.gate = 0;
         }
         break;
     }
