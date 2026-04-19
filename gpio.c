@@ -277,6 +277,7 @@ static void process_buttons(){
                         cur_disp_num = cur_midi_chan;
                         set_ui_mode(UI_MODE_DISP_NUM);
                     } else if( ui_mode == UI_MODE_PLAY ){
+                        // call set_param_selected for MOD and ALT only
                         if(alt_held()){
                             struct AltSel *AltSels = get_alt_sels();
                             if(AltSels[i].p == 0){
