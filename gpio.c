@@ -282,7 +282,17 @@ static void process_buttons(){
                         cur_disp_num = cur_midi_chan;
                         set_ui_mode(UI_MODE_DISP_NUM);
                     } else if( ui_mode == UI_MODE_PLAY ){
-                        set_param_selected(i, alt_held());
+                        if(alt_held()){
+                            struct AltSel *AltSels = get_alt_sels();
+                            if(AltSels[i].p == 0){
+                                set_param_selected(i, true);
+                            }
+                        } else {
+                            struct Sel *Sels = get_sels();
+                            if(Sels[i].p == 0){
+                                set_param_selected(i, false);
+                            }
+                        }
                     }
                     // printf("button %d pushed\n\r", i);
                 }
