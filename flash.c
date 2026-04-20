@@ -1,4 +1,5 @@
 #include "bflb_flash.h"
+#include "bflb_mtimer.h"
 #include "board.h"
 #include "midi.h"
 #include "gpio.h"
@@ -20,6 +21,7 @@
 #define PRESET_BASE MEDIA_PART_BASE
 
 #define NUM_CONFIG_VARS (1 + NUM_CC_MAP) // midi_chan + CC map
+#define CONFIG_SCHEMA_VERSION 1U
 
 #define NUM_MODS NUM_BUTTONS
 #define NUM_ALTS NUM_BUTTONS
@@ -46,18 +48,16 @@ extern bool is_initial_boot;
 static float presets[NUM_PRESETS][NUM_FLOATS];
 
 static int current_slot = -1;
+static uint8_t runtime_cc_map[NUM_CC_MAP] = {0};
+static bool midi_chan_persist_pending = false;
+static uint64_t midi_chan_persist_due_us = 0;
+
+#define MIDI_CHAN_PERSIST_DEBOUNCE_US (1000000ULL)
 
 static struct Config default_config = {
     .empty = { true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true }, // 17
-    .cc_map = {
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-        0,0,0,0 // 130
-    },
+    .config_schema_version = { 1, 0, 0, 0 },
+    .midi_chan = MIDI_CHANNEL_OMNI,
     .magic = 9,
 };
 
@@ -76,19 +76,59 @@ struct Config *get_config(void)
     return &current_config;
 }
 
+uint8_t *get_cc_map(void)
+{
+    return &runtime_cc_map[0];
+}
+
+static int write_config_to_flash(void)
+{
+    int ret = bflb_flash_erase(CONFIG_BASE, SECTOR_SIZE);
+    if(ret < 0)
+    {
+        return ret;
+    }
+    return bflb_flash_write(CONFIG_BASE, (uint8_t *)&current_config, sizeof(struct Config));
+}
+
+static uint32_t get_schema_version(const struct Config *cfg)
+{
+    return (uint32_t)cfg->config_schema_version[0]
+        | ((uint32_t)cfg->config_schema_version[1] << 8)
+        | ((uint32_t)cfg->config_schema_version[2] << 16)
+        | ((uint32_t)cfg->config_schema_version[3] << 24);
+}
+
+static void set_schema_version(struct Config *cfg, uint32_t version)
+{
+    cfg->config_schema_version[0] = (uint8_t)(version & 0xFFu);
+    cfg->config_schema_version[1] = (uint8_t)((version >> 8) & 0xFFu);
+    cfg->config_schema_version[2] = (uint8_t)((version >> 16) & 0xFFu);
+    cfg->config_schema_version[3] = (uint8_t)((version >> 24) & 0xFFu);
+}
+
 void flash_init(void)
 {
     printf("initializing flash\n");
     struct Config conf;
-    bflb_flash_read(CONFIG_BASE, &conf, sizeof(struct Config));
+    bflb_flash_read(CONFIG_BASE, (uint8_t *)&conf, sizeof(struct Config));
     if(conf.magic == default_config.magic)
     {
         printf("the magic number in flash was correct\n");
         current_config = conf;
-        // for(int i=0; i< 127; i++)
-        // {
-        //     printf("%d : %d\n", i, current_config.cc_map[i]);
-        // }
+        bool config_dirty = false;
+        if(get_schema_version(&current_config) != CONFIG_SCHEMA_VERSION) {
+            set_schema_version(&current_config, CONFIG_SCHEMA_VERSION);
+            current_config.midi_chan = MIDI_CHANNEL_OMNI;
+            config_dirty = true;
+        } else if(current_config.midi_chan < 1 || current_config.midi_chan > MIDI_CHANNEL_OMNI) {
+            current_config.midi_chan = MIDI_CHANNEL_OMNI;
+            config_dirty = true;
+        }
+        cur_midi_chan = current_config.midi_chan;
+        if(config_dirty) {
+            write_config_to_flash();
+        }
     }
     else
     {
@@ -96,11 +136,44 @@ void flash_init(void)
         printf("initializing flash storage!\n");
         bflb_flash_erase(CONFIG_BASE, SECTOR_SIZE);
         bflb_flash_erase(PRESET_BASE, PRESET_REGION_BYTES);
-        bflb_flash_write(CONFIG_BASE, &default_config, sizeof(struct Config));
+        set_schema_version(&default_config, CONFIG_SCHEMA_VERSION);
+        bflb_flash_write(CONFIG_BASE, (uint8_t *)&default_config, sizeof(struct Config));
         current_config = default_config;
+        cur_midi_chan = current_config.midi_chan;
         is_initial_boot = true;
     }
     load_all_presets_from_flash();
+}
+
+void schedule_midi_chan_persist(void)
+{
+    uint8_t chan = (uint8_t)cur_midi_chan;
+    if(current_config.midi_chan == chan && !midi_chan_persist_pending)
+    {
+        return;
+    }
+    current_config.midi_chan = chan;
+    midi_chan_persist_pending = true;
+    midi_chan_persist_due_us = bflb_mtimer_get_time_us() + MIDI_CHAN_PERSIST_DEBOUNCE_US;
+}
+
+void flash_persist_poll(void)
+{
+    if(!midi_chan_persist_pending)
+    {
+        return;
+    }
+
+    uint64_t now = bflb_mtimer_get_time_us();
+    if(now < midi_chan_persist_due_us)
+    {
+        return;
+    }
+
+    if(write_config_to_flash() >= 0)
+    {
+        midi_chan_persist_pending = false;
+    }
 }
 
 void save(int slot)
@@ -166,7 +239,7 @@ void save(int slot)
     // add config vars
     floats_buf[idx++] = (float)cur_midi_chan;
     for(int i=0; i<NUM_CC_MAP; i++){
-        floats_buf[idx++] = current_config.cc_map[i];
+        floats_buf[idx++] = runtime_cc_map[i];
     }
 
     // save to ram presets
@@ -187,21 +260,15 @@ void save(int slot)
         return;
     }
 
-    // printf("erase config\n");
-    ret = bflb_flash_erase(CONFIG_BASE, SECTOR_SIZE);
-    if(ret < 0)
-    {
-        // printf("bflb_flash_erase returned %d\n", ret);
-        return;
-    }
-    // printf("write config\n");
     current_config.empty[slot] = false;
-    ret = bflb_flash_write(CONFIG_BASE, &current_config, sizeof(struct Config));
+    current_config.midi_chan = (uint8_t)cur_midi_chan;
+    ret = write_config_to_flash();
     if(ret < 0)
     {
         // printf("bflb_flash_write returned %d\n", ret);
         return;
     }
+    midi_chan_persist_pending = false;
 }
 
 void load(int slot)
@@ -252,7 +319,7 @@ void load(int slot)
 
     for(int i=0; i< NUM_MODS; i++)
     {
-        if(mods[i].p == 0)
+        if(mods[i].p == NULL)
         {
             // printf("mod %d is null\n", i);
             idx++;
@@ -265,7 +332,7 @@ void load(int slot)
 
     for(int i=0; i< NUM_ALTS; i++)
     {
-        if(alts[i].p == 0)
+        if(alts[i].p == NULL)
         {
             // printf("alt %d is null\n", i);
             idx++;
@@ -278,7 +345,7 @@ void load(int slot)
     
     for(int i=0; i< NUM_SELS; i++)
     {
-        if(sels[i].p == 0)
+        if(sels[i].p == NULL)
         {
             // printf("sel %d is null\n", i);
             idx++;
@@ -291,7 +358,7 @@ void load(int slot)
 
     for(int i=0; i< NUM_ALTSELS; i++)
     {
-        if(altsels[i].p == 0)
+        if(altsels[i].p == NULL)
         {
             // printf("sel %d is null\n", i);
             idx++;
@@ -304,7 +371,7 @@ void load(int slot)
 
     for(int i=0; i< NUM_ASBS; i++)
     {
-        if(asbs[i].p == 0)
+        if(asbs[i].p == NULL)
         {
             // printf("asbs %d is null\n", i);
             idx++;
@@ -315,9 +382,9 @@ void load(int slot)
         *asbs[i].p = val;
     }    
 
-    cur_midi_chan = (int)floats_buf[idx++];
+    idx++; // deprecated per-preset midi channel (kept for backward compatibility)
     for(int i=0; i<NUM_CC_MAP; i++){
-        current_config.cc_map[i] = floats_buf[idx++];
+        runtime_cc_map[i] = (uint8_t)floats_buf[idx++];
     }
 }
 
@@ -389,7 +456,7 @@ void load_preset(int slot){
 
     for(int i=0; i< NUM_MODS; i++)
     {
-        if(mods[i].p == 0)
+        if(mods[i].p == NULL)
         {
             // printf("mod %d is null\n", i);
             idx++;
@@ -402,7 +469,7 @@ void load_preset(int slot){
 
     for(int i=0; i< NUM_ALTS; i++)
     {
-        if(alts[i].p == 0)
+        if(alts[i].p == NULL)
         {
             // printf("alt %d is null\n", i);
             idx++;
@@ -415,7 +482,7 @@ void load_preset(int slot){
 
     for(int i=0; i< NUM_SELS; i++)
     {
-        if(sels[i].p == 0)
+        if(sels[i].p == NULL)
         {
             // printf("sel %d is null\n", i);
             idx++;
@@ -428,7 +495,7 @@ void load_preset(int slot){
     
     for(int i=0; i< NUM_ALTSELS; i++)
     {
-        if(altsels[i].p == 0)
+        if(altsels[i].p == NULL)
         {
             // printf("sel %d is null\n", i);
             idx++;
@@ -441,7 +508,7 @@ void load_preset(int slot){
     
     for(int i=0; i< NUM_ASBS; i++)
     {
-        if(asbs[i].p == 0)
+        if(asbs[i].p == NULL)
         {
             // printf("alt %d is null\n", i);
             idx++;
@@ -452,9 +519,9 @@ void load_preset(int slot){
         *asbs[i].p = val;
     }
 
-    cur_midi_chan = (int)floats_buf[idx++];
+    idx++; // deprecated per-preset midi channel (kept for backward compatibility)
     for(int i=0; i<NUM_CC_MAP; i++){
-        current_config.cc_map[i] = floats_buf[idx++];
+        runtime_cc_map[i] = (uint8_t)floats_buf[idx++];
     }
 }
 

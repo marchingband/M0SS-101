@@ -16,13 +16,11 @@
 #define NUM_LED 37
 #define FLASH_INTERVAL (ONE_SECOND / 6)
 
-void test_lights(void);
-
 extern int learn_mode_state;
 extern int alt_switch_state;
 extern uint64_t reset_mode_started;
 
-// test mode
+// hardware test mode
 extern bool test_mode;
 extern bool test_button_pressed;
 extern bool test_midi_data_in;
@@ -62,7 +60,6 @@ static size_t time_p = 0;
 
 void update_leds(void)
 {
-    // test_lights(); // 201
     render_lights();
     encode_rgb(data_buf);
     spi_rgb_send(data_buf, 128);
@@ -90,12 +87,6 @@ const struct pixel_t pixel_on = {
     .red = 4,
     .green = 3,
     .blue = 1
-    // .red = 5,
-    // .green = 30,
-    // .blue = 0
-    // .red = 2,
-    // .green = 1,
-    // .blue = 0
 };
 
 const struct pixel_t pixel_off = {
@@ -128,16 +119,17 @@ const struct pixel_t light_green = {
     .blue = 0
 };
 
-const uint8_t number_select_lights[NUM_PRESETS] = { 0, 2, 7, 6, 17, 10, 13, 14, 15, 16, 12, 23, 19, 20, 21, 22, 18 };
+const uint8_t number_select_lights[NUM_PRESETS] = { 
+    0, 2, 7, 6, 17, 10, 13, 14, 15, 16, 12, 23, 19, 20, 21, 22, 18 
+};
+
 int ui_mode = UI_MODE_PLAY;
 
-void set_ui_mode(int mode)
-{
+void set_ui_mode(int mode){
     ui_mode = mode;
 }
 
-int get_ui_mode(void)
-{
+int get_ui_mode(void){
     return ui_mode;
 }
 
@@ -255,10 +247,6 @@ void render_lights(void){
             pixel_buf[24] = *(sels[13].p)  == 1 ? pixel_on : pixel_off; // vcflp
             pixel_buf[25] = *(sels[13].p)  == 2 ? pixel_on : pixel_off; // vcfbp
 
-            // pixel_buf[16] = *(sels[11].p) == 0 ? pixel_on : pixel_off; // envasr
-            // pixel_buf[17] = *(sels[11].p) == 1 ? pixel_on : pixel_off; // envar
-
-
             // ****************************************
             // temperature pixels for LFO in high range
             // ****************************************
@@ -279,7 +267,6 @@ void render_lights(void){
                 // pixel_buf[18] = pixel_fade_lfo((*mods[12].p), (*sigs->env));     // vca
             }
             
-            // if(*(altSels[12].p) == 1 && (*mods[8].p) > 0.0){ // lfo high range and lfo.vca active
             if(*(altSels[12].p)){ // lfo high range
                 if(*(sels[9].p) == 1){ // lfo.env active
                     pixel_buf[18] = pixel_fade_lfo((*mods[12].p), 1);     // vca
@@ -455,33 +442,4 @@ void render_lights(void){
         }
         default: break;
     }
-}
-
-// TEST 201 (also modify spi_rgb.c for larger xfer)
-
-static ATTR_NOCACHE_NOINIT_RAM_SECTION uint32_t test_data_buf[256] __ALIGNED(4);
-#define NUM 67
-
-void test_lights(void){
-    struct pixel_t test_pixel_buf[NUM];
-    for (int i = 0; i < NUM; i++) {
-        test_pixel_buf[i] = pixel_on;
-        int loc = i * PIXEL_SIZE;
-
-        test_data_buf[loc]     = (bit_patterns[test_pixel_buf[i].green >> 6 & 0x03]  << 24) | 
-                        (bit_patterns[test_pixel_buf[i].green >> 4 & 0x03] << 16) | 
-                        (bit_patterns[test_pixel_buf[i].green >> 2 & 0x03] << 8)  | 
-                         bit_patterns[test_pixel_buf[i].green & 0x03];
-
-        test_data_buf[loc + 1] = (bit_patterns[test_pixel_buf[i].red >> 6 & 0x03]    << 24) | 
-                        (bit_patterns[test_pixel_buf[i].red >> 4 & 0x03]   << 16) |
-                        (bit_patterns[test_pixel_buf[i].red   >> 2 & 0x03] << 8)  | 
-                         bit_patterns[test_pixel_buf[i].red & 0x03];
-                         
-        test_data_buf[loc + 2] = (bit_patterns[test_pixel_buf[i].blue >> 6 & 0x03]   << 24) | 
-                        (bit_patterns[test_pixel_buf[i].blue >> 4 & 0x03]  << 16) |
-                        (bit_patterns[test_pixel_buf[i].blue  >> 2 & 0x03] << 8)  |
-                         bit_patterns[test_pixel_buf[i].blue & 0x03];
-    }
-    spi_rgb_send(test_data_buf, 256);
 }

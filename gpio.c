@@ -92,7 +92,7 @@ void set_param_selected(int num, bool alt)
     {
         struct Alt *Alts = get_alts();
         struct Alt alt = Alts[num];
-        if(alt.p == 0)
+        if(alt.p == NULL)
         {
             return;
         }
@@ -103,7 +103,7 @@ void set_param_selected(int num, bool alt)
     {
         struct Mod *Mods = get_mods();
         struct Mod mod = Mods[num];
-        if(mod.p == 0){
+        if(mod.p == NULL){
             return;
         }
         // printf("set led %f %f %f\n\r", val, mod.min, mod.max);
@@ -246,7 +246,7 @@ static void process_buttons(){
         // check for presses
         if(button_pushes[i] == 0) // was not pushed
         {
-            if(state == 0) // maybe pushed ( 0 is low so maybe pressed )
+            if(state == 0) // maybe pushed ( 0 is low )
             {
                 if( (now - button_time[i]) > DEBOUNCE_TIME ) // pressed
                 {
@@ -263,7 +263,6 @@ static void process_buttons(){
                             handle_encoder_press(true);
                         }
                     } else if( i == BUTTON_NUM_ALT ){
-                        // handle_button_press(i);
                         alt_consumed = false;
                     } else if( alt_held() && get_asbs()[i].p != 0 ){
                         // its an asb
@@ -280,12 +279,12 @@ static void process_buttons(){
                         // call set_param_selected for MOD and ALT only
                         if(alt_held()){
                             struct AltSel *AltSels = get_alt_sels();
-                            if(AltSels[i].p == 0){
+                            if(AltSels[i].p == NULL){
                                 set_param_selected(i, true);
                             }
                         } else {
                             struct Sel *Sels = get_sels();
-                            if(Sels[i].p == 0){
+                            if(Sels[i].p == NULL){
                                 set_param_selected(i, false);
                             }
                         }
@@ -352,14 +351,10 @@ uint8_t *get_button_pushes(void)
     return button_pushes;
 }
 
-// void clear_button_pushes(void)
-// {
-//     memset(button_pushes, 0, sizeof button_pushes); // clear it on every read
-// }
-
 void poll_gpio(){
     read_buttons();
     process_buttons();
+    flash_persist_poll();
 }
 
 bool check_test_mode(void)

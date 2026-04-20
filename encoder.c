@@ -13,6 +13,7 @@
 #include "gpio.h"
 #include "midi.h"
 #include "rgb_led.h"
+#include "flash.h"
 
 #define ROT_ENC_A_GPIO 16
 #define ROT_ENC_B_GPIO 17
@@ -66,6 +67,7 @@ static void on_encoder(bool up){
         if(new_chan >= 1 && new_chan <= MIDI_CHANNEL_OMNI){
             cur_midi_chan = new_chan;
             cur_disp_num = new_chan;
+            schedule_midi_chan_persist();
         }
     } 
     else if(alt_held()) // pitch bend
@@ -101,7 +103,7 @@ static void on_encoder(bool up){
         {
             struct Alt *Alts = get_alts();
             struct Alt alt = Alts[param.button];
-            if(alt.p == 0)
+            if(alt.p == NULL)
             {
                 // printf("got unknown Alt %d\n\r", param.button);
             }
@@ -121,7 +123,7 @@ static void on_encoder(bool up){
         {
             struct Mod *Mods = get_mods();
             struct Mod mod = Mods[param.button];
-            if(mod.p == 0)
+            if(mod.p == NULL)
             {
                 // printf("got unknown Mod %d\n\r", param.button);
             }

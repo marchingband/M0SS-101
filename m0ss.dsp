@@ -96,7 +96,7 @@ lfo_sh = noise / 2 + 0.5 : ba.latch(lfo_sq);
 lfo = lfo_tri, lfo_sq, lfo_sh : ba.selectn(3, lfo_wavform) <: attach(vbargraph("lfo[lfo]", 0 , 1));
 lfo_to_pitch   = (lfo - 0.5) * lfo2pitch * 100 * 127 : ba.cent2ratio;
 lfo_to_cuttoff = lfo * lfo2vcf;
-lfo_to_volume  = (lfo * lfo2vca) + 1;
+lfo_to_volume  = (lfo * lfo2vca);
 
 // osc 1
 osc1_pw = osc_1_pw * (1 - (lfo2pwm * lfo)) * (1 - env2pwm); // mod pulse wav duty
@@ -147,7 +147,8 @@ vcf = _ <: hpf, lpf, bpf : ba.selectn(3, filter_type) ;
 bias_f = adsr_bias / 10;
 env_trig = gate, lfo_sq : ba.selectn(2, lfo2env);
 env = en.adsr_bias(attack, decay, sustain, release, 1.0 - bias_f, bias_f, bias_f, 1, env_trig) <: attach(vbargraph("env[env]", 0 , 1));
-vca = env_to_volume * lfo_to_volume <: attach(vbargraph("vca[vca]", 0 , 1));
+vca = env_to_volume + lfo_to_volume : clamp(0,1) <: attach(vbargraph("vca[vca]", 0 , 1));
+// vca = env_to_volume * lfo_to_volume <: attach(vbargraph("vca[vca]", 0 , 1));
 
 env_to_pitch  = env * env2pitch * 100 * 127 : ba.cent2ratio;
 env_to_volume_norm = (env * env2volume);

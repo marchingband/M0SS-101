@@ -367,7 +367,7 @@ void reset_params(void){
 }
 
 void reset_ccs(void){
-    uint8_t *cc_map = &get_config()->cc_map[0];
+    uint8_t *cc_map = get_cc_map();
     for(int i=0; i<NUM_CC_MAP; i++){
         cc_map[i] = 0;
     }
@@ -553,7 +553,7 @@ void handle_midi(uint8_t *msg, uint8_t len)
     }
 
     int ui_mode = get_ui_mode();
-    uint8_t *cc_map = &get_config()->cc_map[0];
+    uint8_t *cc_map = get_cc_map();
 
     switch (code)
     {
@@ -644,7 +644,7 @@ void handle_midi(uint8_t *msg, uint8_t len)
                     if(alt_held())
                     {
                         struct Alt alt = Alts[i];
-                        if(alt.p == 0)
+                        if(alt.p == NULL)
                         {
                             // printf("got unknown Alt %d\n\r\r", i);
                         }
@@ -662,7 +662,7 @@ void handle_midi(uint8_t *msg, uint8_t len)
                     else
                     {
                         struct Mod mod = Mods[i];
-                        if(mod.p == 0)
+                        if(mod.p == NULL)
                         {
                             // printf("got unknown Mod %d\n\r\r", i);
                         }
@@ -685,7 +685,7 @@ void handle_midi(uint8_t *msg, uint8_t len)
             }
         }
         struct CC cc = CCs[cc_num];
-        if(cc.p == 0)
+        if(cc.p == NULL)
         {
             // printf("got unknown CC %d\n\r\r", cc_num);
             break;
