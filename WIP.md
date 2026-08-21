@@ -7,7 +7,6 @@ WIP:
 todo:
 - test channel pressure and program change on usb
 - test Prog Chang > 17
-- test v1.2 to 1.3 migration
 
 last:
 - released dualenv firmware
@@ -15,6 +14,7 @@ last:
 - staged flash changes for global persistent midi channel
 - - causes a little audio glitch on change midi chan
 - - adds schema version to manage firmware updates that don't wipe presets 
+- env and lfo are additive not multiplicative
 
 next: 
-- env and lfo are additive not multiplicative
+- test v1.2 to 1.3 migration
