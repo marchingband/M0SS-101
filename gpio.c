@@ -270,16 +270,16 @@ static void process_buttons(){
                     } else if( i == BUTTON_NUM_ALT ){
                         // handle_button_press(i);
                         alt_consumed = false;
+                    } else if( alt_held() && i == BUTTON_NUM_MIDI_CHAN ){
+                        set_midi_chan_active = true;
+                        cur_disp_num = cur_midi_chan;
+                        set_ui_mode(UI_MODE_DISP_NUM);
                     } else if( alt_held() && get_asbs()[i].p != 0 ){
                         // its an asb
                         // printf("got asb on button %d\n", i);
                         cur_asb = i;
                         asb_active = true;
                         cur_disp_num = (int)*get_asbs()[i].p;
-                        set_ui_mode(UI_MODE_DISP_NUM);
-                    } else if( alt_held() && i == BUTTON_NUM_MIDI_CHAN ){
-                        set_midi_chan_active = true;
-                        cur_disp_num = cur_midi_chan;
                         set_ui_mode(UI_MODE_DISP_NUM);
                     } else if( ui_mode == UI_MODE_PLAY ){
                         if(alt_held()){
@@ -364,6 +364,7 @@ uint8_t *get_button_pushes(void)
 void poll_gpio(){
     read_buttons();
     process_buttons();
+    flash_persist_poll();
 }
 
 bool check_test_mode(void)

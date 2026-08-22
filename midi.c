@@ -481,7 +481,7 @@ void reset_params(void){
 }
 
 void reset_ccs(void){
-    uint8_t *cc_map = &get_config()->cc_map[0];
+    uint8_t *cc_map = get_cc_map();
     for(int i=0; i<NUM_CC_MAP; i++){
         cc_map[i] = 0;
     }
@@ -686,7 +686,7 @@ void handle_midi(uint8_t *msg, uint8_t len)
     }
 
     int ui_mode = get_ui_mode();
-    uint8_t *cc_map = &get_config()->cc_map[0];
+    uint8_t *cc_map = get_cc_map();
 
     switch (code)
     {

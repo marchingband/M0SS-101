@@ -13,6 +13,7 @@
 #include "gpio.h"
 #include "midi.h"
 #include "rgb_led.h"
+#include "flash.h"
 
 #define ROT_ENC_A_GPIO 16
 #define ROT_ENC_B_GPIO 17
@@ -66,6 +67,7 @@ static void on_encoder(bool up){
         if(new_chan >= 1 && new_chan <= MIDI_CHANNEL_OMNI){
             cur_midi_chan = new_chan;
             cur_disp_num = new_chan;
+            schedule_midi_chan_persist();
         }
     } 
     else if(alt_held()) // pitch bend
