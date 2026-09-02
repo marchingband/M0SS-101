@@ -20,8 +20,9 @@
 #define CONFIG_BASE DATA_PART_BASE
 #define PRESET_BASE MEDIA_PART_BASE
 
-#define NUM_CONFIG_VARS (1 + NUM_CC_MAP) // midi_chan + CC map
-#define CONFIG_SCHEMA_VERSION 1U
+#define CONFIG_SCHEMA_VERSION 2U
+#define CONFIG_MAGIC_NORMAL 9
+#define CONFIG_MAGIC_DUAL_ENV 10
 
 #define NUM_MODS NUM_BUTTONS
 #define NUM_ALTS NUM_BUTTONS
@@ -29,10 +30,15 @@
 #define NUM_ALTSELS NUM_BUTTONS
 #define NUM_ASBS NUM_BUTTONS
 
-#define NUM_FLOATS (NUM_CC + NUM_MODS + NUM_ALTS + NUM_SELS + NUM_ALTSELS + NUM_ASBS + NUM_CONFIG_VARS)
-#define NUM_BYTES_PER_PRESET (NUM_FLOATS * sizeof(float)) // 612
-#define TOTAL_BYTES (NUM_BYTES_PER_PRESET * NUM_PRESETS) // 10,414 packed payload bytes
-#define PRESET_REGION_BYTES (SECTOR_SIZE * NUM_PRESETS)  // 69,632 (one sector per slot)
+#define SCHEMA1_NORMAL_NUM_CC 44
+#define SCHEMA1_DUAL_ENV_NUM_CC 54
+#define SCHEMA1_PANEL_FLOATS (NUM_MODS + NUM_ALTS + NUM_SELS + NUM_ALTSELS + NUM_ASBS)
+
+#define SCHEMA2_PARAM_VALUES 128
+#define SCHEMA2_CC_MAP_OFFSET SCHEMA2_PARAM_VALUES
+#define NUM_FLOATS (SCHEMA2_PARAM_VALUES + NUM_CC_MAP)
+#define NUM_BYTES_PER_PRESET (NUM_FLOATS * sizeof(float))
+#define PRESET_REGION_BYTES (SECTOR_SIZE * NUM_PRESETS)
 
 #if (SECTOR_SIZE > DATA_PART_SIZE)
 #error "Config sector does not fit in DATA partition"
@@ -56,14 +62,15 @@ static uint64_t midi_chan_persist_due_us = 0;
 
 static struct Config default_config = {
     .empty = { true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true }, // 17
-    .config_schema_version = { 1, 0, 0, 0 },
+    .config_schema_version = { 2, 0, 0, 0 },
     .midi_chan = MIDI_CHANNEL_OMNI,
-    .magic = 10,
+    .magic = CONFIG_MAGIC_DUAL_ENV,
 };
 
 static struct Config current_config;
 
 static uint8_t buf[NUM_BYTES_PER_PRESET];
+static uint8_t migration_buf[SECTOR_SIZE];
 static float *floats_buf;
 
 int get_current_slot(void)
@@ -107,21 +114,115 @@ static void set_schema_version(struct Config *cfg, uint32_t version)
     cfg->config_schema_version[3] = (uint8_t)((version >> 24) & 0xFFu);
 }
 
+static bool config_magic_is_supported(uint8_t magic)
+{
+    return magic == CONFIG_MAGIC_NORMAL || magic == CONFIG_MAGIC_DUAL_ENV;
+}
+
+static uint8_t schema1_num_cc_for_magic(uint8_t magic)
+{
+    return magic == CONFIG_MAGIC_DUAL_ENV ? SCHEMA1_DUAL_ENV_NUM_CC : SCHEMA1_NORMAL_NUM_CC;
+}
+
+static size_t schema1_num_floats(uint8_t num_cc)
+{
+    return (size_t)num_cc + SCHEMA1_PANEL_FLOATS + 1 + NUM_CC_MAP;
+}
+
+static void apply_preset_values(float *preset_values)
+{
+    struct CC *ccs = get_ccs();
+
+    for(int i=0; i< NUM_CC; i++)
+    {
+        if(ccs[i].p == NULL)
+        {
+            continue;
+        }
+        *ccs[i].p = preset_values[i];
+    }
+
+    for(int i=0; i<NUM_CC_MAP; i++){
+        runtime_cc_map[i] = (uint8_t)preset_values[SCHEMA2_CC_MAP_OFFSET + i];
+    }
+}
+
+static int migrate_schema1_preset(int slot, uint8_t old_num_cc)
+{
+    uint32_t base = PRESET_BASE + (SECTOR_SIZE * slot);
+    size_t old_num_floats = schema1_num_floats(old_num_cc);
+    int ret = bflb_flash_read(base, migration_buf, old_num_floats * sizeof(float));
+    if(ret < 0)
+    {
+        return ret;
+    }
+
+    memset(buf, 0, sizeof(buf));
+    float *old_values = (float *)&migration_buf[0];
+    float *new_values = (float *)&buf[0];
+
+    for(int i=0; i<old_num_cc && i<SCHEMA2_PARAM_VALUES; i++)
+    {
+        new_values[i] = old_values[i];
+    }
+
+    size_t old_cc_map_offset = (size_t)old_num_cc + SCHEMA1_PANEL_FLOATS + 1;
+    for(int i=0; i<NUM_CC_MAP; i++)
+    {
+        new_values[SCHEMA2_CC_MAP_OFFSET + i] = old_values[old_cc_map_offset + i];
+    }
+
+    ret = bflb_flash_erase(base, SECTOR_SIZE);
+    if(ret < 0)
+    {
+        return ret;
+    }
+    return bflb_flash_write(base, buf, sizeof(buf));
+}
+
+static int migrate_schema1_presets(uint8_t old_num_cc)
+{
+    for(int slot=0; slot<NUM_PRESETS; slot++){
+        if(current_config.empty[slot] == true)
+        {
+            continue;
+        }
+
+        int ret = migrate_schema1_preset(slot, old_num_cc);
+        if(ret < 0)
+        {
+            return ret;
+        }
+    }
+
+    return 0;
+}
+
 void flash_init(void)
 {
     printf("initializing flash\n");
     struct Config conf;
     bflb_flash_read(CONFIG_BASE, (uint8_t *)&conf, sizeof(struct Config));
-    if(conf.magic == default_config.magic)
+    uint32_t schema_version = get_schema_version(&conf);
+
+    if(config_magic_is_supported(conf.magic) && (schema_version == 1 || schema_version == CONFIG_SCHEMA_VERSION))
     {
         printf("the magic number in flash was correct\n");
         current_config = conf;
         bool config_dirty = false;
-        if(get_schema_version(&current_config) != CONFIG_SCHEMA_VERSION) {
+
+        if(schema_version == 1) {
+            uint8_t old_num_cc = schema1_num_cc_for_magic(current_config.magic);
+            if(migrate_schema1_presets(old_num_cc) >= 0) {
+                set_schema_version(&current_config, CONFIG_SCHEMA_VERSION);
+                config_dirty = true;
+            }
+        } else if(schema_version != CONFIG_SCHEMA_VERSION) {
             set_schema_version(&current_config, CONFIG_SCHEMA_VERSION);
-            current_config.midi_chan = MIDI_CHANNEL_OMNI;
             config_dirty = true;
-        } else if(current_config.midi_chan < 1 || current_config.midi_chan > MIDI_CHANNEL_OMNI) {
+        }
+
+        if(current_config.midi_chan < 1 || current_config.midi_chan > MIDI_CHANNEL_OMNI) {
             current_config.midi_chan = MIDI_CHANNEL_OMNI;
             config_dirty = true;
         }
@@ -186,60 +287,30 @@ void save(int slot)
     floats_buf = (float *)&buf[0];
 
     struct CC *ccs   = get_ccs();
-    struct Mod *mods = get_mods();
-    struct Alt *alts = get_alts();
-    struct Sel *sels = get_sels();
-    struct AltSel *altsels = get_alt_sels();
-    struct Asb *asbs = get_asbs();
 
-    int idx = 0;
-
-    for(int i=0; i< NUM_CC; i++)
+    if(current_config.empty[slot] == false)
     {
-        float val = ccs[i].p ? *ccs[i].p : 0.0;
-        // printf("writing %f to cc %d\n", val, i);
-        floats_buf[idx++] = val;
+        ret = bflb_flash_read(base, buf, sizeof(buf));
+        if(ret < 0)
+        {
+            memset(buf, 0, sizeof(buf));
+        }
+    }
+    else
+    {
+        memset(buf, 0, sizeof(buf));
     }
 
-    for(int i=0; i< NUM_MODS; i++)
+    for(int i=0; i< NUM_CC && i<SCHEMA2_PARAM_VALUES; i++)
     {
-        float val = mods[i].p ? *mods[i].p : 0.0;
-        // printf("writing %f to mods %d\n", val, i);
-        floats_buf[idx++] = val;
+        if(ccs[i].p)
+        {
+            floats_buf[i] = *ccs[i].p;
+        }
     }
 
-    for(int i=0; i< NUM_ALTS; i++)
-    {
-        float val = alts[i].p ? *alts[i].p : 0.0;
-        // printf("writing %f to alts %d\n", val, i);
-        floats_buf[idx++] = val;
-    }
-
-    for(int i=0; i< NUM_SELS; i++)
-    {
-        float val = sels[i].p ? *sels[i].p : 0.0;
-        // printf("writing %f to sels %d\n", val, i);
-        floats_buf[idx++] = val;
-    }
-
-    for(int i=0; i< NUM_ALTSELS; i++)
-    {
-        float val = altsels[i].p ? *altsels[i].p : 0.0;
-        // printf("writing %f to sels %d\n", val, i);
-        floats_buf[idx++] = val;
-    }
-    
-    for(int i=0; i< NUM_ASBS; i++)
-    {
-        float val = asbs[i].p ? *asbs[i].p : 0.0;
-        // printf("writing %f to alts %d\n", val, i);
-        floats_buf[idx++] = val;
-    }
-
-    // add config vars
-    floats_buf[idx++] = (float)cur_midi_chan;
     for(int i=0; i<NUM_CC_MAP; i++){
-        floats_buf[idx++] = runtime_cc_map[i];
+        floats_buf[SCHEMA2_CC_MAP_OFFSET + i] = runtime_cc_map[i];
     }
 
     // save to ram presets
@@ -285,13 +356,6 @@ void load(int slot)
     int ret;
     uint32_t base = PRESET_BASE + (SECTOR_SIZE * slot);
 
-    struct CC *ccs = get_ccs();
-    struct Mod *mods = get_mods();
-    struct Alt *alts = get_alts();
-    struct Sel *sels = get_sels();
-    struct AltSel *altsels = get_alt_sels();
-    struct Asb *asbs = get_asbs();
-
     ret = bflb_flash_read(base, buf, sizeof(buf));
 
     if(ret < 0)
@@ -301,91 +365,7 @@ void load(int slot)
     }
 
     floats_buf = (float *) &buf[0];
-
-    int idx = 0;
-
-    for(int i=0; i< NUM_CC; i++)
-    {
-        if(ccs[i].p == NULL)
-        {
-            // printf("cc %d is null\n", i);
-            idx++;
-            continue;
-        }
-        float val = floats_buf[idx++];
-        // printf("reading %f to cc %d\n", val, i);
-        *ccs[i].p = val;
-    }
-
-    for(int i=0; i< NUM_MODS; i++)
-    {
-        if(mods[i].p == 0)
-        {
-            // printf("mod %d is null\n", i);
-            idx++;
-            continue;
-        }
-        float val = floats_buf[idx++];
-        // printf("reading %f to mod %d\n", val, i);
-        *mods[i].p = val;
-    }
-
-    for(int i=0; i< NUM_ALTS; i++)
-    {
-        if(alts[i].p == 0)
-        {
-            // printf("alt %d is null\n", i);
-            idx++;
-            continue;
-        }
-        float val = floats_buf[idx++];
-        // printf("reading %f to alts %d\n", val, i);
-        *alts[i].p = val;
-    }
-    
-    for(int i=0; i< NUM_SELS; i++)
-    {
-        if(sels[i].p == 0)
-        {
-            // printf("sel %d is null\n", i);
-            idx++;
-            continue;
-        }
-        float val = floats_buf[idx++];
-        // printf("reading %f to sels %d\n", val, i);
-        *sels[i].p = val;
-    }
-
-    for(int i=0; i< NUM_ALTSELS; i++)
-    {
-        if(altsels[i].p == 0)
-        {
-            // printf("sel %d is null\n", i);
-            idx++;
-            continue;
-        }
-        float val = floats_buf[idx++];
-        // printf("reading %f to sels %d\n", val, i);
-        *altsels[i].p = val;
-    }
-
-    for(int i=0; i< NUM_ASBS; i++)
-    {
-        if(asbs[i].p == 0)
-        {
-            // printf("asbs %d is null\n", i);
-            idx++;
-            continue;
-        }    
-        float val = floats_buf[idx++];
-        // printf("reading %f to alts %d\n", val, i);
-        *asbs[i].p = val;
-    }    
-
-    idx++; // deprecated per-preset midi channel (kept for backward compatibility)
-    for(int i=0; i<NUM_CC_MAP; i++){
-        runtime_cc_map[i] = (uint8_t)floats_buf[idx++];
-    }
+    apply_preset_values(floats_buf);
 }
 
 void load_all_presets_from_flash(void){
@@ -421,108 +401,8 @@ void load_preset(int slot){
     // int ret;
     // uint32_t base = PRESET_BASE + (SECTOR_SIZE * slot);
 
-    struct CC *ccs = get_ccs();
-    struct Mod *mods = get_mods();
-    struct Alt *alts = get_alts();
-    struct Sel *sels = get_sels();
-    struct Sel *altsels = get_alt_sels();
-    struct Asb *asbs = get_asbs();
-
-    // ret = bflb_flash_read(base, buf, sizeof(buf));
-
-    // if(ret < 0)
-    // {
-    //     // printf("bflb_flash_read returned %d\n", ret);
-    //     return;
-    // }
-
-    // floats_buf = (float *) &buf[0];
     floats_buf = &presets[slot][0];
-
-    int idx = 0;
-
-    for(int i=0; i< NUM_CC; i++)
-    {
-        if(ccs[i].p == NULL)
-        {
-            // printf("cc %d is null\n", i);
-            idx++;
-            continue;
-        }
-        float val = floats_buf[idx++];
-        // printf("reading %f to cc %d\n", val, i);
-        *ccs[i].p = val;
-    }
-
-    for(int i=0; i< NUM_MODS; i++)
-    {
-        if(mods[i].p == 0)
-        {
-            // printf("mod %d is null\n", i);
-            idx++;
-            continue;
-        }
-        float val = floats_buf[idx++];
-        // printf("reading %f to mod %d\n", val, i);
-        *mods[i].p = val;
-    }
-
-    for(int i=0; i< NUM_ALTS; i++)
-    {
-        if(alts[i].p == 0)
-        {
-            // printf("alt %d is null\n", i);
-            idx++;
-            continue;
-        }
-        float val = floats_buf[idx++];
-        // printf("reading %f to alts %d\n", val, i);
-        *alts[i].p = val;
-    }
-
-    for(int i=0; i< NUM_SELS; i++)
-    {
-        if(sels[i].p == 0)
-        {
-            // printf("sel %d is null\n", i);
-            idx++;
-            continue;
-        }
-        float val = floats_buf[idx++];
-        // printf("reading %f to sels %d\n", val, i);
-        *sels[i].p = val;
-    }
-    
-    for(int i=0; i< NUM_ALTSELS; i++)
-    {
-        if(altsels[i].p == 0)
-        {
-            // printf("sel %d is null\n", i);
-            idx++;
-            continue;
-        }
-        float val = floats_buf[idx++];
-        // printf("reading %f to sels %d\n", val, i);
-        *altsels[i].p = val;
-    }
-    
-    for(int i=0; i< NUM_ASBS; i++)
-    {
-        if(asbs[i].p == 0)
-        {
-            // printf("alt %d is null\n", i);
-            idx++;
-            continue;
-        }
-        float val = floats_buf[idx++];
-        // printf("reading %f to alts %d\n", val, i);
-        *asbs[i].p = val;
-    }
-
-    idx++; // deprecated per-preset midi channel (kept for backward compatibility)
-    for(int i=0; i<NUM_CC_MAP; i++){
-        runtime_cc_map[i] = (uint8_t)floats_buf[idx++];
-    }
+    apply_preset_values(floats_buf);
 }
 
 void factory_reset(void){
