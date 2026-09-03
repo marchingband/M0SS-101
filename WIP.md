@@ -1,8 +1,6 @@
-`current version: 1.3`
+`current version: 1.4`
 
 WIP:
-- Schema version 2, with migration
-- minichord usb compat
 
 todo:
 - test channel pressure and program change on usb
@@ -17,6 +15,9 @@ last:
 - env and lfo are additive not multiplicative
 - global persistent midi channel
 - env and lfo are additive not multiplicative
+- Schema version 2, with migration
+- minichord usb compat
 
 next: 
 - 11 banks of presets (use bytes for ccMap, and fit 4 per sector)
+- migration v<1.2 -> v1.5
