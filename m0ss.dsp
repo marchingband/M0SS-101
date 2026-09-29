@@ -1,5 +1,24 @@
 import("stdfaust.lib");
 
+adsr(att, dec, sus, rel, gate) = fb ~ (_,_) : !, _
+with {
+    att_slope = 1 / max(1, att*ma.SR);
+    dec_slope = (sus-1) / max(1, dec*ma.SR);
+    rel_rate = 1 / max(1, rel*ma.SR);
+
+    fb(state, y) = nextState, nextY
+    with {
+        // State 0: release; state 1: attack; state 2: decay/sustain.
+        y_at_release = y : ba.latch(gate == 0);
+        slope = -y_at_release * rel_rate, att_slope, dec_slope : select3(state);
+        nextY = y + slope : aa.clip(ba.if(state == 2, sus, 0), 1);
+        nextState = select2(gate > 0,
+            0,
+            select3(state, 1, select2(y < 1, 2, 1), 2)
+        );
+    };
+};
+
 sm = ba.tau2pole(0.1);
 
 clamp(low, high, x) = min(max( low, x), high);
@@ -70,7 +89,6 @@ delay_wet    = hslider("d_wet[alt:25][midi:38]",        0,     0,     0.5,  0.00
 midi_chan       = hslider("midi-chan[asb:6]", 1, 1, 16, 1) <: attach(vbargraph("dummy", 0 , 1));    // lfo.pwm button
 pitch_bend_up   = hslider("pbend-up[asb:10][midi:39]", 2, 1, 12, 1);                                // lfo.osc button
 pitch_bend_down = hslider("pbend-dn[asb:11][midi:40]", 2, 1, 12, 1);                                // lfo.vcf button
-adsr_bias       = hslider("adsr-bias[asb:16][midi:41]", 5, 1, 9, 1);                                // attack button
 
 // signals
 fine_tune  = hslider("fine-tune[fine-tune][midi:42]", 0, -100, 100, 1) : ba.cent2ratio;
@@ -132,9 +150,8 @@ bpf = ve.oberheimBPF(cutoff, resonance);
 vcf = _ <: hpf, lpf, bpf : ba.selectn(3, filter_type) ;
 
 // env
-bias_f = adsr_bias / 10;
 env_trig = gate, lfo_sq : ba.selectn(2, lfo2env);
-env = en.adsr(attack, decay, sustain, release, env_trig) <: attach(vbargraph("env[env]", 0 , 1));
+env = adsr(attack, decay, sustain, release, env_trig) <: attach(vbargraph("env[env]", 0 , 1));
 vca = env_to_volume + envII_to_volume + lfo_to_volume : clamp(0,1) <: attach(vbargraph("vca[vca]", 0 , 1));
 
 env_to_pitch  = env * env2pitch;
@@ -144,7 +161,7 @@ env_to_volume = env_to_volume_norm, env_to_volume_inv : ba.selectn(2, env_vca_in
 env_to_cutoff = env * env2cutoff;
 
 envII_trig = gate, lfo_sq : ba.selectn(2, lfo2envII);
-envII = en.adsr(attackII, decayII, sustainII, releaseII, envII_trig) <: attach(vbargraph("envII[envII]", 0 , 1));
+envII = adsr(attackII, decayII, sustainII, releaseII, envII_trig) <: attach(vbargraph("envII[envII]", 0 , 1));
 envII_to_pitch  = envII * envII2pitch;
 envII_to_volume_norm = (envII * envII2volume);
 envII_to_volume_inv = 1 - ((1-envII) * envII2volume);
